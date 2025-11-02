@@ -2,7 +2,6 @@ package main
 
 import (
 	"Spacetraders/src/Agent"
-	Game "Spacetraders/src/General"
 	"Spacetraders/src/Server"
 	"Spacetraders/src/Ships"
 	"fmt"
@@ -21,9 +20,6 @@ func handleMenuSelection(choice string, app *tview.Application) tview.Primitive 
 
 	case "Ships":
 		return Ships.DisplayShipState()
-
-	case "About":
-		return Game.DisplayAbout()
 
 	case "Exit":
 		app.Stop()

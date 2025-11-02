@@ -13,7 +13,7 @@ import (
 
 func GetAgentState(agent string) AgentState {
 	var a AgentState
-	db, _ := sql.Open("sqlite3", "src/DB/spacetraders.db")
+	db, _ := sql.Open("sqlite3", "SpaceTraders.db")
 	defer db.Close()
 
 	// Check the last update time, if more than 15 mins go grab new info
@@ -67,7 +67,7 @@ func UpdateAgentState() error {
 		return err
 	}
 
-	db, err := sql.Open("sqlite3", "src/DB/spacetraders.db")
+	db, err := sql.Open("sqlite3", "SpaceTraders.db")
 	defer db.Close()
 
 	_, err = db.Exec(`

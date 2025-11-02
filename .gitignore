@@ -1,4 +1,4 @@
-release
 activity.log
 error.log
-spacetraders.db
+SpaceTraders.db
+SpaceTraders.tui

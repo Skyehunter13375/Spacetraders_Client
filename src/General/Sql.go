@@ -8,7 +8,7 @@ import (
 
 func GetToken(tokentype string) string {
 	var token string
-	db, _ := sql.Open("sqlite3", "src/DB/spacetraders.db")
+	db, _ := sql.Open("sqlite3", "SpaceTraders.db")
 	defer db.Close()
 	err := db.QueryRow(`SELECT token FROM tokens WHERE type = ? LIMIT 1`, tokentype).Scan(&token)
 	if err == sql.ErrNoRows {

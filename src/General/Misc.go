@@ -5,8 +5,6 @@ import (
 	"log"
 	"os"
 	"strings"
-
-	"github.com/rivo/tview"
 )
 
 func LogErr(msg string) {
@@ -21,19 +19,6 @@ func LogActivity(msg string) {
 	log.SetOutput(logFile)
 	log.Printf("%s", msg)
 	logFile.Close()
-}
-
-func DisplayAbout() tview.Primitive {
-	content, _ := os.ReadFile("README.md")
-
-	window := tview.NewFlex()
-	window.SetBorder(true)
-	window.SetTitle("  About This Project  ")
-	About := tview.NewTextView()
-	fmt.Fprintf(About, string(content), 0, 1, false)
-	window.AddItem(About, 0, 1, false)
-
-	return window
 }
 
 func ProgressBar(curr int, max int) string {

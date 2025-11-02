@@ -13,7 +13,7 @@ import (
 
 func GetShipState(symbol string) ShipData {
 	var sd ShipData
-	db, _ := sql.Open("sqlite3", "src/DB/spacetraders.db")
+	db, _ := sql.Open("sqlite3", "SpaceTraders.db")
 	defer db.Close()
 
 	// Check the last update time, if more than 15 mins go grab new info
@@ -137,12 +137,12 @@ func UpdateShipState() error {
 	var ships []ShipData
 	json.Unmarshal(wrapper["data"], &ships)
 
-	db, err := sql.Open("sqlite3", "src/DB/spacetraders.db")
+	db, _ := sql.Open("sqlite3", "SpaceTraders.db")
 	defer db.Close()
 
 	for _, s := range ships {
 		// ┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫ Upsert Ship ┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫
-		_, err = db.Exec(`
+		_, err := db.Exec(`
 			INSERT INTO ship (
 				symbol,
 				name,

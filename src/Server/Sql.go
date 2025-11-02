@@ -14,7 +14,7 @@ import (
 func GetGameServerState() GameState {
 	var g GameState
 	var ts string
-	db, _ := sql.Open("sqlite3", "src/DB/spacetraders.db")
+	db, _ := sql.Open("sqlite3", "SpaceTraders.db")
 	defer db.Close()
 
 	// Check the last update time, if more than 15 mins go grab new info
@@ -72,7 +72,7 @@ func UpdateGameServerState() error {
 		return err
 	}
 
-	db, _ := sql.Open("sqlite3", "src/DB/spacetraders.db")
+	db, _ := sql.Open("sqlite3", "SpaceTraders.db")
 	defer db.Close()
 
 	_, err = db.Exec("DELETE FROM server")
