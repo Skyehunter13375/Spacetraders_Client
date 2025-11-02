@@ -48,7 +48,7 @@ func main() {
 	tview.Styles.ContrastSecondaryTextColor = tcell.ColorGray
 
 	// ┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫ Build Menu Bar ┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫
-	menuItems := []string{"Game Status", "Agent Status", "Ships", "About", "Exit"}
+	menuItems := []string{"Game Status", "Agent Status", "Ships", "Exit"}
 	menuBar := tview.NewFlex().SetDirection(tview.FlexColumn)
 	menuBar.SetBorder(false)
 	menuBar.SetTitle("Welcome to Null Sky")

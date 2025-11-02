@@ -11,5 +11,3 @@ type AgentState struct {
 		LastUpdated string
 	} `json:"data"`
 }
-
-

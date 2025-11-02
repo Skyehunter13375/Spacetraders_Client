@@ -67,7 +67,7 @@ func UpdateAgentState() error {
 		return err
 	}
 
-	db, err := sql.Open("sqlite3", "SpaceTraders.db")
+	db, _ := sql.Open("sqlite3", "SpaceTraders.db")
 	defer db.Close()
 
 	_, err = db.Exec(`
