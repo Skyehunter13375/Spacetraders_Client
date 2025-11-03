@@ -1,57 +1,71 @@
 package Ships
 
 import (
-	"Spacetraders/src/General"
+	"database/sql"
 	"fmt"
 
-	"github.com/rivo/tview"
+	"github.com/charmbracelet/lipgloss"
 )
 
-func DisplayShipState() tview.Primitive {
-	window := tview.NewFlex()
-	window.SetBorder(false)
-	window.SetDirection(tview.FlexRow)
-
-	row_1 := tview.NewFlex()
-	row_1.SetBorder(false)
-	row_2 := tview.NewFlex()
-	row_2.SetBorder(false)
-
-	var box_1 tview.Primitive = BuildShipForm("NULL_SKY-1")
-	var box_2 tview.Primitive = BuildShipForm("NULL_SKY-2")
-
-	box_3 := tview.NewTextView().SetBorder(true).SetTitle("  Box 3  ")
-	box_4 := tview.NewTextView().SetBorder(true).SetTitle("  Box 4  ")
-
-	row_1.AddItem(box_1, 0, 1, false)
-	row_1.AddItem(box_2, 0, 1, false)
-
-	row_2.AddItem(box_3, 0, 1, false)
-	row_2.AddItem(box_4, 0, 1, false)
-
-	window.AddItem(row_1, 0, 1, false)
-	window.AddItem(row_2, 0, 1, false)
-	return window
-}
-
-func BuildShipForm(symbol string) tview.Primitive {
-	box := tview.NewForm()
-	box.SetBorder(true)
-	box.SetTitle("  " + symbol + "  ")
-
+func BuildShipBox(symbol string, width int) string {
 	ship := GetShipState(symbol)
 
-	box.AddTextView("Role", ship.Registration.Role, 0, 1, true, true)
-	box.AddTextView("Status", ship.Nav.Status, 0, 1, true, true)
-	box.AddTextView("Frame", ship.Frame.Name, 0, 1, true, true)
-	box.AddTextView("Reactor", ship.Reactor.Name, 0, 1, true, true)
-	box.AddTextView("Engine", ship.Engine.Name, 0, 1, true, true)
-	box.AddTextView("Mode", ship.Nav.FlightMode, 0, 1, true, true)
-	box.AddTextView("Waypoint", ship.Nav.WaypointSymbol, 0, 1, true, true)
-	box.AddTextView("Crew", fmt.Sprintf("%d (Min: %d | Max: %d)", ship.Crew.Current, ship.Crew.Required, ship.Crew.Capacity), 0, 1, true, true)
-	box.AddTextView("Fuel", General.ProgressBar(ship.Fuel.Current, ship.Fuel.Capacity), 0, 1, true, true)
-	box.AddTextView("Morale", General.ProgressBar(ship.Crew.Morale, 100), 0, 1, true, true)
-	// box.AddTextView("Cargo", ProgressBar(ship.Cargo.), 0, 1, true, true)
+	// Build the ship’s info text
+	info := fmt.Sprintf("Role:     %s\n", ship.Registration.Role)
+	info = info + fmt.Sprintf("Status:   %s\n", ship.Nav.Status)
+	info = info + fmt.Sprintf("Frame:    %s\n", ship.Frame.Name)
+	info = info + fmt.Sprintf("Reactor:  %s\n", ship.Reactor.Name)
+	info = info + fmt.Sprintf("Engine:   %s\n", ship.Engine.Name)
+	info = info + fmt.Sprintf("Mode:     %s\n", ship.Nav.FlightMode)
+	info = info + fmt.Sprintf("Waypoint: %s\n", ship.Nav.WaypointSymbol)
+	info = info + fmt.Sprintf("Crew:     %d/%d (Req: %d)\n", ship.Crew.Current, ship.Crew.Capacity, ship.Crew.Required)
+	info = info + fmt.Sprintf("Fuel:     %d/%d\n", ship.Fuel.Current, ship.Fuel.Capacity)
+	info = info + fmt.Sprintf("Morale:   %d%%", ship.Crew.Morale)
 
-	return box
+	boxStyle := lipgloss.NewStyle().
+		Border(lipgloss.NormalBorder()).
+		Padding(1, 2).
+		Width(width).
+		BorderForeground(lipgloss.Color("240"))
+
+	title := lipgloss.NewStyle().
+		Foreground(lipgloss.Color("63")).
+		Bold(true).
+		Underline(true).
+		Render(symbol)
+
+	return boxStyle.Render(title + "\n\n" + info)
+}
+
+func ShipsView(width int) string {
+	db, _ := sql.Open("sqlite3", "SpaceTraders.db")
+	defer db.Close()
+	ships, _ := db.Query(`SELECT symbol FROM ship`)
+	defer ships.Close()
+
+	var symbols []string
+	for ships.Next() {
+		var s string
+		ships.Scan(&s)
+		symbols = append(symbols, s)
+	}
+
+	const colsPerRow = 3
+	boxWidth := (width / colsPerRow) - 2
+
+	var rows []string
+	var currentRow []string
+
+	for i, symbol := range symbols {
+		box := BuildShipBox(symbol, boxWidth)
+		currentRow = append(currentRow, box)
+
+		// Once a row hits 3 boxes or we reach the end, join and add the row
+		if (i+1)%colsPerRow == 0 || i == len(symbols)-1 {
+			rows = append(rows, lipgloss.JoinHorizontal(lipgloss.Top, currentRow...))
+			currentRow = []string{}
+		}
+	}
+
+	return lipgloss.JoinVertical(lipgloss.Left, rows...)
 }

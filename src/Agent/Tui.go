@@ -2,30 +2,42 @@ package Agent
 
 import (
 	"fmt"
-	"github.com/rivo/tview"
+	"strings"
+
+	"github.com/charmbracelet/lipgloss"
 )
 
-func DisplayAgentState() tview.Primitive {
+func BuildAgentBox(title, content string, width int) string {
+	titleStyle := lipgloss.NewStyle().
+		Foreground(lipgloss.Color("63")).
+		Bold(true).
+		Underline(true)
+
+	boxStyle := lipgloss.NewStyle().
+		Border(lipgloss.NormalBorder()).
+		Padding(1, 2).
+		Width(width).
+		BorderForeground(lipgloss.Color("240"))
+
+	return boxStyle.Render(titleStyle.Render(title) + "\n\n" + content)
+}
+
+func AgentView(width int) string {
 	agent := GetAgentState("NULL_SKY")
 
-	window := tview.NewFlex()
-	window.SetBorder(false)
-	window.SetDirection(tview.FlexRow)
+	// Box 1 – Agent Info
+	var box1 strings.Builder
+	fmt.Fprintf(&box1, "Account ID:   %s\n", agent.Data.AccountID)
+	fmt.Fprintf(&box1, "Agent Symbol: %s\n", agent.Data.Symbol)
+	fmt.Fprintf(&box1, "Faction:      %s\n", agent.Data.Faction)
+	fmt.Fprintf(&box1, "Headquarters: %s\n", agent.Data.HQ)
+	fmt.Fprintf(&box1, "Ship Count:   %d\n", agent.Data.Ships)
+	fmt.Fprintf(&box1, "Credits:      %d", agent.Data.Credits)
 
-	stats_1 := tview.NewFlex()
-	stats_1.SetBorder(false)
-	box_1 := tview.NewTextView()
-	box_1.SetBorder(true)
-	box_1.SetTitle("  Box 1  ")
-	fmt.Fprintf(box_1, "Account ID:   %s\n", agent.Data.AccountID)
-	fmt.Fprintf(box_1, "Agent Symbol: %s\n", agent.Data.Symbol)
-	fmt.Fprintf(box_1, "Faction:      %s\n", agent.Data.Faction)
-	fmt.Fprintf(box_1, "Headquarters: %s\n", agent.Data.HQ)
-	fmt.Fprintf(box_1, "Ship Count:   %d\n", agent.Data.Ships)
-	fmt.Fprintf(box_1, "Credits:      %d\n", agent.Data.Credits)
-	stats_1.AddItem(box_1, 0, 1, false)
+	// Create up to 9 boxes and arrange them horizontally/vertically
+	row1 := lipgloss.JoinHorizontal(
+		lipgloss.Left,
+		BuildAgentBox("Agent Details", box1.String(), width/2))
 
-	window.AddItem(stats_1, 0, 1, false)
-
-	return window
+	return lipgloss.JoinVertical(lipgloss.Left, row1)
 }

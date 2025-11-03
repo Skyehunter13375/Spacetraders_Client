@@ -6,117 +6,117 @@ import (
 	"Spacetraders/src/Ships"
 	"fmt"
 
-	"github.com/gdamore/tcell/v2"
-	"github.com/rivo/tview"
+	tea "github.com/charmbracelet/bubbletea"
+	"github.com/charmbracelet/lipgloss"
 )
 
-func handleMenuSelection(choice string, app *tview.Application) tview.Primitive {
-	switch choice {
-	case "Game Status":
-		return Server.DisplayGameServerState()
+type model struct {
+	menuItems     []string
+	selectedIndex int
+	content       string
+	width, height int
+	quitting      bool
+}
 
-	case "Agent Status":
-		return Agent.DisplayAgentState()
+func (m model) Init() tea.Cmd {
+	return nil
+}
 
-	case "Ships":
-		return Ships.DisplayShipState()
+func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+	switch msg := msg.(type) {
 
-	case "Exit":
-		app.Stop()
-		return nil
+	case tea.WindowSizeMsg:
+		m.width = msg.Width
+		m.height = msg.Height
 
-	default:
-		emptyBox := tview.NewTextView()
-		fmt.Fprintf(emptyBox, "You selected the menu: %s\n", choice)
-		return emptyBox
+	case tea.KeyMsg:
+		switch msg.String() {
+
+		case "right", "l":
+			m.selectedIndex = (m.selectedIndex + 1) % len(m.menuItems)
+
+		case "left", "h":
+			m.selectedIndex = (m.selectedIndex - 1 + len(m.menuItems)) % len(m.menuItems)
+
+		case "enter":
+			item := m.menuItems[m.selectedIndex]
+			switch item {
+			case "Agent Status":
+				m.content = Agent.AgentView(m.width)
+			case "Game Status":
+				m.content = Server.ServerView(m.width)
+			case "Ships":
+				m.content = Ships.ShipsView(m.width)
+			case "Exit":
+				m.quitting = true
+				return m, tea.Quit
+			default:
+				m.content = "Coming Soon..."
+			}
+
+		case "q", "esc":
+			m.quitting = true
+			return m, tea.Quit
+		}
 	}
+
+	return m, nil
+}
+
+func (m model) View() string {
+	if m.quitting {
+		return ""
+	}
+
+	var menuParts []string
+	for i, item := range m.menuItems {
+		style := lipgloss.NewStyle().
+			Border(lipgloss.RoundedBorder()).
+			Padding(0, 2).
+			BorderForeground(lipgloss.Color("240")).
+			Foreground(lipgloss.Color("250"))
+		if i == m.selectedIndex {
+			style = style.
+				Foreground(lipgloss.Color("46")).
+				BorderForeground(lipgloss.Color("46"))
+		}
+		menuParts = append(menuParts, style.Render(item))
+	}
+
+	menuBar := lipgloss.JoinHorizontal(lipgloss.Left, menuParts...)
+
+	title := lipgloss.NewStyle().
+		Foreground(lipgloss.Color("63")).
+		Bold(true).
+		Render("Welcome to Null Sky")
+
+	footer := lipgloss.NewStyle().
+		Foreground(lipgloss.Color("240")).
+		Render("(← → navigate, Enter select, q to quit)")
+
+	body := lipgloss.JoinVertical(
+		lipgloss.Left,
+		title,
+		menuBar,
+		m.content,
+		footer,
+	)
+
+	return lipgloss.Place(
+		m.width, m.height,
+		lipgloss.Left, lipgloss.Top,
+		body,
+	)
 }
 
 func main() {
-	// ┣━━━━━━━━━━━━━━━━━━━━━━┫ Pre-Define Default Colorscheme ┣━━━━━━━━━━━━━━━━━━━━━━┫
-	app := tview.NewApplication()
-	tview.Styles.PrimitiveBackgroundColor = tcell.ColorBlack
-	tview.Styles.ContrastBackgroundColor = tcell.ColorBlack
-	tview.Styles.MoreContrastBackgroundColor = tcell.ColorBlack
-	tview.Styles.BorderColor = tcell.ColorGray
-	tview.Styles.TitleColor = tcell.ColorWhite
-	tview.Styles.GraphicsColor = tcell.ColorGray
-	tview.Styles.PrimaryTextColor = tcell.ColorWhite
-	tview.Styles.SecondaryTextColor = tcell.ColorGray
-	tview.Styles.TertiaryTextColor = tcell.ColorGray
-	tview.Styles.InverseTextColor = tcell.ColorGray
-	tview.Styles.ContrastSecondaryTextColor = tcell.ColorGray
-
-	// ┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫ Build Menu Bar ┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫
-	menuItems := []string{"Game Status", "Agent Status", "Ships", "Exit"}
-	menuBar := tview.NewFlex().SetDirection(tview.FlexColumn)
-	menuBar.SetBorder(false)
-	menuBar.SetTitle("Welcome to Null Sky")
-	menuBar.SetTitleAlign(0)
-
-	buttons := []*tview.Button{}
-	for _, item := range menuItems {
-		btn := tview.NewButton(item)
-		btn.SetBorder(true)
-		buttons = append(buttons, btn)
-		if item == "Exit" {
-			spacer := tview.NewBox()
-			menuBar.AddItem(spacer, 0, 1, false)
-		}
-		menuBar.AddItem(btn, len(item)+4, 0, false)
+	m := model{
+		menuItems: []string{"Game Status", "Agent Status", "Ships", "Exit"},
+		content:   "Use ← → to navigate, Enter to select.",
 	}
 
-	selected := 0
-	highlight := func(index int) {
-		for i, b := range buttons {
-			if i == index {
-				b.SetLabelColor(tcell.ColorGreen)
-				b.SetBorderColor(tcell.ColorGreen)
-			} else {
-				b.SetLabelColor(tcell.ColorWhite)
-				b.SetBorderColor(tcell.ColorGray)
-			}
-		}
-	}
-	highlight(selected)
-
-	// ┣━━━━━━━━━━━━━━━━━━━━━━━━━┫ Building the data field ┣━━━━━━━━━━━━━━━━━━━━━━━━━━┫
-	content := tview.NewFlex().SetDirection(tview.FlexRow)
-	content.SetBorder(false)
-
-	// ┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫ Define the layout ┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫
-	layout := tview.NewFlex().SetDirection(tview.FlexRow)
-	layout.AddItem(menuBar, 3, 0, false)
-	layout.AddItem(content, 0, 1, false)
-
-	app.SetRoot(layout, true)
-
-	// ┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫ Input Key Handler ┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫
-	app.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
-		switch event.Key() {
-		case tcell.KeyRight:
-			selected = (selected + 1) % len(buttons)
-			highlight(selected)
-
-		case tcell.KeyLeft:
-			selected = (selected - 1 + len(buttons)) % len(buttons)
-			highlight(selected)
-
-		case tcell.KeyEnter:
-			content.Clear()
-			content_data := handleMenuSelection(menuItems[selected], app)
-			if content_data != nil {
-				content.AddItem(content_data, 0, 1, false)
-			}
-
-		case tcell.KeyESC:
-			app.Stop()
-		}
-		return nil
-	})
-
-	// ┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫ Display UI ┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫
-	if err := app.EnableMouse(false).Run(); err != nil {
-		panic(err)
+	p := tea.NewProgram(m, tea.WithAltScreen())
+	if _, err := p.Run(); err != nil {
+		fmt.Println("Error:", err)
 	}
 }

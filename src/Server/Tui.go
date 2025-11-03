@@ -3,53 +3,67 @@ package Server
 import (
 	"fmt"
 
-	"github.com/rivo/tview"
+	"github.com/charmbracelet/lipgloss"
 )
 
-func DisplayGameServerState() tview.Primitive {
+type infoBox struct {
+	Title string
+	Body  string
+}
+
+func renderBox(b infoBox, width int) string {
+	style := lipgloss.NewStyle().
+		Border(lipgloss.NormalBorder()).
+		Padding(1, 2).
+		Width(width / 3).
+		BorderForeground(lipgloss.Color("240"))
+
+	title := lipgloss.NewStyle().
+		Foreground(lipgloss.Color("63")).
+		Bold(true).
+		Underline(true).
+		Render(b.Title)
+
+	return style.Render(title + "\n\n" + b.Body)
+}
+
+func ServerView(width int) string {
 	g := GetGameServerState()
 
-	window := tview.NewFlex()
-	window.SetBorder(false)
-	window.SetDirection(tview.FlexRow)
+	// Build box content with fmt.Sprintf for clarity
+	state := fmt.Sprintf(
+		"Status:    %s\nVersion:   %s\nResetFreq: %s\nLastReset: %s\nNextReset: %s\nLastCheck: %s",
+		g.Status, g.Version, g.ServerResets.ResetFreq, g.LastReset, g.ServerResets.NextReset, g.LastCheckIn,
+	)
+	players := fmt.Sprintf(
+		"Accounts:  %d\nAgents:    %d\nShips:     %d\nSystems:   %d\nWaypoints: %d\n",
+		g.Stats.Accounts, g.Stats.Agents, g.Stats.Ships, g.Stats.Systems, g.Stats.Waypoints,
+	)
 
-	stats_1 := tview.NewFlex()
-	stats_1.SetBorder(false)
+	boxes := []infoBox{
+		{"Game Server Status", state},
+		{"Registered Agents", players},
+		{"Leaderboard Credits", "Coming Soon..."},
+		{"Leaderboard Charts", "Coming Soon..."},
+	}
 
-	stats_2 := tview.NewFlex()
-	stats_2.SetBorder(false)
+	// Render all boxes
+	var rendered []string
+	for _, b := range boxes {
+		rendered = append(rendered, renderBox(b, width))
+	}
 
-	StateBox := tview.NewFlex()
-	StateBox.SetBorder(true)
-	StateBox.SetTitle("Game Server Status")
-	StateInfo := tview.NewTextView()
-	fmt.Fprintf(StateInfo, "Status:    %s\n", g.Status)
-	fmt.Fprintf(StateInfo, "Version:   %s\n", g.Version)
-	fmt.Fprintf(StateInfo, "ResetFreq: %s\n", g.ServerResets.ResetFreq)
-	fmt.Fprintf(StateInfo, "LastReset: %s\n", g.LastReset)
-	fmt.Fprintf(StateInfo, "NextReset: %s\n", g.ServerResets.NextReset)
-	fmt.Fprintf(StateInfo, "LastCheck: %s\n", g.LastCheckIn)
-	StateBox.AddItem(StateInfo, 0, 1, false)
-	stats_1.AddItem(StateBox, 0, 1, false)
+	// Group boxes into rows of 3
+	const cols = 2
+	var rows []string
+	for i := 0; i < len(rendered); i += cols {
+		end := i + cols
+		if end > len(rendered) {
+			end = len(rendered)
+		}
+		row := lipgloss.JoinHorizontal(lipgloss.Top, rendered[i:end]...)
+		rows = append(rows, row)
+	}
 
-	PlayerBox := tview.NewFlex()
-	PlayerBox.SetBorder(true)
-	PlayerBox.SetTitle("Registered Player Stats")
-	PlayerInfo := tview.NewTextView()
-	fmt.Fprintf(PlayerInfo, "Accounts:  %d\n", g.Stats.Accounts)
-	fmt.Fprintf(PlayerInfo, "Agents:    %d\n", g.Stats.Agents)
-	fmt.Fprintf(PlayerInfo, "Ships:     %d\n", g.Stats.Ships)
-	fmt.Fprintf(PlayerInfo, "Systems:   %d\n", g.Stats.Systems)
-	fmt.Fprintf(PlayerInfo, "Waypoints: %d\n", g.Stats.Waypoints)
-	PlayerBox.AddItem(PlayerInfo, 0, 1, false)
-	stats_1.AddItem(PlayerBox, 0, 1, false)
-
-	LeaderBox1 := tview.NewFlex()
-	LeaderBox1.SetBorder(true)
-	LeaderBox1.SetTitle("  Leaderboard (Credits)  ")
-	stats_2.AddItem(LeaderBox1, 0, 1, false)
-
-	window.AddItem(stats_1, 0, 1, false)
-	window.AddItem(stats_2, 0, 1, false)
-	return window
+	return lipgloss.JoinVertical(lipgloss.Left, rows...)
 }
