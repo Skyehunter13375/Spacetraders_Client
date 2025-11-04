@@ -2,6 +2,7 @@ package main
 
 import (
 	"Spacetraders/src/Agent"
+	"Spacetraders/src/Contracts"
 	"Spacetraders/src/Server"
 	"Spacetraders/src/Ships"
 	"fmt"
@@ -46,7 +47,12 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			case "Game Status":
 				m.content = Server.ServerView(m.width)
 			case "Ships":
+				Ships.UpdateShipState()
 				m.content = Ships.ShipsView(m.width)
+			case "Contracts":
+				// Contracts.NegotiateNewContract("NULL_SKY-1")
+				// Contracts.UpdateContracts()
+				m.content = Contracts.ContractView(m.width)
 			case "Exit":
 				m.quitting = true
 				return m, tea.Quit
@@ -111,7 +117,7 @@ func (m model) View() string {
 
 func main() {
 	m := model{
-		menuItems: []string{"Game Status", "Agent Status", "Ships", "Exit"},
+		menuItems: []string{"Game Status", "Agent Status", "Ships", "Contracts", "Exit"},
 		content:   "Use ← → to navigate, Enter to select.",
 	}
 

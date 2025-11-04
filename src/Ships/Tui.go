@@ -4,23 +4,50 @@ import (
 	"database/sql"
 	"fmt"
 
+	"github.com/charmbracelet/bubbles/progress"
 	"github.com/charmbracelet/lipgloss"
 )
+
+func ProgressBar(value, max int) string {
+	bar := progress.New(
+		progress.WithGradient("#045f04ff", "#28b328ff"),
+	)
+	bar.Width = 30
+
+	var ratio float64
+	if max > 0 {
+		ratio = float64(value) / float64(max)
+	} else {
+		ratio = 1
+	}
+
+	// Clamp between 0 and 1 just in case
+	if ratio < 0 {
+		ratio = 0
+	} else if ratio > 1 {
+		ratio = 1
+	}
+
+	return bar.ViewAs(ratio)
+}
 
 func BuildShipBox(symbol string, width int) string {
 	ship := GetShipState(symbol)
 
-	// Build the ship’s info text
+	crewBar := ProgressBar(ship.Crew.Current, ship.Crew.Capacity)
+	fuelBar := ProgressBar(ship.Fuel.Current, ship.Fuel.Capacity)
+	moraleBar := ProgressBar(ship.Crew.Morale, 100)
+
 	info := fmt.Sprintf("Role:     %s\n", ship.Registration.Role)
-	info = info + fmt.Sprintf("Status:   %s\n", ship.Nav.Status)
-	info = info + fmt.Sprintf("Frame:    %s\n", ship.Frame.Name)
-	info = info + fmt.Sprintf("Reactor:  %s\n", ship.Reactor.Name)
-	info = info + fmt.Sprintf("Engine:   %s\n", ship.Engine.Name)
-	info = info + fmt.Sprintf("Mode:     %s\n", ship.Nav.FlightMode)
-	info = info + fmt.Sprintf("Waypoint: %s\n", ship.Nav.WaypointSymbol)
-	info = info + fmt.Sprintf("Crew:     %d/%d (Req: %d)\n", ship.Crew.Current, ship.Crew.Capacity, ship.Crew.Required)
-	info = info + fmt.Sprintf("Fuel:     %d/%d\n", ship.Fuel.Current, ship.Fuel.Capacity)
-	info = info + fmt.Sprintf("Morale:   %d%%", ship.Crew.Morale)
+	info += fmt.Sprintf("Status:   %s\n", ship.Nav.Status)
+	info += fmt.Sprintf("Frame:    %s\n", ship.Frame.Name)
+	info += fmt.Sprintf("Reactor:  %s\n", ship.Reactor.Name)
+	info += fmt.Sprintf("Engine:   %s\n", ship.Engine.Name)
+	info += fmt.Sprintf("Mode:     %s\n", ship.Nav.FlightMode)
+	info += fmt.Sprintf("Waypoint: %s\n", ship.Nav.WaypointSymbol)
+	info += fmt.Sprintf("Crew:     %d/%d (Req: %d)\n%s\n", ship.Crew.Current, ship.Crew.Capacity, ship.Crew.Required, crewBar)
+	info += fmt.Sprintf("Fuel:     %d/%d\n%s\n", ship.Fuel.Current, ship.Fuel.Capacity, fuelBar)
+	info += fmt.Sprintf("Morale:   %d%%\n%s", ship.Crew.Morale, moraleBar)
 
 	boxStyle := lipgloss.NewStyle().
 		Border(lipgloss.NormalBorder()).
@@ -60,7 +87,6 @@ func ShipsView(width int) string {
 		box := BuildShipBox(symbol, boxWidth)
 		currentRow = append(currentRow, box)
 
-		// Once a row hits 3 boxes or we reach the end, join and add the row
 		if (i+1)%colsPerRow == 0 || i == len(symbols)-1 {
 			rows = append(rows, lipgloss.JoinHorizontal(lipgloss.Top, currentRow...))
 			currentRow = []string{}

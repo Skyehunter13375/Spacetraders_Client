@@ -132,10 +132,16 @@ func UpdateShipState() error {
 	data := General.GetUrlJson("https://api.spacetraders.io/v2/my/ships", "agent")
 
 	var wrapper map[string]json.RawMessage
-	json.Unmarshal([]byte(data), &wrapper)
+	err := json.Unmarshal([]byte(data), &wrapper)
+	if err != nil {
+		General.LogErr(fmt.Sprintf("%v", err))
+	}
 
 	var ships []ShipData
-	json.Unmarshal(wrapper["data"], &ships)
+	err = json.Unmarshal(wrapper["data"], &ships)
+	if err != nil {
+		General.LogErr(fmt.Sprintf("%v", err))
+	}
 
 	db, _ := sql.Open("sqlite3", "SpaceTraders.db")
 	defer db.Close()
@@ -169,7 +175,7 @@ func UpdateShipState() error {
 			s.Registration.FactionSymbol,
 		)
 		if err != nil {
-			return err
+			General.LogErr(fmt.Sprintf("%v", err))
 		}
 
 		// ┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫ Upsert Ship Nav ┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫
@@ -225,7 +231,7 @@ func UpdateShipState() error {
 			s.Nav.Route.DepartureTime,
 		)
 		if err != nil {
-			return err
+			General.LogErr(fmt.Sprintf("%v", err))
 		}
 
 		// ┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫ Upsert Ship Crew ┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫
@@ -251,7 +257,7 @@ func UpdateShipState() error {
 			s.Crew.Wages,
 		)
 		if err != nil {
-			return err
+			General.LogErr(fmt.Sprintf("%v", err))
 		}
 
 		// ┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫ Upsert Ship Fuel ┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫
@@ -269,7 +275,7 @@ func UpdateShipState() error {
 			s.Fuel.Capacity,
 		)
 		if err != nil {
-			return err
+			General.LogErr(fmt.Sprintf("%v", err))
 		}
 
 		// ┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫ Upsert Ship Frame ┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫
@@ -305,7 +311,7 @@ func UpdateShipState() error {
 			s.Frame.Requirements.Crew,
 		)
 		if err != nil {
-			return err
+			General.LogErr(fmt.Sprintf("%v", err))
 		}
 
 		// ┣━━━━━━━━━━━━━━━━━━━━━━━━━━━┫ Upsert Ship Reactor ┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫
@@ -335,7 +341,7 @@ func UpdateShipState() error {
 			s.Frame.Requirements.Crew,
 		)
 		if err != nil {
-			return err
+			General.LogErr(fmt.Sprintf("%v", err))
 		}
 
 		// ┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫ Upsert Ship Engine ┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫
@@ -367,7 +373,7 @@ func UpdateShipState() error {
 			s.Engine.Requirements.Crew,
 		)
 		if err != nil {
-			return err
+			General.LogErr(fmt.Sprintf("%v", err))
 		}
 	}
 

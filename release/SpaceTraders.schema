@@ -99,3 +99,24 @@ CREATE TABLE ship_engine (
     power_required INT,
     crew_required INT
 );
+CREATE TABLE contract (
+    id STRING PRIMARY KEY,
+    faction STRING,
+    type STRING,
+    pay_on_accept BIGINT,
+    pay_on_complete BIGINT,
+    accepted BOOLEAN,
+    fulfilled BOOLEAN,
+    deadline TIMESTAMP WITH TIME ZONE,
+    expiration TIMESTAMP WITH TIME ZONE,
+    deadline_to_accept TIMESTAMP WITH TIME ZONE,
+    last_updated TIMESTAMP WITHOUT TIME ZONE
+);
+CREATE TABLE contract_materials (
+    id STRING REFERENCES contract(id) ON DELETE CASCADE,
+    material STRING,
+    destination STRING,
+    units_required BIGINT,
+    units_fulfilled BIGINT,
+    UNIQUE(id,material,destination)
+);
