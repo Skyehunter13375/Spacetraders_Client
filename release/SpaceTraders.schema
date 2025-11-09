@@ -120,3 +120,25 @@ CREATE TABLE contract_materials (
     units_fulfilled BIGINT,
     UNIQUE(id,material,destination)
 );
+CREATE TABLE systems (
+    symbol TEXT PRIMARY KEY,
+    sector TEXT,
+    constellation TEXT,
+    name TEXT,
+    type TEXT,
+    x_coord INT,
+    y_coord INT,
+    factions TEXT
+);
+CREATE TABLE waypoints (
+    system TEXT REFERENCES systems(symbol) ON DELETE CASCADE,
+    symbol TEXT PRIMARY KEY,
+    type TEXT,
+    x_coord INT,
+    y_coord INT,
+    orbits TEXT
+);
+CREATE TABLE orbitals (
+    waypoint TEXT REFERENCES waypoints(symbol) ON DELETE CASCADE,
+    symbol TEXT PRIMARY KEY
+);

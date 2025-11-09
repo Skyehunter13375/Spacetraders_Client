@@ -1,0 +1,72 @@
+package Waypoints
+
+type System struct {
+	Data SysData `json:"data"`
+}
+
+type SysData struct {
+	Symbol        string         `json:"symbol"`
+	Sector        string         `json:"sectorSymbol"`
+	Constellation string         `json:"constellation"`
+	Name          string         `json:"name"`
+	Type          string         `json:"type"`
+	Xcoord        int            `json:"x"`
+	Ycoord        int            `json:"y"`
+	Waypoints     []SysWaypoints `json:"waypoints"`
+	// Factions      []SysFactions  `json:"factions"`
+}
+
+type SysWaypoints struct {
+	Symbol string `json:"symbol"`
+	Type   string `json:"type"`
+	Xcoord int    `json:"x"`
+	Ycoord int    `json:"y"`
+	// Orbitals []SysWayOrbitals `json:"orbitals"`
+	Orbits string `json:"orbits"`
+}
+
+// type SysWayOrbitals struct {
+// 	Symbol string `json:"symbol"`
+// }
+
+// type SysFactions struct {
+// 	Symbol string `json:"symbol"`
+// }
+
+// ┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫   SAMPLE   ┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫ \\
+/*
+{
+	"data": {
+		"symbol": "X1-XQ13",
+		"sectorSymbol": "X1",
+		"type": "BLUE_STAR",
+		"x": 2216,
+		"y": -10966,
+		"waypoints": [
+			{
+				"symbol": "X1-XQ13-A1",
+				"type": "PLANET",
+				"x": 8,
+				"y": 26,
+				"orbitals": [
+					{"symbol": "X1-XQ13-A2"},
+					{"symbol": "X1-XQ13-A3"},
+					{"symbol": "X1-XQ13-A4"}
+				]
+			},
+			{
+				"symbol": "X1-XQ13-XB5E",
+				"type": "ENGINEERED_ASTEROID",
+				"x": -28,
+				"y": -5,
+				"orbitals": [
+
+				]
+			}
+		],
+		"factions": [],
+		"constellation": "Purva Bhadrapada",
+		"name": "Purva Bhadrapada XLIV"
+	}
+}
+*/

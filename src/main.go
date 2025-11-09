@@ -45,13 +45,16 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			case "Agent Status":
 				m.content = Agent.AgentView(m.width)
 			case "Game Status":
+				// Waypoints.UpdateSystem("X1-XQ13")
 				m.content = Server.ServerView(m.width)
 			case "Ships":
-				// Ships.UpdateShipState()
+				Ships.UpdateShipState()
 				m.content = Ships.ShipsView(m.width)
 			case "Contracts":
 				// Contracts.NegotiateNewContract("NULL_SKY-1")
 				// Contracts.UpdateContracts()
+				m.content = Contracts.ContractView(m.width)
+				// m.content = Contracts.ContractView2(m.width)
 			case "Exit":
 				m.quitting = true
 				return m, tea.Quit

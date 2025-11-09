@@ -125,10 +125,7 @@ func ContractView2(width int) string {
 		},
 		content: "Use ↑ ↓ to navigate, Enter to select.",
 		width:   width,
-		// height:  20, // optional default height
 	}
-
-	// Return static render
 	return m.View()
 }
 
