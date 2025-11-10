@@ -1,4 +1,4 @@
-## [0.3.0] - Completed: 11/10/2025
+## [0.2.5] - Completed: 11/10/2025
 - Finishing out initial stages of data collection
 #### 11/10/2025
 - Fixed my ingest routines to properly use json.Unmarshal() with wrappers to get rid of the "data" fields
