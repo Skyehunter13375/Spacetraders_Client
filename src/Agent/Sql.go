@@ -11,8 +11,8 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 )
 
-func GetAgentState(agent string) AgentState {
-	var a AgentState
+func GetAgentState(agent string) Agent {
+	var a Agent
 	db, _ := sql.Open("sqlite3", "SpaceTraders.db")
 	defer db.Close()
 
@@ -59,7 +59,7 @@ func GetAgentState(agent string) AgentState {
 }
 
 func UpdateAgentState() error {
-	var a AgentState
+	var a Agent
 
 	jsonStr := General.GetUrlJson("https://api.spacetraders.io/v2/my/agent", "agent")
 	err := json.Unmarshal([]byte(jsonStr), &a)

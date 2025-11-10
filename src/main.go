@@ -52,9 +52,8 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				m.content = Ships.ShipsView(m.width)
 			case "Contracts":
 				// Contracts.NegotiateNewContract("NULL_SKY-1")
-				// Contracts.UpdateContracts()
+				Contracts.UpdateContracts()
 				m.content = Contracts.ContractView(m.width)
-				// m.content = Contracts.ContractView2(m.width)
 			case "Exit":
 				m.quitting = true
 				return m, tea.Quit

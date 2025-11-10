@@ -1,10 +1,10 @@
 package Contracts
 
 type Contracts struct {
-	Data []ContractData `json:"data"`
+	Data []Contract `json:"data"`
 }
 
-type ContractData struct {
+type Contract struct {
 	ID               string        `json:"id"`
 	Faction          string        `json:"factionSymbol"`
 	Type             string        `json:"type"`

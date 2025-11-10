@@ -11,8 +11,8 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 )
 
-func GetShipState(symbol string) ShipData {
-	var sd ShipData
+func GetShipState(symbol string) Ship {
+	var sd Ship
 	db, _ := sql.Open("sqlite3", "SpaceTraders.db")
 	defer db.Close()
 
@@ -137,7 +137,7 @@ func UpdateShipState() error {
 		General.LogErr(fmt.Sprintf("%v", err))
 	}
 
-	var ships []ShipData
+	var ships []Ship
 	err = json.Unmarshal(wrapper["data"], &ships)
 	if err != nil {
 		General.LogErr(fmt.Sprintf("%v", err))

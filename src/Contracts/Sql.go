@@ -25,7 +25,7 @@ func GetAllContracts() Contracts {
 
 	// Fill structs for each contract
 	var CStruct Contracts
-	CStruct.Data = make([]ContractData, len(contracts)) //> You must instantiate the substruct index before you can .Scan() to it apparently
+	CStruct.Data = make([]Contract, len(contracts)) //> You must instantiate the substruct index before you can .Scan() to it apparently
 	for idx, value := range contracts {
 		data, _ := db.Query(`SELECT * FROM contract WHERE id = ?`, value)
 		for data.Next() {

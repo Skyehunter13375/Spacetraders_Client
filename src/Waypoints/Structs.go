@@ -1,5 +1,6 @@
 package Waypoints
 
+// ┣━━━━━━━━━━━━━━━━━━━━━┫ System (All at once - no detail) ┣━━━━━━━━━━━━━━━━━━━━━┫
 type System struct {
 	Data SysData `json:"data"`
 }
@@ -13,7 +14,6 @@ type SysData struct {
 	Xcoord        int            `json:"x"`
 	Ycoord        int            `json:"y"`
 	Waypoints     []SysWaypoints `json:"waypoints"`
-	// Factions      []SysFactions  `json:"factions"`
 }
 
 type SysWaypoints struct {
@@ -21,19 +21,17 @@ type SysWaypoints struct {
 	Type   string `json:"type"`
 	Xcoord int    `json:"x"`
 	Ycoord int    `json:"y"`
-	// Orbitals []SysWayOrbitals `json:"orbitals"`
 	Orbits string `json:"orbits"`
 }
 
-// type SysWayOrbitals struct {
-// 	Symbol string `json:"symbol"`
-// }
+type SysWayOrbitals struct {
+	Symbol string `json:"symbol"`
+}
 
-// type SysFactions struct {
-// 	Symbol string `json:"symbol"`
-// }
+type SysFactions struct {
+	Symbol string `json:"symbol"`
+}
 
-// ┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫   SAMPLE   ┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫ \\
 /*
 {
 	"data": {
@@ -50,8 +48,7 @@ type SysWaypoints struct {
 				"y": 26,
 				"orbitals": [
 					{"symbol": "X1-XQ13-A2"},
-					{"symbol": "X1-XQ13-A3"},
-					{"symbol": "X1-XQ13-A4"}
+					{"symbol": "X1-XQ13-A3"}
 				]
 			},
 			{
@@ -68,5 +65,47 @@ type SysWaypoints struct {
 		"constellation": "Purva Bhadrapada",
 		"name": "Purva Bhadrapada XLIV"
 	}
+}
+*/
+
+// ┣━━━━━━━━━━━━━━━━━━━━━━━━━━━┫ Individual Waypoints ┣━━━━━━━━━━━━━━━━━━━━━━━━━━━┫
+/*
+{
+  "data": {
+    "symbol": "string",
+    "type": "PLANET",
+    "systemSymbol": "string",
+    "x": 0,
+    "y": 0,
+    "orbitals": [
+      {
+        "symbol": "string"
+      }
+    ],
+    "orbits": "string",
+    "faction": {
+      "symbol": "COSMIC"
+    },
+    "traits": [
+      {
+        "symbol": "UNCHARTED",
+        "name": "string",
+        "description": "string"
+      }
+    ],
+    "modifiers": [
+      {
+        "symbol": "STRIPPED",
+        "name": "string",
+        "description": "string"
+      }
+    ],
+    "chart": {
+      "waypointSymbol": "string",
+      "submittedBy": "string",
+      "submittedOn": "2019-08-24T14:15:22Z"
+    },
+    "isUnderConstruction": true
+  }
 }
 */
