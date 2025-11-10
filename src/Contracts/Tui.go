@@ -117,9 +117,9 @@ func ContractView2(width int) string {
 
 	m := model{
 		menuItems: []string{
-			CStruct.Data[0].Faction + " | " +
-				CStruct.Data[0].Type + " | " +
-				CStruct.Data[0].DeadlineToAccept,
+			CStruct[0].Faction + " | " +
+				CStruct[0].Type + " | " +
+				CStruct[0].DeadlineToAccept,
 			"Example 2",
 			"Example 3",
 		},
@@ -132,18 +132,18 @@ func ContractView2(width int) string {
 func ContractView(width int) string {
 	var sb strings.Builder
 	CStruct := GetAllContracts()
-	fmt.Fprintf(&sb, "ID:        %s\n", CStruct.Data[0].ID)
-	fmt.Fprintf(&sb, "UpFront:   %d\n", CStruct.Data[0].Terms.Payment.OnAccepted)
-	fmt.Fprintf(&sb, "OnCompl:   %d\n", CStruct.Data[0].Terms.Payment.OnFulfilled)
-	fmt.Fprintf(&sb, "Accepted:  %t\n", CStruct.Data[0].Accepted)
-	fmt.Fprintf(&sb, "Fulfilled: %t\n", CStruct.Data[0].Fulfilled)
-	fmt.Fprintf(&sb, "Deadline:  %s\n", CStruct.Data[0].Terms.Deadline)
-	fmt.Fprintf(&sb, "Expires:   %s\n", CStruct.Data[0].Expiration)
+	fmt.Fprintf(&sb, "ID:        %s\n", CStruct[0].ID)
+	fmt.Fprintf(&sb, "UpFront:   %d\n", CStruct[0].Terms.Payment.OnAccepted)
+	fmt.Fprintf(&sb, "OnCompl:   %d\n", CStruct[0].Terms.Payment.OnFulfilled)
+	fmt.Fprintf(&sb, "Accepted:  %t\n", CStruct[0].Accepted)
+	fmt.Fprintf(&sb, "Fulfilled: %t\n", CStruct[0].Fulfilled)
+	fmt.Fprintf(&sb, "Deadline:  %s\n", CStruct[0].Terms.Deadline)
+	fmt.Fprintf(&sb, "Expires:   %s\n", CStruct[0].Expiration)
 	fmt.Fprintf(&sb, "Material:  %d/%d (%s → %s)",
-		CStruct.Data[0].Terms.Deliver[0].UnitsFulfilled,
-		CStruct.Data[0].Terms.Deliver[0].UnitsRequired,
-		CStruct.Data[0].Terms.Deliver[0].Material,
-		CStruct.Data[0].Terms.Deliver[0].Destination,
+		CStruct[0].Terms.Deliver[0].UnitsFulfilled,
+		CStruct[0].Terms.Deliver[0].UnitsRequired,
+		CStruct[0].Terms.Deliver[0].Material,
+		CStruct[0].Terms.Deliver[0].Destination,
 	)
 
 	boxStyle := lipgloss.NewStyle().
@@ -156,7 +156,7 @@ func ContractView(width int) string {
 		Foreground(lipgloss.Color("63")).
 		Bold(true).
 		Underline(true).
-		Render(CStruct.Data[0].Faction + " | " + CStruct.Data[0].Type + " | " + CStruct.Data[0].DeadlineToAccept)
+		Render(CStruct[0].Faction + " | " + CStruct[0].Type + " | " + CStruct[0].DeadlineToAccept)
 
 	return boxStyle.Render(title + "\n\n" + sb.String())
 }

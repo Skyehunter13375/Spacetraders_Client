@@ -1,4 +1,4 @@
-package Agent
+package Agents
 
 import (
 	"Spacetraders/src/General"
@@ -7,18 +7,19 @@ import (
 	"fmt"
 	"strings"
 	"time"
-
-	_ "github.com/mattn/go-sqlite3"
 )
 
-func GetAgentState(agent string) Agent {
-	var a Agent
-	db, _ := sql.Open("sqlite3", "SpaceTraders.db")
+func GetAgentState(agent string) AgentData {
+	var a AgentData
+	db, err := sql.Open("postgres", "user=skyehunter dbname=spacetraders sslmode=disable")
+	if err != nil {
+		General.LogErr(fmt.Sprintf("DB open failed: %v", err))
+	}
 	defer db.Close()
 
 	// Check the last update time, if more than 15 mins go grab new info
 	var check_time string
-	err2 := db.QueryRow(`SELECT last_updated FROM agents where symbol = ?`, agent).Scan(&check_time)
+	err2 := db.QueryRow(`SELECT last_updated FROM agents where symbol = $1`, agent).Scan(&check_time)
 	if err2 == sql.ErrNoRows {
 		check_time = "2025-01-01 13:00:00"
 	}
@@ -43,7 +44,7 @@ func GetAgentState(agent string) Agent {
 			credits,
 			last_updated 
 		FROM agents 
-		WHERE symbol = ?`
+		WHERE symbol = $1`
 
 	_ = db.QueryRow(query, agent).Scan(
 		&a.Data.AccountID,
@@ -59,7 +60,7 @@ func GetAgentState(agent string) Agent {
 }
 
 func UpdateAgentState() error {
-	var a Agent
+	var a AgentData
 
 	jsonStr := General.GetUrlJson("https://api.spacetraders.io/v2/my/agent", "agent")
 	err := json.Unmarshal([]byte(jsonStr), &a)
@@ -67,7 +68,11 @@ func UpdateAgentState() error {
 		return err
 	}
 
-	db, _ := sql.Open("sqlite3", "SpaceTraders.db")
+	db, err := sql.Open("postgres", "user=skyehunter dbname=spacetraders sslmode=disable")
+	if err != nil {
+		General.LogErr(fmt.Sprintf("DB open failed: %v", err))
+		return err
+	}
 	defer db.Close()
 
 	_, err = db.Exec(`
@@ -80,13 +85,13 @@ func UpdateAgentState() error {
 			ships,
 			last_updated
 		) VALUES (
-			?,
-			?,
-			?,
-			?,
-			?,
-			?,
-			datetime('now', 'localtime')
+			$1,
+			$2,
+			$3,
+			$4,
+			$5,
+			$6,
+			NOW()
 		)
 		ON CONFLICT (symbol) DO UPDATE SET
 			account_id   = EXCLUDED.account_id,
@@ -95,7 +100,7 @@ func UpdateAgentState() error {
 			credits      = EXCLUDED.credits,
 			ships        = EXCLUDED.ships,
 			faction      = EXCLUDED.faction,
-			last_updated = datetime('now', 'localtime')
+			last_updated = EXCLUDED.last_updated
 		`,
 		a.Data.AccountID,
 		a.Data.Symbol,

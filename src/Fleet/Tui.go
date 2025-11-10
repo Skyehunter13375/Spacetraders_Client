@@ -1,6 +1,7 @@
-package Ships
+package Fleet
 
 import (
+	"Spacetraders/src/General"
 	"database/sql"
 	"fmt"
 
@@ -65,7 +66,10 @@ func BuildShipBox(symbol string, width int) string {
 }
 
 func ShipsView(width int) string {
-	db, _ := sql.Open("sqlite3", "SpaceTraders.db")
+	db, err := sql.Open("postgres", "user=skyehunter dbname=spacetraders sslmode=disable")
+	if err != nil {
+		General.LogErr(fmt.Sprintf("DB open failed: %v", err))
+	}
 	defer db.Close()
 	ships, _ := db.Query(`SELECT symbol FROM ship`)
 	defer ships.Close()

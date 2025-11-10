@@ -1,10 +1,11 @@
 package main
 
 import (
-	"Spacetraders/src/Agent"
+	"Spacetraders/src/Agents"
 	"Spacetraders/src/Contracts"
+	"Spacetraders/src/Fleet"
 	"Spacetraders/src/Server"
-	"Spacetraders/src/Ships"
+	Waypoints "Spacetraders/src/Systems"
 	"fmt"
 
 	tea "github.com/charmbracelet/bubbletea"
@@ -42,18 +43,20 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case "enter":
 			item := m.menuItems[m.selectedIndex]
 			switch item {
-			case "Agent Status":
-				m.content = Agent.AgentView(m.width)
-			case "Game Status":
-				// Waypoints.UpdateSystem("X1-XQ13")
+			case "Server":
 				m.content = Server.ServerView(m.width)
+			case "Agents":
+				m.content = Agents.AgentView(m.width)
 			case "Ships":
-				Ships.UpdateShipState()
-				m.content = Ships.ShipsView(m.width)
+				Fleet.UpdateShipState()
+				m.content = Fleet.ShipsView(m.width)
 			case "Contracts":
-				// Contracts.NegotiateNewContract("NULL_SKY-1")
+				Contracts.NegotiateNewContract("NULL_SKY-1")
 				Contracts.UpdateContracts()
 				m.content = Contracts.ContractView(m.width)
+			case "Systems":
+				Waypoints.UpdateSystem("X1-XQ13")
+				m.content = "Coming Soon..."
 			case "Exit":
 				m.quitting = true
 				return m, tea.Quit
@@ -118,7 +121,7 @@ func (m model) View() string {
 
 func main() {
 	m := model{
-		menuItems: []string{"Game Status", "Agent Status", "Ships", "Contracts", "Exit"},
+		menuItems: []string{"Server", "Agents", "Ships", "Contracts", "Systems", "Exit"},
 		content:   "Use ← → to navigate, Enter to select.",
 	}
 

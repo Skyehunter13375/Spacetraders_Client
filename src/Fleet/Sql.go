@@ -1,4 +1,4 @@
-package Ships
+package Fleet
 
 import (
 	"Spacetraders/src/General"
@@ -7,13 +7,14 @@ import (
 	"fmt"
 	"strings"
 	"time"
-
-	_ "github.com/mattn/go-sqlite3"
 )
 
 func GetShipState(symbol string) Ship {
 	var sd Ship
-	db, _ := sql.Open("sqlite3", "SpaceTraders.db")
+	db, err := sql.Open("postgres", "user=skyehunter dbname=spacetraders sslmode=disable")
+	if err != nil {
+		General.LogErr(fmt.Sprintf("DB open failed: %v", err))
+	}
 	defer db.Close()
 
 	// Check the last update time, if more than 15 mins go grab new info
@@ -49,7 +50,7 @@ func GetShipState(symbol string) Ship {
 		INNER JOIN ship_frame   AS frame   ON frame.ship   = ship.symbol
 		INNER JOIN ship_reactor AS reactor ON reactor.ship = ship.symbol
 		INNER JOIN ship_engine  AS engine  ON engine.ship  = ship.symbol
-		WHERE ship.symbol = ?
+		WHERE ship.symbol = $1
 	`
 	_ = db.QueryRow(query, symbol).Scan(
 		&sd.Symbol,
@@ -143,7 +144,11 @@ func UpdateShipState() error {
 		General.LogErr(fmt.Sprintf("%v", err))
 	}
 
-	db, _ := sql.Open("sqlite3", "SpaceTraders.db")
+	db, err := sql.Open("postgres", "user=skyehunter dbname=spacetraders sslmode=disable")
+	if err != nil {
+		General.LogErr(fmt.Sprintf("DB open failed: %v", err))
+		return err
+	}
 	defer db.Close()
 
 	for _, s := range ships {
@@ -156,18 +161,18 @@ func UpdateShipState() error {
 				faction,
 				last_updated
 			) VALUES (
-				?,
-				?,
-				?,
-				?,
-				datetime('now', 'localtime')
+				$1,
+				$2,
+				$3,
+				$4,
+				NOW()
 			)
 			ON CONFLICT (symbol) DO UPDATE SET
 				symbol  = EXCLUDED.symbol,
 				name    = EXCLUDED.name,
 				role    = EXCLUDED.role,
 				faction = EXCLUDED.faction,
-				last_updated = datetime('now', 'localtime')
+				last_updated = EXCLUDED.last_updated
 			`,
 			s.Symbol,
 			s.Registration.Name,
@@ -175,7 +180,7 @@ func UpdateShipState() error {
 			s.Registration.FactionSymbol,
 		)
 		if err != nil {
-			General.LogErr(fmt.Sprintf("%v", err))
+			General.LogErr(fmt.Sprintf("Ship Insert: %v", err))
 		}
 
 		// ┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫ Upsert Ship Nav ┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫
@@ -196,7 +201,7 @@ func UpdateShipState() error {
 				destination_y,
 				arrival,
 				departure
-			) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
+			) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15)
 			ON CONFLICT (ship) DO UPDATE SET
 				ship             = EXCLUDED.ship,
 				system           = EXCLUDED.system,
@@ -231,14 +236,14 @@ func UpdateShipState() error {
 			s.Nav.Route.DepartureTime,
 		)
 		if err != nil {
-			General.LogErr(fmt.Sprintf("%v", err))
+			General.LogErr(fmt.Sprintf("Ship Nav Insert: %v", err))
 		}
 
 		// ┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫ Upsert Ship Crew ┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫
 		_, err = db.Exec(`
 			INSERT INTO 
 				ship_crew (ship, current, required, capacity, rotation, morale, wages) 
-				VALUES (?,?,?,?,?,?,?)
+				VALUES ($1,$2,$3,$4,$5,$6,$7)
 			ON CONFLICT (ship) DO UPDATE SET
 				ship      = EXCLUDED.ship,
 				current   = EXCLUDED.current, 
@@ -257,14 +262,14 @@ func UpdateShipState() error {
 			s.Crew.Wages,
 		)
 		if err != nil {
-			General.LogErr(fmt.Sprintf("%v", err))
+			General.LogErr(fmt.Sprintf("Ship Crew Insert: %v", err))
 		}
 
 		// ┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫ Upsert Ship Fuel ┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫
 		_, err = db.Exec(`
 			INSERT INTO 
 				ship_fuel (ship,current,capacity)
-				VALUES (?,?,?)
+				VALUES ($1,$2,$3)
 			ON CONFLICT (ship) DO UPDATE SET
 				ship     = EXCLUDED.ship,
 				current  = EXCLUDED.current,
@@ -275,14 +280,14 @@ func UpdateShipState() error {
 			s.Fuel.Capacity,
 		)
 		if err != nil {
-			General.LogErr(fmt.Sprintf("%v", err))
+			General.LogErr(fmt.Sprintf("Ship Fuel Insert: %v", err))
 		}
 
 		// ┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫ Upsert Ship Frame ┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫
 		_, err = db.Exec(`
 			INSERT INTO 
 				ship_frame (ship,symbol,name,description,module_slots,mount_points,fuel_capacity,condition,integrity,quality,power_required,crew_required)
-				VALUES (?,?,?,?,?,?,?,?,?,?,?,?)
+				VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)
 			ON CONFLICT (ship) DO UPDATE SET
 				ship           = EXCLUDED.ship,
 				symbol         = EXCLUDED.symbol,
@@ -311,14 +316,14 @@ func UpdateShipState() error {
 			s.Frame.Requirements.Crew,
 		)
 		if err != nil {
-			General.LogErr(fmt.Sprintf("%v", err))
+			General.LogErr(fmt.Sprintf("Ship Frame Insert: %v", err))
 		}
 
 		// ┣━━━━━━━━━━━━━━━━━━━━━━━━━━━┫ Upsert Ship Reactor ┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫
 		_, err = db.Exec(`
 			INSERT INTO 
 				ship_reactor (ship,symbol,name,description,condition,integrity,power_output,quality,crew_required)
-				VALUES (?,?,?,?,?,?,?,?,?)
+				VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9)
 			ON CONFLICT (ship) DO UPDATE SET
 				ship           = EXCLUDED.ship,
 				symbol         = EXCLUDED.symbol,
@@ -341,14 +346,14 @@ func UpdateShipState() error {
 			s.Frame.Requirements.Crew,
 		)
 		if err != nil {
-			General.LogErr(fmt.Sprintf("%v", err))
+			General.LogErr(fmt.Sprintf("Ship Reactor Insert: %v", err))
 		}
 
 		// ┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫ Upsert Ship Engine ┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫
 		_, err = db.Exec(`
 			INSERT INTO 
 				ship_engine (ship,symbol,name,description,condition,integrity,speed,quality,power_required,crew_required)
-				VALUES (?,?,?,?,?,?,?,?,?,?)
+				VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)
 			ON CONFLICT (ship) DO UPDATE SET
 				ship           = EXCLUDED.ship,
 				symbol         = EXCLUDED.symbol,
@@ -373,7 +378,7 @@ func UpdateShipState() error {
 			s.Engine.Requirements.Crew,
 		)
 		if err != nil {
-			General.LogErr(fmt.Sprintf("%v", err))
+			General.LogErr(fmt.Sprintf("Ship Engine Insert: %v", err))
 		}
 	}
 

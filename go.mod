@@ -4,7 +4,7 @@ go 1.24.6
 
 require (
 	github.com/charmbracelet/lipgloss v1.1.0
-	github.com/mattn/go-sqlite3 v1.14.32
+	github.com/lib/pq v1.10.9
 )
 
 require (

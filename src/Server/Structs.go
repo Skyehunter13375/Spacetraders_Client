@@ -21,3 +21,18 @@ type ServStats struct {
 	Systems   int `json:"systems"`
 	Waypoints int `json:"waypoints"`
 }
+
+type Leaderboards struct {
+	MostCredits []LeaderCredits `json:"mostCredits"`
+	MostCharted []LeaderCharts  `json:"mostSubmittedCharts"`
+}
+
+type LeaderCredits struct {
+	Agent string `json:"agentSymbol"`
+	Creds int64  `json:"credits"`
+}
+
+type LeaderCharts struct {
+	Agent  string `json:"agentSymbol"`
+	Charts int64  `json:"chartCount"`
+}

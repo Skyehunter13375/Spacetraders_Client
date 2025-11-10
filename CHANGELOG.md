@@ -1,7 +1,18 @@
+## [0.3.0] - Completed: 11/10/2025
+- Finishing out initial stages of data collection
+#### 11/10/2025
+- Fixed my ingest routines to properly use json.Unmarshal() with wrappers to get rid of the "data" fields
+- Rebuilt my structs for all data types for ease of using interfaces and SQL tuning later on
+- Gave up on SQLite and switched back to PostgreSQL. I need the ability to store arrays in a single column for cross reference later.
+- Rebuilt the PSQL DB and updated all functions to write data there again.
+#### 11/09/2025
+- Added system and waypoint data collection routines
+- Built DB tables to contain that data
+
 ## [0.2.0] - Completed: 11/04/2025
 - Early big refactor 
 #### 11/04/2025
-- Added "contract" and "contract_materials" tables to SQLite and built associated structs
+- Added contract tables to DB and built associated structs
 - Built Get,Update,Display routine framework for the contract data.
 #### 11/03/2025
 - Moved development environment to a local machine from a remote server.

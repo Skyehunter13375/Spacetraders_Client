@@ -7,14 +7,15 @@ import (
 	"fmt"
 	"strings"
 	"time"
-
-	_ "github.com/mattn/go-sqlite3"
 )
 
 func GetGameServerState() GameState {
 	var g GameState
 	var ts string
-	db, _ := sql.Open("sqlite3", "SpaceTraders.db")
+	db, err := sql.Open("postgres", "user=skyehunter dbname=spacetraders sslmode=disable")
+	if err != nil {
+		General.LogErr(fmt.Sprintf("DB open failed: %v", err))
+	}
 	defer db.Close()
 
 	// Check the last update time, if more than 15 mins go grab new info
@@ -72,7 +73,11 @@ func UpdateGameServerState() error {
 		return err
 	}
 
-	db, _ := sql.Open("sqlite3", "SpaceTraders.db")
+	db, err := sql.Open("postgres", "user=skyehunter dbname=spacetraders sslmode=disable")
+	if err != nil {
+		General.LogErr(fmt.Sprintf("DB open failed: %v", err))
+		return err
+	}
 	defer db.Close()
 
 	_, err = db.Exec("DELETE FROM server")
@@ -95,16 +100,16 @@ func UpdateGameServerState() error {
 			last_updated
 		) VALUES (
 		 	true, 
-			?,
-			?,
-			?,
-			?,
-			?,
-			?,
-			datetime(?, 'localtime'),
-			datetime(?, 'localtime'),
-			?,
-			datetime('now', 'localtime')
+			$1,
+			$2,
+			$3,
+			$4,
+			$5,
+			$6,
+			$7,
+			$8,
+			$9,
+			NOW()
 		)`,
 		g.Version,
 		g.Stats.Agents,
@@ -118,6 +123,7 @@ func UpdateGameServerState() error {
 	)
 
 	if err != nil {
+		General.LogErr(fmt.Sprintf("%v", err))
 		return err
 	}
 

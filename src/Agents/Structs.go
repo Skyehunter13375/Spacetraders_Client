@@ -1,10 +1,10 @@
-package Agent
-
-type Agent struct {
-	Data AgentData `json:"data"`
-}
+package Agents
 
 type AgentData struct {
+	Data Agent `json:"data"`
+}
+
+type Agent struct {
 	AccountID   string `json:"accountId"`
 	Symbol      string `json:"symbol"`
 	HQ          string `json:"headquarters"`

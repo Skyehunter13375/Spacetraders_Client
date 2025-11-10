@@ -1,4 +1,4 @@
-package Ships
+package Fleet
 
 type Ship struct {
 	Symbol       string        `json:"symbol"`

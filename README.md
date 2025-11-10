@@ -4,7 +4,7 @@ This is my most recent attempt at creating a usable client for the [SpaceTraders
 If you stumbled across this project looking for some good advice on how to write in Golang or to steal my trade secrets in-game you've come to the wrong place friend! I'm doing this mostly for the data collection and TUI building experience, I'd be lucky if my agent completes even a single contract per bi-weekly reset!
 
 # What this project is:
-- A passion project & academic exercise for me to learn Golang and SQLite.
+- A passion project & academic exercise for me to learn Golang and PostgreSQL.
 - A fun way for me to both justify playing a fun game and also build skills/tools at the same time.
 
 # What this project is NOT:

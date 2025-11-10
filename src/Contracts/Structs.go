@@ -1,9 +1,5 @@
 package Contracts
 
-type Contracts struct {
-	Data []Contract `json:"data"`
-}
-
 type Contract struct {
 	ID               string        `json:"id"`
 	Faction          string        `json:"factionSymbol"`

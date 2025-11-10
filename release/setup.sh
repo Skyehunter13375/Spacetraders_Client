@@ -2,6 +2,7 @@
 # Get sudo creds for install so it doesn't break alignment
 sudo printf ""
 
+
 # Installing packages
 if rpm -q golang 2>&1 | grep -q "not installed"; then
     printf "Installing Golang..."
@@ -15,31 +16,23 @@ if rpm -q sqlite-devel 2>&1 | grep -q "not installed"; then
     printf "Done\n"
 fi
 
-# Setting up the DB files
-if [[ ! -e SpaceTraders.db ]]; then
-    printf "Creating SpaceTraders.db..."
-    sqlite3 SpaceTraders.db < SpaceTraders.schema
-    printf "Done\n"
 
-    # Get Account and Agent data for the user and store
-    printf "Enter your ACCOUNT token: "
-    read acct_token
+# Get Account and Agent data for the user and store
+printf "Enter your ACCOUNT token: "
+read acct_token
 
-    sqlite3 SpaceTraders.db "INSERT INTO tokens (type,token) VALUES ('account', '${acct_token}') ON CONFLICT (type) DO UPDATE SET token = EXCLUDED.token"
+psql -d spacetraders -c "INSERT INTO tokens (type,token) VALUES ('account', '${acct_token}') ON CONFLICT (type) DO UPDATE SET token = EXCLUDED.token"
 
-    printf "Enter your AGENT token: "
-    read agent_token
+printf "Enter your AGENT token: "
+read agent_token
 
-    sqlite3 SpaceTraders.db "INSERT INTO tokens (type,token) VALUES ('agent', '${agent_token}') ON CONFLICT (type) DO UPDATE SET token = EXCLUDED.token"
-fi
-
+psql -d spacetraders -c "INSERT INTO tokens (type,token) VALUES ('agent', '${agent_token}') ON CONFLICT (type) DO UPDATE SET token = EXCLUDED.token"
 
 
 # Build the program, show where it is and execute it for testing.
-printf "Building executable binary..."
-go build -o SpaceTraders.tui ../src/main.go
-printf "Done\n"
+# printf "Building executable binary..."
+# go build -o SpaceTraders.tui ../src/main.go
+# printf "Done\n"
 
-sleep 1
 
-./SpaceTraders.tui
+printf "All done..."
