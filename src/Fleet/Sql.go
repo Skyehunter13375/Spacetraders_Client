@@ -7,6 +7,8 @@ import (
 	"fmt"
 	"strings"
 	"time"
+
+	_ "github.com/lib/pq" // PostgreSQL driver
 )
 
 func GetShipState(symbol string) Ship {
@@ -19,7 +21,7 @@ func GetShipState(symbol string) Ship {
 
 	// Check the last update time, if more than 15 mins go grab new info
 	var check_time string
-	err2 := db.QueryRow(`SELECT last_updated FROM ship where symbol = 'NULL_SKY-1'`).Scan(&check_time)
+	err2 := db.QueryRow(`SELECT last_updated FROM ships where symbol = 'NULL_SKY-1'`).Scan(&check_time)
 	if err2 == sql.ErrNoRows {
 		check_time = "2025-01-01 13:00:00"
 	}
@@ -35,15 +37,8 @@ func GetShipState(symbol string) Ship {
 	}
 
 	query := `
-		SELECT 
-			ship.*,
-			navg.*,
-			crew.*,
-			fuel.*,
-			frame.*,
-			reactor.*,
-			engine.*
-		FROM ship AS ship
+		SELECT ship.*, navg.*, crew.*, fuel.*, frame.*, reactor.*, engine.*
+		FROM ships AS ship
 		INNER JOIN ship_nav     AS navg    ON navg.ship    = ship.symbol
 		INNER JOIN ship_crew    AS crew    ON crew.ship    = ship.symbol
 		INNER JOIN ship_fuel    AS fuel    ON fuel.ship    = ship.symbol
@@ -154,19 +149,8 @@ func UpdateShipState() error {
 	for _, s := range ships {
 		// ┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫ Upsert Ship ┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫
 		_, err := db.Exec(`
-			INSERT INTO ship (
-				symbol,
-				name,
-				role,
-				faction,
-				last_updated
-			) VALUES (
-				$1,
-				$2,
-				$3,
-				$4,
-				NOW()
-			)
+			INSERT INTO ships (symbol,name,role,faction,last_updated) 
+			VALUES ($1,$2,$3,$4,NOW())
 			ON CONFLICT (symbol) DO UPDATE SET
 				symbol  = EXCLUDED.symbol,
 				name    = EXCLUDED.name,
@@ -180,28 +164,13 @@ func UpdateShipState() error {
 			s.Registration.FactionSymbol,
 		)
 		if err != nil {
-			General.LogErr(fmt.Sprintf("Ship Insert: %v", err))
+			General.LogErr(fmt.Sprintf("Ships Insert: %v", err))
 		}
 
 		// ┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫ Upsert Ship Nav ┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫
 		_, err = db.Exec(`
-			INSERT INTO ship_nav (
-				ship,
-				system,
-				waypoint,
-				status,
-				flight_mode,
-				origin,
-				origin_type,
-				origin_x,
-				origin_y,
-				destination,
-				destination_type,
-				destination_x,
-				destination_y,
-				arrival,
-				departure
-			) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15)
+			INSERT INTO ship_nav (ship,system,waypoint,status,flight_mode,origin,origin_type,origin_x,origin_y,destination,destination_type,destination_x,destination_y,arrival,departure) 
+			VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15)
 			ON CONFLICT (ship) DO UPDATE SET
 				ship             = EXCLUDED.ship,
 				system           = EXCLUDED.system,
@@ -241,9 +210,8 @@ func UpdateShipState() error {
 
 		// ┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫ Upsert Ship Crew ┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫
 		_, err = db.Exec(`
-			INSERT INTO 
-				ship_crew (ship, current, required, capacity, rotation, morale, wages) 
-				VALUES ($1,$2,$3,$4,$5,$6,$7)
+			INSERT INTO ship_crew (ship, current, required, capacity, rotation, morale, wages) 
+			VALUES ($1,$2,$3,$4,$5,$6,$7)
 			ON CONFLICT (ship) DO UPDATE SET
 				ship      = EXCLUDED.ship,
 				current   = EXCLUDED.current, 
@@ -267,9 +235,8 @@ func UpdateShipState() error {
 
 		// ┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫ Upsert Ship Fuel ┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫
 		_, err = db.Exec(`
-			INSERT INTO 
-				ship_fuel (ship,current,capacity)
-				VALUES ($1,$2,$3)
+			INSERT INTO ship_fuel (ship,current,capacity)
+			VALUES ($1,$2,$3)
 			ON CONFLICT (ship) DO UPDATE SET
 				ship     = EXCLUDED.ship,
 				current  = EXCLUDED.current,
@@ -285,9 +252,8 @@ func UpdateShipState() error {
 
 		// ┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫ Upsert Ship Frame ┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫
 		_, err = db.Exec(`
-			INSERT INTO 
-				ship_frame (ship,symbol,name,description,module_slots,mount_points,fuel_capacity,condition,integrity,quality,power_required,crew_required)
-				VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)
+			INSERT INTO ship_frame (ship,symbol,name,description,module_slots,mount_points,fuel_capacity,condition,integrity,quality,power_required,crew_required)
+			VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)
 			ON CONFLICT (ship) DO UPDATE SET
 				ship           = EXCLUDED.ship,
 				symbol         = EXCLUDED.symbol,
@@ -321,9 +287,8 @@ func UpdateShipState() error {
 
 		// ┣━━━━━━━━━━━━━━━━━━━━━━━━━━━┫ Upsert Ship Reactor ┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫
 		_, err = db.Exec(`
-			INSERT INTO 
-				ship_reactor (ship,symbol,name,description,condition,integrity,power_output,quality,crew_required)
-				VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9)
+			INSERT INTO ship_reactor (ship,symbol,name,description,condition,integrity,power_output,quality,crew_required)
+			VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9)
 			ON CONFLICT (ship) DO UPDATE SET
 				ship           = EXCLUDED.ship,
 				symbol         = EXCLUDED.symbol,
@@ -351,9 +316,8 @@ func UpdateShipState() error {
 
 		// ┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫ Upsert Ship Engine ┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫
 		_, err = db.Exec(`
-			INSERT INTO 
-				ship_engine (ship,symbol,name,description,condition,integrity,speed,quality,power_required,crew_required)
-				VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)
+			INSERT INTO ship_engine (ship,symbol,name,description,condition,integrity,speed,quality,power_required,crew_required)
+			VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)
 			ON CONFLICT (ship) DO UPDATE SET
 				ship           = EXCLUDED.ship,
 				symbol         = EXCLUDED.symbol,

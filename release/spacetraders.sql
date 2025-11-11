@@ -24,7 +24,7 @@ CREATE TABLE agents (
     credits      INT,
     last_updated TIMESTAMP WITHOUT TIME ZONE
 );
-CREATE TABLE ship (
+CREATE TABLE ships (
     symbol       TEXT PRIMARY KEY,
     name         TEXT,
     role         TEXT,
@@ -99,7 +99,7 @@ CREATE TABLE ship_engine (
     power_required INT,
     crew_required  INT
 );
-CREATE TABLE contract (
+CREATE TABLE contracts (
     id                 TEXT PRIMARY KEY,
     faction            TEXT,
     type               TEXT,
@@ -128,15 +128,18 @@ CREATE TABLE systems (
     type          TEXT,
     x_coord       INT,
     y_coord       INT,
-    factions      TEXT
+    factions      TEXT[]
 );
 CREATE TABLE waypoints (
-    system  TEXT REFERENCES systems(symbol) ON DELETE CASCADE,
-    symbol  TEXT PRIMARY KEY,
-    type    TEXT,
-    x_coord INT,
-    y_coord INT,
-    orbits  TEXT
+    system       TEXT REFERENCES systems(symbol) ON DELETE CASCADE,
+    symbol       TEXT PRIMARY KEY,
+    type         TEXT,
+    x_coord      INT,
+    y_coord      INT,
+    orbits       TEXT,
+    construction BOOLEAN,
+    traits       TEXT[],
+    modifiers    TEXT[]
 );
 CREATE TABLE orbitals (
     waypoint TEXT REFERENCES waypoints(symbol) ON DELETE CASCADE,

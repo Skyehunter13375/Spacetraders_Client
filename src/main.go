@@ -5,7 +5,6 @@ import (
 	"Spacetraders/src/Contracts"
 	"Spacetraders/src/Fleet"
 	"Spacetraders/src/Server"
-	Waypoints "Spacetraders/src/Systems"
 	"fmt"
 
 	tea "github.com/charmbracelet/bubbletea"
@@ -48,14 +47,14 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			case "Agents":
 				m.content = Agents.AgentView(m.width)
 			case "Ships":
-				Fleet.UpdateShipState()
+				// Fleet.UpdateShipState()
 				m.content = Fleet.ShipsView(m.width)
 			case "Contracts":
-				Contracts.NegotiateNewContract("NULL_SKY-1")
-				Contracts.UpdateContracts()
+				// Contracts.NegotiateNewContract("NULL_SKY-1")
+				// Contracts.UpdateContracts()
 				m.content = Contracts.ContractView(m.width)
 			case "Systems":
-				Waypoints.UpdateSystem("X1-XQ13")
+				// Waypoints.UpdateSystem("X1-XQ13")
 				m.content = "Coming Soon..."
 			case "Exit":
 				m.quitting = true

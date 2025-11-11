@@ -6,6 +6,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+
+	_ "github.com/lib/pq" // PostgreSQL driver
 )
 
 func GetAllContracts() []Contract {
@@ -16,7 +18,7 @@ func GetAllContracts() []Contract {
 	defer db.Close()
 
 	// Get all contract IDs
-	ids, _ := db.Query(`SELECT id FROM contract`)
+	ids, _ := db.Query(`SELECT id FROM contracts`)
 	defer ids.Close()
 
 	var contracts []string
@@ -29,7 +31,7 @@ func GetAllContracts() []Contract {
 	// Fill structs for each contract
 	CStruct := make([]Contract, len(contracts)) //> You must instantiate the substruct index before you can .Scan() to it apparently
 	for idx, value := range contracts {
-		data, _ := db.Query(`SELECT * FROM contract WHERE id = $1`, value)
+		data, _ := db.Query(`SELECT * FROM contracts WHERE id = $1`, value)
 		for data.Next() {
 			row := &CStruct[idx]
 			data.Scan(
@@ -86,7 +88,7 @@ func UpdateContracts() error {
 
 	for index := range c {
 		_, err = db.Exec(`
-			INSERT INTO contract (id,faction,type,deadline,pay_on_accept,pay_on_complete,accepted,fulfilled,expiration,deadline_to_accept,last_updated) 
+			INSERT INTO contracts (id,faction,type,deadline,pay_on_accept,pay_on_complete,accepted,fulfilled,expiration,deadline_to_accept,last_updated) 
 			VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,NOW())
 			ON CONFLICT (id) DO UPDATE SET
 				id                 = EXCLUDED.id, 

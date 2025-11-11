@@ -10,9 +10,9 @@ if rpm -q golang 2>&1 | grep -q "not installed"; then
     printf "Done\n"
 fi
 
-if rpm -q sqlite-devel 2>&1 | grep -q "not installed"; then
-    printf "Installing SQLlite3..."
-    sudo dnf install -qy sqlite-devel >/dev/null 2>&1
+if rpm -q postgresql-server 2>&1 | grep -q "not installed"; then
+    printf "Installing PostgreSQL Server..."
+    sudo dnf install -qy postgresql-server >/dev/null 2>&1
     printf "Done\n"
 fi
 

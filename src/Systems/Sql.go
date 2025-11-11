@@ -7,12 +7,13 @@ import (
 	"fmt"
 	"log"
 
-	_ "github.com/lib/pq" // PostgreSQL driver
+	"github.com/lib/pq" // PostgreSQL driver
 )
 
 func UpdateSystem(symbol string) error {
 	jsonStr := General.GetUrlJson("https://api.spacetraders.io/v2/systems/"+symbol, "")
 	// General.LogActivity(string(jsonStr))
+
 	var wrapper map[string]json.RawMessage
 	err := json.Unmarshal([]byte(jsonStr), &wrapper)
 	if err != nil {
@@ -55,25 +56,13 @@ func UpdateSystem(symbol string) error {
 		General.LogErr(fmt.Sprintf("%v", err))
 	}
 
+	//! Very heavy on API calls at the moment...
+	//! Also not reading asteroids which we will need later on...
 	for idx := range s.Waypoints {
-		_, err = db.Exec(`
-			INSERT INTO waypoints (system,symbol,type,x_coord,y_coord,orbits)
-			VALUES ($1, $2, $3, $4, $5, $6)
-			ON CONFLICT (symbol) DO UPDATE SET
-				system  = EXCLUDED.system,
-				symbol  = EXCLUDED.symbol,
-				type    = EXCLUDED.type,
-				x_coord = EXCLUDED.x_coord,
-				y_coord = EXCLUDED.y_coord,
-				orbits  = EXCLUDED.orbits
-			`,
-			s.Symbol,
-			s.Waypoints[idx].Symbol,
-			s.Waypoints[idx].Type,
-			s.Waypoints[idx].Xcoord,
-			s.Waypoints[idx].Ycoord,
-			s.Waypoints[idx].Orbits,
-		)
+		if s.Waypoints[idx].Type == "ASTEROID" {
+			continue
+		}
+		err = UpdateWaypoint(s.Symbol, s.Waypoints[idx].Symbol)
 		if err != nil {
 			General.LogErr(fmt.Sprintf("%v", err))
 		}
@@ -94,15 +83,42 @@ func UpdateWaypoint(system string, waypoint string) error {
 		General.LogErr(err.Error())
 	}
 
+	traitArr := make([]string, len(w.Traits))
+	for idx, val := range w.Traits {
+		traitArr[idx] = val.Symbol
+	}
+
+	modArr := make([]string, len(w.Modifiers))
+	for idx, val := range w.Modifiers {
+		modArr[idx] = val.Symbol
+	}
+
 	db, _ := sql.Open("postgres", "user=skyehunter dbname=spacetraders sslmode=disable")
 	defer db.Close()
 
 	_, err = db.Exec(`
-		INSERT INTO ???? ()
-		VALUES ()
+		INSERT INTO waypoints (system,symbol,type,x_coord,y_coord,orbits,construction,traits,modifiers)
+		VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9)
 		ON CONFLICT (symbol) DO UPDATE SET
+			system       = EXCLUDED.system, 
+			symbol       = EXCLUDED.symbol, 
+			type         = EXCLUDED.type, 
+			x_coord      = EXCLUDED.x_coord, 
+			y_coord      = EXCLUDED.y_coord, 
+			orbits       = EXCLUDED.orbits, 
+			construction = EXCLUDED.construction,
+			traits       = EXCLUDED.traits,
+			modifiers    = EXCLUDED.modifiers
 		`,
+		w.System,
 		w.Symbol,
+		w.Type,
+		w.X,
+		w.Y,
+		w.Orbits,
+		w.Construction,
+		pq.Array(traitArr),
+		pq.Array(modArr),
 	)
 	if err != nil {
 		General.LogErr(fmt.Sprintf("%v", err))

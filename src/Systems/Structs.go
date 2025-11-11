@@ -61,6 +61,42 @@ type SysFactions struct {
 // }
 
 // ┣━━━━━━━━━━━━━━━━━━━━━━━━━━━┫ Individual Waypoints ┣━━━━━━━━━━━━━━━━━━━━━━━━━━━┫
+type Waypoint struct {
+	System       string      `json:"systemSymbol"`
+	Symbol       string      `json:"symbol"`
+	Type         string      `json:"type"`
+	X            int         `json:"x"`
+	Y            int         `json:"Y"`
+	Orbits       string      `json:"orbits"`
+	Traits       []WayTraits `json:"traits"`
+	Modifiers    []WayMods   `json:"modifiers"`
+	Chart        WayChart    `json:"chart"`
+	Construction bool        `json:"isUnderConstruction"`
+	// Factions     []WayFactions `json:"faction"`
+}
+
+type WayFactions struct {
+	Symbol string `json:"symbol"`
+}
+
+type WayTraits struct {
+	Symbol string `json:"symbol"`
+	Name   string `json:"name"`
+	Descr  string `json:"description"`
+}
+
+type WayMods struct {
+	Symbol string `json:"symbol"`
+	Name   string `json:"name"`
+	Descr  string `json:"description"`
+}
+
+type WayChart struct {
+	Symbol string `json:"symbol"`
+	Agent  string `json:"submittedBy"`
+	Date   string `json:"submittedOn"`
+}
+
 // {
 //     "data": {
 //         "symbol": "string",
@@ -99,39 +135,3 @@ type SysFactions struct {
 //         "isUnderConstruction": true
 //     }
 // }
-
-type Waypoint struct {
-	System       string        `json:"systemSymbol"`
-	Symbol       string        `json:"symbol"`
-	Type         string        `json:"type"`
-	X            int           `json:"x"`
-	Y            int           `json:"Y"`
-	Orbits       string        `json:"orbits"`
-	Factions     []WayFactions `json:"faction"`
-	Traits       []WayTraits   `json:"traits"`
-	Modifiers    []WayMods     `json:"modifiers"`
-	Chart        WayChart      `json:"chart"`
-	Construction bool          `json:"isUnderConstruction"`
-}
-
-type WayFactions struct {
-	Symbol string `json:"symbol"`
-}
-
-type WayTraits struct {
-	Symbol string `json:"symbol"`
-	Name   string `json:"name"`
-	Descr  string `json:"description"`
-}
-
-type WayMods struct {
-	Symbol string `json:"symbol"`
-	Name   string `json:"name"`
-	Descr  string `json:"description"`
-}
-
-type WayChart struct {
-	Symbol string `json:"symbol"`
-	Agent  string `json:"submittedBy"`
-	Date   string `json:"submittedOn"`
-}

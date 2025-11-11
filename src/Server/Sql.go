@@ -7,6 +7,8 @@ import (
 	"fmt"
 	"strings"
 	"time"
+
+	_ "github.com/lib/pq" // PostgreSQL driver
 )
 
 func GetGameServerState() GameState {
@@ -35,20 +37,8 @@ func GetGameServerState() GameState {
 	}
 
 	// Once game state is updated we go collect data
-	_ = db.QueryRow(
-		`SELECT 
-			server_up,
-			game_version,
-			agents,
-			ships,
-			systems,
-			waypoints,
-			accounts,
-			reset_date,
-			next_reset,
-			reset_freq,
-			last_updated
-		FROM server`).Scan(
+	_ = db.QueryRow(`
+		SELECT server_up,game_version,agents,ships,systems,waypoints,accounts,reset_date,next_reset,reset_freq,last_updated FROM server`).Scan(
 		&g.Status,
 		&g.Version,
 		&g.Stats.Agents,

@@ -71,7 +71,7 @@ func ShipsView(width int) string {
 		General.LogErr(fmt.Sprintf("DB open failed: %v", err))
 	}
 	defer db.Close()
-	ships, _ := db.Query(`SELECT symbol FROM ship`)
+	ships, _ := db.Query(`SELECT symbol FROM ships`)
 	defer ships.Close()
 
 	var symbols []string
