@@ -23,7 +23,7 @@ func UpdateSystem(symbol string) error {
 	var s System
 	err = json.Unmarshal(wrapper["data"], &s)
 	if err != nil {
-		General.LogErr(fmt.Sprintf("%v", err))
+		General.LogErr("UpdateSystem: "+err.Error())
 	}
 
 	db, err := sql.Open("postgres", "user=skyehunter dbname=spacetraders sslmode=disable")
@@ -56,8 +56,10 @@ func UpdateSystem(symbol string) error {
 		General.LogErr(fmt.Sprintf("%v", err))
 	}
 
-	//! Very heavy on API calls at the moment...
-	//! Also not reading asteroids which we will need later on...
+	// PERF:
+	// Very heavy on API calls at the moment...
+	// Also not reading asteroids which we will need later on...
+	// I should store the data I have here from the current jsonStr, and only run UpdateWaypoint() later on if needed.
 	for idx := range s.Waypoints {
 		if s.Waypoints[idx].Type == "ASTEROID" {
 			continue
@@ -80,7 +82,7 @@ func UpdateWaypoint(system string, waypoint string) error {
 	var w Waypoint
 	err := json.Unmarshal(wrapper["data"], &w)
 	if err != nil {
-		General.LogErr(err.Error())
+		General.LogErr("UpdateWaypoint: " + err.Error())
 	}
 
 	traitArr := make([]string, len(w.Traits))
@@ -122,6 +124,21 @@ func UpdateWaypoint(system string, waypoint string) error {
 	)
 	if err != nil {
 		General.LogErr(fmt.Sprintf("%v", err))
+	}
+
+	return nil
+}
+
+func UpdateShipyard(system string, symbol string) error {
+	jsonStr := General.GetUrlJson("https://api.spacetraders.io/v2/systems/"+system+"/waypoints/"+symbol+"/shipyard", "")
+
+	var wrapper map[string]json.RawMessage
+	json.Unmarshal([]byte(jsonStr), &wrapper)
+
+	var y Shipyard
+	err := json.Unmarshal(wrapper["data"], &y)
+	if err != nil {
+		General.LogErr("UpdateShipyard: " + err.Error())
 	}
 
 	return nil

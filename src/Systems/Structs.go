@@ -1,5 +1,7 @@
 package Waypoints
 
+import "Spacetraders/src/Fleet"
+
 // ┣━━━━━━━━━━━━━━━━━━━━━┫ System (All at once - no detail) ┣━━━━━━━━━━━━━━━━━━━━━┫
 type System struct {
 	Symbol        string         `json:"symbol"`
@@ -134,4 +136,151 @@ type WayChart struct {
 //         },
 //         "isUnderConstruction": true
 //     }
+// }
+
+// ┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫ Shipyard ┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫
+type Shipyard struct {
+	Symbol       string            `json:"symbol"`
+	Types        []SY_Types        `json:"shipTypes"`
+	Transactions []SY_Transactions `json:"transactions"`
+	Ships        []SY_Ship         `json:"ships"`
+}
+
+type SY_Types struct {
+	Type string `json:"type"`
+}
+
+type SY_Transactions struct {
+	Waypoint  string `json:"waypointSymbol"`
+	Ship      string `json:"shipSymbol"`
+	Type      string `json:"shipType"`
+	Price     int64  `json:"price"`
+	Agent     string `json:"agentSymbol"`
+	Timestamp string `json:"timestamp"`
+}
+
+type SY_Ship struct {
+	Type        string              `json:"type"`
+	Name        string              `json:"name"`
+	Description string              `json:"description"`
+	Supply      string              `json:"supply"`
+	Activity    string              `json:"activity"`
+	Price       int64               `json:"shipPrice"`
+	ModFee      int64               `json:"modificationsFee"`
+	Frame       Fleet.ShipFrame     `json:"frame"`
+	Reactor     Fleet.ShipReactor   `json:"reactor"`
+	Engine      Fleet.ShipEngine    `json:"engine"`
+	Modules     []Fleet.ShipModules `json:"modules"`
+	Mounts      []Fleet.ShipMounts  `json:"mounts"`
+	Crew        Fleet.ShipCrew      `json:"crew"`
+}
+
+// {
+//   "data": {
+//     "symbol": "string",
+//     "shipTypes": [
+//       {
+//         "type": "SHIP_PROBE"
+//       }
+//     ],
+//     "transactions": [
+//       {
+//         "waypointSymbol": "string",
+//         "shipSymbol": "string",
+//         "shipType": "string",
+//         "price": 0,
+//         "agentSymbol": "string",
+//         "timestamp": "2019-08-24T14:15:22Z"
+//       }
+//     ],
+//     "ships": [
+//       {
+//         "type": "SHIP_PROBE",
+//         "name": "string",
+//         "description": "string",
+//         "supply": "SCARCE",
+//         "activity": "WEAK",
+//         "purchasePrice": 0,
+//         "frame": {
+//           "symbol": "FRAME_PROBE",
+//           "name": "string",
+//           "description": "string",
+//           "condition": 0,
+//           "integrity": 0,
+//           "moduleSlots": 0,
+//           "mountingPoints": 0,
+//           "fuelCapacity": 0,
+//           "requirements": {
+//             "power": 0,
+//             "crew": 0,
+//             "slots": 0
+//           },
+//           "quality": 0
+//         },
+//         "reactor": {
+//           "symbol": "REACTOR_SOLAR_I",
+//           "name": "string",
+//           "description": "string",
+//           "condition": 0,
+//           "integrity": 0,
+//           "powerOutput": 1,
+//           "requirements": {
+//             "power": 0,
+//             "crew": 0,
+//             "slots": 0
+//           },
+//           "quality": 0
+//         },
+//         "engine": {
+//           "symbol": "ENGINE_IMPULSE_DRIVE_I",
+//           "name": "string",
+//           "description": "string",
+//           "condition": 0,
+//           "integrity": 0,
+//           "speed": 1,
+//           "requirements": {
+//             "power": 0,
+//             "crew": 0,
+//             "slots": 0
+//           },
+//           "quality": 0
+//         },
+//         "modules": [
+//           {
+//             "symbol": "MODULE_MINERAL_PROCESSOR_I",
+//             "capacity": 0,
+//             "range": 0,
+//             "name": "string",
+//             "description": "string",
+//             "requirements": {
+//               "power": 0,
+//               "crew": 0,
+//               "slots": 0
+//             }
+//           }
+//         ],
+//         "mounts": [
+//           {
+//             "symbol": "MOUNT_GAS_SIPHON_I",
+//             "name": "string",
+//             "description": "string",
+//             "strength": 0,
+//             "deposits": [
+//               "QUARTZ_SAND"
+//             ],
+//             "requirements": {
+//               "power": 0,
+//               "crew": 0,
+//               "slots": 0
+//             }
+//           }
+//         ],
+//         "crew": {
+//           "required": 0,
+//           "capacity": 0
+//         }
+//       }
+//     ],
+//     "modificationsFee": 0
+//   }
 // }

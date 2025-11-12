@@ -1,3 +1,8 @@
+## [0.3.0] - Completed: TBD
+- Filling in gaps in data collection routines
+#### 11/11/2025
+- Created structs and function template for shipyard data collection but can't test until next reset or I move systems.
+
 ## [0.2.5] - Completed: 11/10/2025
 - Finishing out initial stages of data collection
 #### 11/10/2025

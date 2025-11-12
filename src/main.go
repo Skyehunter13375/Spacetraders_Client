@@ -55,6 +55,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				m.content = Contracts.ContractView(m.width)
 			case "Systems":
 				// Waypoints.UpdateSystem("X1-XQ13")
+				// Waypoints.UpdateShipyard("X1-XQ13", "") // BUGS: There is no shipyard in my starting system apparently
 				m.content = "Coming Soon..."
 			case "Exit":
 				m.quitting = true
