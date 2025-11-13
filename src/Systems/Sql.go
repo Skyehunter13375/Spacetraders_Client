@@ -140,6 +140,8 @@ func UpdateShipyard(system string, symbol string) error {
 	if err != nil {
 		General.LogErr("UpdateShipyard: " + err.Error())
 	}
+ 
+	// TODO: Write SQL to upsert data
 
 	return nil
 }

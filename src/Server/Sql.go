@@ -111,10 +111,42 @@ func UpdateGameServerState() error {
 		g.ServerResets.NextReset,
 		g.ServerResets.ResetFreq,
 	)
-
 	if err != nil {
-		General.LogErr(fmt.Sprintf("%v", err))
+		General.LogErr(err.Error())
 		return err
+	}
+
+
+	for i := range g.Leaderboards.MostCredits {
+		_, err = db.Exec(`
+			INSERT INTO leaderboard_creds (agent,credits)
+			VALUES ($1,$2)
+			ON CONFLICT (agent) DO UPDATE SET
+				agent   = EXCLUDED.agent,
+				credits = EXCLUDED.credits
+			`,
+			g.Leaderboards.MostCredits[i].Agent,
+			g.Leaderboards.MostCredits[i].Creds,
+		)
+		if err != nil {
+			General.LogErr(err.Error())
+		}
+	}
+
+	for i := range g.Leaderboards.MostCharted {
+		_, err = db.Exec(`
+			INSERT INTO leaderboard_charts (agent,charts)
+			VALUES ($1,$2)
+			ON CONFLICT (agent) DO UPDATE SET
+				agent  = EXCLUDED.agent,
+				charts = EXCLUDED.charts
+			`,
+			g.Leaderboards.MostCharted[i].Agent,
+			g.Leaderboards.MostCharted[i].Charts,
+		)
+		if err != nil {
+			General.LogErr(err.Error())
+		}
 	}
 
 	return nil

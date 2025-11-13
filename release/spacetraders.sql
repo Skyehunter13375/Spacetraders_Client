@@ -15,6 +15,14 @@ CREATE TABLE server (
     next_reset   TIMESTAMP WITHOUT TIME ZONE,
     last_updated TIMESTAMP WITHOUT TIME ZONE
 );
+CREATE TABLE leaderboard_creds (
+    agent   TEXT PRIMARY KEY,
+    credits BIGINT
+);
+CREATE TABLE leaderboard_charts (
+    agent  TEXT PRIMARY KEY,
+    charts BIGINT
+)
 CREATE TABLE agents (
     account_id   TEXT,
     symbol       TEXT PRIMARY KEY,
@@ -145,3 +153,7 @@ CREATE TABLE orbitals (
     waypoint TEXT REFERENCES waypoints(symbol) ON DELETE CASCADE,
     symbol   TEXT PRIMARY KEY
 );
+CREATE TABLE shipyards ( qq
+    yard_symbol TEXT,
+    
+)
