@@ -1,0 +1,7 @@
+TRUNCATE TABLE server;
+TRUNCATE TABLE leaderboard_creds;
+TRUNCATE TABLE leaderboard_charts;
+TRUNCATE TABLE agents;
+TRUNCATE TABLE ships     CASCADE;
+TRUNCATE TABLE contracts CASCADE;
+TRUNCATE TABLE systems   CASCADE;

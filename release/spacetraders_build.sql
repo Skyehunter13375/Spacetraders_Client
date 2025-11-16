@@ -153,7 +153,3 @@ CREATE TABLE orbitals (
     waypoint TEXT REFERENCES waypoints(symbol) ON DELETE CASCADE,
     symbol   TEXT PRIMARY KEY
 );
-CREATE TABLE shipyards ( qq
-    yard_symbol TEXT,
-    
-)

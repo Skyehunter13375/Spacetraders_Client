@@ -145,6 +145,9 @@ func UpdateContracts() error {
 }
 
 func NegotiateNewContract(ship string) {
-	json := General.PostUrlJson("https://api.spacetraders.io/v2/my/ships/"+ship+"/negotiate/contract", "agent")
-	General.LogActivity(string(json))
+	General.PostUrlJson("https://api.spacetraders.io/v2/my/ships/"+ship+"/negotiate/contract", "agent")
+}
+
+func AcceptContract(contract string) {
+	General.PostUrlJson("https://api.spacetraders.io/v2/my/contracts/"+contract+"/accept", "agent")
 }

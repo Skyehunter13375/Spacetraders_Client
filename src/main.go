@@ -32,6 +32,9 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 	case tea.KeyMsg:
 		switch msg.String() {
+		case "q", "esc":
+			m.quitting = true
+			return m, tea.Quit
 
 		case "right", "l":
 			m.selectedIndex = (m.selectedIndex + 1) % len(m.menuItems)
@@ -51,11 +54,12 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				m.content = Fleet.ShipsView(m.width)
 			case "Contracts":
 				// Contracts.NegotiateNewContract("NULL_SKY-1")
+				// Contracts.AcceptContract("cmi1uorb9fpwbui6xvdicy6ab")
 				// Contracts.UpdateContracts()
 				m.content = Contracts.ContractView(m.width)
 			case "Systems":
-				// Waypoints.UpdateSystem("X1-XQ13")
-				// Waypoints.UpdateShipyard("X1-XQ13", "") // BUGS: There is no shipyard in my starting system apparently
+				// Waypoints.UpdateSystem("X1-FU6")
+				// Waypoints.UpdateShipyard("X1-FU6", "") // BUGS: There is no shipyard in my starting system apparently
 				m.content = "Coming Soon..."
 			case "Exit":
 				m.quitting = true
@@ -63,10 +67,6 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			default:
 				m.content = "Coming Soon..."
 			}
-
-		case "q", "esc":
-			m.quitting = true
-			return m, tea.Quit
 		}
 	}
 

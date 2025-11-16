@@ -8,14 +8,14 @@ import (
 )
 
 func LogErr(msg string) {
-	logFile, _ := os.OpenFile("logs/error.log", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+	logFile, _ := os.OpenFile("/home/skyehunter/Projects/SpaceTraders/logs/error.log", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 	log.SetOutput(logFile)
 	log.Printf("%s", msg)
 	logFile.Close()
 }
 
 func LogActivity(msg string) {
-	logFile, _ := os.OpenFile("logs/activity.log", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+	logFile, _ := os.OpenFile("/home/skyehunter/Projects/SpaceTraders/logs/activity.log", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 	log.SetOutput(logFile)
 	log.Printf("%s", msg)
 	logFile.Close()

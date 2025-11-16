@@ -44,20 +44,16 @@ func GetUrlJson(url string, tokenType string) string {
 	return returns.String()
 }
 
-func PostUrlJson(url string, tokenType string) string {
+func PostUrlJson(url string, tokenType string) (string, error) {
 	var returns strings.Builder
 	req, _ := http.NewRequest(http.MethodPost, url, nil)
 	req.Header.Set("Accept", "application/json")
 
 	switch tokenType {
 	case "agent":
-		tokenParam := "Bearer " + GetToken("agent")
-		req.Header.Add("Authorization", tokenParam)
-
+		req.Header.Add("Authorization", "Bearer "+GetToken("agent"))
 	case "account":
-		tokenParam := "Bearer " + GetToken("account")
-		req.Header.Add("Authorization", tokenParam)
-
+		req.Header.Add("Authorization", "Bearer "+GetToken("account"))
 	default:
 	}
 
@@ -65,17 +61,17 @@ func PostUrlJson(url string, tokenType string) string {
 	resp, err := client.Do(req)
 
 	if err != nil {
-		fmt.Fprintf(&returns, "Error performing request: %v\n", err)
-		return returns.String()
+		LogErr(fmt.Sprintf("Error performing request: %v\n", err))
+		return "", err
 	}
 	defer resp.Body.Close()
 
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
-		fmt.Fprintf(&returns, "Data Read Failed: %s", err)
-		return returns.String()
+		LogErr(fmt.Sprintf("Data Read Failed: %v\n", err))
+		return "", err
 	}
 
 	fmt.Fprintf(&returns, "%s", body)
-	return returns.String()
+	return returns.String(), nil
 }

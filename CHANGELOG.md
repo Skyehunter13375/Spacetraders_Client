@@ -1,5 +1,8 @@
 ## [0.3.0] - Completed: TBD
 - Filling in gaps in data collection routines
+#### 11/13/2025
+- New agent registration function so I don't have to keep going to the web page on reset. Requires testing still.
+- Basic leaderboard data collection started.
 #### 11/11/2025
 - Created structs and function template for shipyard data collection but can't test until next reset or I move systems.
 

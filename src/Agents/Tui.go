@@ -23,7 +23,7 @@ func BuildAgentBox(title, content string, width int) string {
 }
 
 func AgentView(width int) string {
-	agent := GetAgentState("NULL_SKY")
+	agent := GetAgentState("NULL-SKY")
 
 	// Box 1 – Agent Info
 	var box1 strings.Builder
