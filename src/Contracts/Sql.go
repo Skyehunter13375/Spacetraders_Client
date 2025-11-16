@@ -2,7 +2,6 @@ package Contracts
 
 import (
 	"Spacetraders/src/General"
-	"database/sql"
 	"encoding/json"
 	"fmt"
 	"log"
@@ -11,14 +10,8 @@ import (
 )
 
 func GetAllContracts() []Contract {
-	db, err := sql.Open("postgres", "user=skyehunter dbname=spacetraders sslmode=disable")
-	if err != nil {
-		General.LogErr(fmt.Sprintf("DB open failed: %v", err))
-	}
-	defer db.Close()
-
 	// Get all contract IDs
-	ids, _ := db.Query(`SELECT id FROM contracts`)
+	ids, _ := General.PG.Query(`SELECT id FROM contracts`)
 	defer ids.Close()
 
 	var contracts []string
@@ -31,7 +24,7 @@ func GetAllContracts() []Contract {
 	// Fill structs for each contract
 	CStruct := make([]Contract, len(contracts)) //> You must instantiate the substruct index before you can .Scan() to it apparently
 	for idx, value := range contracts {
-		data, _ := db.Query(`SELECT * FROM contracts WHERE id = $1`, value)
+		data, _ := General.PG.Query(`SELECT * FROM contracts WHERE id = $1`, value)
 		for data.Next() {
 			row := &CStruct[idx]
 			data.Scan(
@@ -49,7 +42,7 @@ func GetAllContracts() []Contract {
 			)
 		}
 
-		mats, _ := db.Query(`SELECT material,destination,units_required,units_fulfilled FROM contract_materials WHERE id = $1`, value)
+		mats, _ := General.PG.Query(`SELECT material,destination,units_required,units_fulfilled FROM contract_materials WHERE id = $1`, value)
 		for mats.Next() {
 			var deliverData ContractDeliveries
 			mats.Scan(
@@ -70,24 +63,18 @@ func UpdateContracts() error {
 	var wrapper map[string]json.RawMessage
 	err := json.Unmarshal([]byte(jsonStr), &wrapper)
 	if err != nil {
+		General.LogErr(err.Error())
 		log.Fatal(err)
 	}
 
 	var c []Contract
 	err = json.Unmarshal(wrapper["data"], &c)
 	if err != nil {
-		General.LogErr(fmt.Sprintf("%v", err))
+		General.LogErr(err.Error())
 	}
-
-	db, err := sql.Open("postgres", "user=skyehunter dbname=spacetraders sslmode=disable")
-	if err != nil {
-		General.LogErr(fmt.Sprintf("DB open failed: %v", err))
-		return err
-	}
-	defer db.Close()
 
 	for index := range c {
-		_, err = db.Exec(`
+		_, err = General.PG.Exec(`
 			INSERT INTO contracts (id,faction,type,deadline,pay_on_accept,pay_on_complete,accepted,fulfilled,expiration,deadline_to_accept,last_updated) 
 			VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,NOW())
 			ON CONFLICT (id) DO UPDATE SET
@@ -119,7 +106,7 @@ func UpdateContracts() error {
 		}
 
 		for idx2 := range c[index].Terms.Deliver {
-			_, err = db.Exec(`
+			_, err = General.PG.Exec(`
 				INSERT INTO contract_materials (id,material,destination,units_required,units_fulfilled) 
 				VALUES ($1,$2,$3,$4,$5)
 				ON CONFLICT (id,material,destination) DO UPDATE SET
@@ -136,7 +123,7 @@ func UpdateContracts() error {
 				c[index].Terms.Deliver[idx2].UnitsFulfilled,
 			)
 			if err != nil {
-				General.LogErr(fmt.Sprintf("%v", err))
+				General.LogErr(err.Error())
 			}
 		}
 	}

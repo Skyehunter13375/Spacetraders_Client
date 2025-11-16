@@ -2,6 +2,14 @@
 # ┣━━━━━━━━━━━━━━━━━━┫ Get sudo up-front for formatting ease ┣━━━━━━━━━━━━━━━━━━━┫
 sudo printf ""
 
+# ┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫ Creating log dir ┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫
+sudo mkdir /var/log/spacetraders >/dev/null 2>&1
+sudo chown $(whoami):$(whoami) /var/log/spacetraders
+sudo chmod 777 /var/log/spacetraders
+touch /var/log/spacetraders/activity.log
+touch /var/log/spacetraders/error.log
+
+
 # ┣━━━━━━━━━━━━━━━━━━━┫ Install required packages if missing ┣━━━━━━━━━━━━━━━━━━━┫
 if rpm -q golang 2>&1 | grep -q "not installed"; then
     printf "Installing Golang..."
@@ -14,16 +22,6 @@ if rpm -q postgresql-server 2>&1 | grep -q "not installed"; then
     sudo dnf install -qy postgresql-server >/dev/null 2>&1
     printf "Done\n"
 fi
-
-# ┣━━━━━━━━━━━━━━━━━━━━━━━━━━━┫ Store account token ┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫
-# printf "Enter your ACCOUNT token: "
-# read acct_token
-# psql -d spacetraders -c "INSERT INTO tokens (type,token) VALUES ('account', '${acct_token}') ON CONFLICT (type) DO UPDATE SET token = EXCLUDED.token"
-
-# ┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫ Store agent token ┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫
-printf "Enter your AGENT token: "
-read agent_token
-psql -d spacetraders -c "INSERT INTO tokens (type,token) VALUES ('agent', '${agent_token}') ON CONFLICT (type) DO UPDATE SET token = EXCLUDED.token"
 
 # ┣━━━━━━━━━━━━━━━━━━━━━━━━┫ Build and execute program ┣━━━━━━━━━━━━━━━━━━━━━━━━━┫
 # printf "Building executable binary..."

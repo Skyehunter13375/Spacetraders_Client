@@ -1,5 +1,13 @@
-## [0.3.0] - Completed: TBD
+## [0.3.0] - Completed: 11/16/2025
+- Another big refactor while I am learning which packages I like
 - Filling in gaps in data collection routines
+#### 11/16/2025
+- Complete overhaul of postgres connections. Simplified and trimmed lots of fat.
+- Added a config file to standardize DB connection info and account/agent tokens.
+- Fixed all the timestamp checking (UTC vs Local time) and rebuilt the database.
+- Abandoned Bubbletea in favor of Tview. Much simpler, easier to understand and less abstract.
+- Shifting gears from data collection to TUI building then to start actually playing the game.
+- Also added a quick feature milestone tracker to the README. Swiped that idea from someone else's project.
 #### 11/13/2025
 - New agent registration function so I don't have to keep going to the web page on reset. Requires testing still.
 - Basic leaderboard data collection started.

@@ -2,100 +2,56 @@ package Fleet
 
 import (
 	"Spacetraders/src/General"
-	"database/sql"
 	"fmt"
 
-	"github.com/charmbracelet/bubbles/progress"
-	"github.com/charmbracelet/lipgloss"
+	"github.com/rivo/tview"
 )
 
-func ProgressBar(value, max int) string {
-	bar := progress.New(
-		progress.WithGradient("#045f04ff", "#28b328ff"),
-	)
-	bar.Width = 30
+func DisplayShipState() tview.Primitive {
+	window := tview.NewFlex()
+	window.SetBorder(false)
+	window.SetDirection(tview.FlexRow)
 
-	var ratio float64
-	if max > 0 {
-		ratio = float64(value) / float64(max)
-	} else {
-		ratio = 1
-	}
+	row_1 := tview.NewFlex()
+	row_1.SetBorder(false)
+	row_2 := tview.NewFlex()
+	row_2.SetBorder(false)
 
-	// Clamp between 0 and 1 just in case
-	if ratio < 0 {
-		ratio = 0
-	} else if ratio > 1 {
-		ratio = 1
-	}
+	var box_1 tview.Primitive = BuildShipForm("NULL-SKY-1")
+	var box_2 tview.Primitive = BuildShipForm("NULL-SKY-2")
 
-	return bar.ViewAs(ratio)
+	box_3 := tview.NewTextView().SetBorder(true).SetTitle("  Box 3  ")
+	box_4 := tview.NewTextView().SetBorder(true).SetTitle("  Box 4  ")
+
+	row_1.AddItem(box_1, 0, 1, false)
+	row_1.AddItem(box_2, 0, 1, false)
+
+	row_2.AddItem(box_3, 0, 1, false)
+	row_2.AddItem(box_4, 0, 1, false)
+
+	window.AddItem(row_1, 0, 1, false)
+	window.AddItem(row_2, 0, 1, false)
+	return window
 }
 
-func BuildShipBox(symbol string, width int) string {
+func BuildShipForm(symbol string) tview.Primitive {
+	box := tview.NewForm()
+	box.SetBorder(true)
+	box.SetTitle("  " + symbol + "  ")
+
 	ship := GetShipState(symbol)
 
-	crewBar := ProgressBar(ship.Crew.Current, ship.Crew.Capacity)
-	fuelBar := ProgressBar(ship.Fuel.Current, ship.Fuel.Capacity)
-	moraleBar := ProgressBar(ship.Crew.Morale, 100)
+	box.AddTextView("Role", ship.Registration.Role, 0, 1, true, true)
+	box.AddTextView("Status", ship.Nav.Status, 0, 1, true, true)
+	box.AddTextView("Frame", ship.Frame.Name, 0, 1, true, true)
+	box.AddTextView("Reactor", ship.Reactor.Name, 0, 1, true, true)
+	box.AddTextView("Engine", ship.Engine.Name, 0, 1, true, true)
+	box.AddTextView("Mode", ship.Nav.FlightMode, 0, 1, true, true)
+	box.AddTextView("Waypoint", ship.Nav.WaypointSymbol, 0, 1, true, true)
+	box.AddTextView("Crew", fmt.Sprintf("%d (Min: %d | Max: %d)", ship.Crew.Current, ship.Crew.Required, ship.Crew.Capacity), 0, 1, true, true)
+	box.AddTextView("Fuel", General.ProgressBar(ship.Fuel.Current, ship.Fuel.Capacity), 0, 1, true, true)
+	box.AddTextView("Morale", General.ProgressBar(ship.Crew.Morale, 100), 0, 1, true, true)
+	// box.AddTextView("Cargo", ProgressBar(ship.Cargo.), 0, 1, true, true)
 
-	info := fmt.Sprintf("Role:     %s\n", ship.Registration.Role)
-	info += fmt.Sprintf("Status:   %s\n", ship.Nav.Status)
-	info += fmt.Sprintf("Frame:    %s\n", ship.Frame.Name)
-	info += fmt.Sprintf("Reactor:  %s\n", ship.Reactor.Name)
-	info += fmt.Sprintf("Engine:   %s\n", ship.Engine.Name)
-	info += fmt.Sprintf("Mode:     %s\n", ship.Nav.FlightMode)
-	info += fmt.Sprintf("Waypoint: %s\n", ship.Nav.WaypointSymbol)
-	info += fmt.Sprintf("Crew:     %d/%d (Req: %d)\n%s\n", ship.Crew.Current, ship.Crew.Capacity, ship.Crew.Required, crewBar)
-	info += fmt.Sprintf("Fuel:     %d/%d\n%s\n", ship.Fuel.Current, ship.Fuel.Capacity, fuelBar)
-	info += fmt.Sprintf("Morale:   %d%%\n%s", ship.Crew.Morale, moraleBar)
-
-	boxStyle := lipgloss.NewStyle().
-		Border(lipgloss.NormalBorder()).
-		Padding(1, 2).
-		Width(width).
-		BorderForeground(lipgloss.Color("240"))
-
-	title := lipgloss.NewStyle().
-		Foreground(lipgloss.Color("63")).
-		Bold(true).
-		Underline(true).
-		Render(symbol)
-
-	return boxStyle.Render(title + "\n\n" + info)
-}
-
-func ShipsView(width int) string {
-	db, err := sql.Open("postgres", "user=skyehunter dbname=spacetraders sslmode=disable")
-	if err != nil {
-		General.LogErr(fmt.Sprintf("DB open failed: %v", err))
-	}
-	defer db.Close()
-	ships, _ := db.Query(`SELECT symbol FROM ships`)
-	defer ships.Close()
-
-	var symbols []string
-	for ships.Next() {
-		var s string
-		ships.Scan(&s)
-		symbols = append(symbols, s)
-	}
-
-	const colsPerRow = 3
-	boxWidth := (width / colsPerRow) - 2
-
-	var rows []string
-	var currentRow []string
-
-	for i, symbol := range symbols {
-		box := BuildShipBox(symbol, boxWidth)
-		currentRow = append(currentRow, box)
-
-		if (i+1)%colsPerRow == 0 || i == len(symbols)-1 {
-			rows = append(rows, lipgloss.JoinHorizontal(lipgloss.Top, currentRow...))
-			currentRow = []string{}
-		}
-	}
-
-	return lipgloss.JoinVertical(lipgloss.Left, rows...)
+	return box
 }

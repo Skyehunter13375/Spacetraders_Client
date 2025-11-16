@@ -3,20 +3,22 @@ package General
 import (
 	"database/sql"
 	"fmt"
+
+	_ "github.com/lib/pq"
 )
 
-func GetToken(tokentype string) string {
-	var token string
-	db, err := sql.Open("postgres", "user=skyehunter dbname=spacetraders sslmode=disable")
+var PG *sql.DB
+
+func DB() error {
+	CFG, _ := GetConfig()
+	connStr := fmt.Sprintf("user=%s dbname=%s sslmode=%s", CFG.DB.User, CFG.DB.Name, CFG.DB.SSL)
+
+	var err error
+	PG, err = sql.Open(CFG.DB.Type, connStr)
 	if err != nil {
-		LogErr(fmt.Sprintf("DB open failed: %v", err))
-	}
-	defer db.Close()
-
-	err = db.QueryRow(`SELECT token FROM tokens WHERE type = $1 LIMIT 1`, tokentype).Scan(&token)
-	if err == sql.ErrNoRows {
-		return ""
+		LogErr(err.Error())
+		return err
 	}
 
-	return string(token)
+	return PG.Ping()
 }

@@ -17,6 +17,7 @@ type RegPayload struct {
 }
 
 func RegisterNewAgent(agentSymbol string) string {
+	CFG, _ := General.GetConfig()
 	var returns strings.Builder
 
 	payload := RegPayload{
@@ -34,8 +35,7 @@ func RegisterNewAgent(agentSymbol string) string {
 		General.LogErr(err.Error())
 	}
 
-	tokenParam := "Bearer " + General.GetToken("account")
-	req.Header.Add("Authorization", tokenParam)
+	req.Header.Add("Authorization", "Bearer "+CFG.Tokens.Account)
 	req.Header.Add("Content-Type", "application/json")
 
 	client := &http.Client{Timeout: 10 * time.Second}

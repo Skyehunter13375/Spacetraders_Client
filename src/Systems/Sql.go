@@ -2,7 +2,6 @@ package Waypoints
 
 import (
 	"Spacetraders/src/General"
-	"database/sql"
 	"encoding/json"
 	"fmt"
 	"log"
@@ -23,17 +22,10 @@ func UpdateSystem(symbol string) error {
 	var s System
 	err = json.Unmarshal(wrapper["data"], &s)
 	if err != nil {
-		General.LogErr("UpdateSystem: "+err.Error())
+		General.LogErr("UpdateSystem: " + err.Error())
 	}
 
-	db, err := sql.Open("postgres", "user=skyehunter dbname=spacetraders sslmode=disable")
-	if err != nil {
-		General.LogErr(fmt.Sprintf("DB open failed: %v", err))
-		return err
-	}
-	defer db.Close()
-
-	_, err = db.Exec(`
+	_, err = General.PG.Exec(`
 		INSERT INTO systems (symbol, sector, constellation, name, type, x_coord, y_coord)
 		VALUES ($1, $2, $3, $4, $5, $6, $7)
 		ON CONFLICT (symbol) DO UPDATE SET
@@ -95,10 +87,7 @@ func UpdateWaypoint(system string, waypoint string) error {
 		modArr[idx] = val.Symbol
 	}
 
-	db, _ := sql.Open("postgres", "user=skyehunter dbname=spacetraders sslmode=disable")
-	defer db.Close()
-
-	_, err = db.Exec(`
+	_, err = General.PG.Exec(`
 		INSERT INTO waypoints (system,symbol,type,x_coord,y_coord,orbits,construction,traits,modifiers)
 		VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9)
 		ON CONFLICT (symbol) DO UPDATE SET
@@ -140,7 +129,7 @@ func UpdateShipyard(system string, symbol string) error {
 	if err != nil {
 		General.LogErr("UpdateShipyard: " + err.Error())
 	}
- 
+
 	// TODO: Write SQL to upsert data
 
 	return nil

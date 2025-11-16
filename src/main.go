@@ -2,131 +2,133 @@ package main
 
 import (
 	"Spacetraders/src/Agents"
-	"Spacetraders/src/Contracts"
 	"Spacetraders/src/Fleet"
+	"Spacetraders/src/General"
 	"Spacetraders/src/Server"
-	"fmt"
 
-	tea "github.com/charmbracelet/bubbletea"
-	"github.com/charmbracelet/lipgloss"
+	"github.com/rivo/tview"
 )
 
-type model struct {
-	menuItems     []string
-	selectedIndex int
-	content       string
-	width, height int
-	quitting      bool
-}
-
-func (m model) Init() tea.Cmd {
-	return nil
-}
-
-func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
-	switch msg := msg.(type) {
-
-	case tea.WindowSizeMsg:
-		m.width = msg.Width
-		m.height = msg.Height
-
-	case tea.KeyMsg:
-		switch msg.String() {
-		case "q", "esc":
-			m.quitting = true
-			return m, tea.Quit
-
-		case "right", "l":
-			m.selectedIndex = (m.selectedIndex + 1) % len(m.menuItems)
-
-		case "left", "h":
-			m.selectedIndex = (m.selectedIndex - 1 + len(m.menuItems)) % len(m.menuItems)
-
-		case "enter":
-			item := m.menuItems[m.selectedIndex]
-			switch item {
-			case "Server":
-				m.content = Server.ServerView(m.width)
-			case "Agents":
-				m.content = Agents.AgentView(m.width)
-			case "Ships":
-				// Fleet.UpdateShipState()
-				m.content = Fleet.ShipsView(m.width)
-			case "Contracts":
-				// Contracts.NegotiateNewContract("NULL_SKY-1")
-				// Contracts.AcceptContract("cmi1uorb9fpwbui6xvdicy6ab")
-				// Contracts.UpdateContracts()
-				m.content = Contracts.ContractView(m.width)
-			case "Systems":
-				// Waypoints.UpdateSystem("X1-FU6")
-				// Waypoints.UpdateShipyard("X1-FU6", "") // BUGS: There is no shipyard in my starting system apparently
-				m.content = "Coming Soon..."
-			case "Exit":
-				m.quitting = true
-				return m, tea.Quit
-			default:
-				m.content = "Coming Soon..."
-			}
-		}
-	}
-
-	return m, nil
-}
-
-func (m model) View() string {
-	if m.quitting {
-		return ""
-	}
-
-	var menuParts []string
-	for i, item := range m.menuItems {
-		style := lipgloss.NewStyle().
-			Border(lipgloss.RoundedBorder()).
-			Padding(0, 2).
-			BorderForeground(lipgloss.Color("240")).
-			Foreground(lipgloss.Color("250"))
-		if i == m.selectedIndex {
-			style = style.
-				Foreground(lipgloss.Color("46")).
-				BorderForeground(lipgloss.Color("46"))
-		}
-		menuParts = append(menuParts, style.Render(item))
-	}
-
-	menuBar := lipgloss.JoinHorizontal(lipgloss.Left, menuParts...)
-
-	title := lipgloss.NewStyle().
-		Foreground(lipgloss.Color("63")).
-		Bold(true).
-		Render("Welcome to Null Sky")
-
-	footer := lipgloss.NewStyle().
-		Foreground(lipgloss.Color("240")).
-		Render("(← → navigate, Enter select, q to quit)")
-
-	body := lipgloss.JoinVertical(
-		lipgloss.Left,
-		title,
-		menuBar,
-		m.content,
-		footer,
-	)
-
-	return lipgloss.Place(
-		m.width, m.height,
-		lipgloss.Left, lipgloss.Top,
-		body,
-	)
+type MenuItem struct {
+	Name     string
+	Action   func()
+	FocusOut bool
 }
 
 func main() {
-	m := model{
-		menuItems: []string{"Server", "Agents", "Ships", "Contracts", "Systems", "Exit"},
-		content:   "Use ← → to navigate, Enter to select.",
+	// Must initialize the DB connection the first time here.
+	if err := General.DB(); err != nil {
+		General.LogErr(err.Error())
+		panic(err)
 	}
 
-	p := tea.NewProgram(m, tea.WithAltScreen())
-	if _, err := p.Run(); err != nil {
-		fmt.Println("Error:", err)
+	app := tview.NewApplication()
+
+	// MAIN MENU (Top-Left)
+	mainMenu := tview.NewList()
+	mainMenu.ShowSecondaryText(false).SetBorder(true).SetTitle(" Main Menu ")
+	mainMenu.AddItem("Server", "", '1', nil)
+	mainMenu.AddItem("Agents", "", '2', nil)
+	mainMenu.AddItem("Ships", "", '3', nil)
+	mainMenu.AddItem("Systems", "", '4', nil)
+	mainMenu.AddItem("Contracts", "", '5', nil)
+	mainMenu.AddItem("Quit", "", 'q', func() { app.Stop() })
+
+	// SUB MENU (Bottom-Left)
+	subMenu := tview.NewList()
+	subMenu.ShowSecondaryText(false).SetBorder(true).SetTitle(" Submenu ")
+
+	// OUTPUT BOX (Right Side)
+	output := tview.NewFlex()
+	output.SetBorder(false)
+
+	// LEFT SIDE = main menu (top) + sub menu (bottom)
+	leftSide := tview.NewFlex()
+	leftSide.SetDirection(tview.FlexRow)
+	leftSide.AddItem(mainMenu, 0, 1, true)
+	leftSide.AddItem(subMenu, 0, 1, false)
+
+	// FULL WINDOW = left column + output box
+	window := tview.NewFlex()
+	window.AddItem(leftSide, 30, 1, true)
+	window.AddItem(output, 0, 2, false)
+
+	// Function to load submenu items
+	loadSubmenu := func(category string) {
+		subMenu.Clear()
+
+		var opts []MenuItem // ← FIXED HERE
+
+		switch category {
+		case "Server":
+			opts = []MenuItem{
+				{
+					Name: "Get Server Status",
+					Action: func() {
+						output.Clear()
+						output.AddItem(Server.DisplayGameServerState(), 0, 1, false)
+					},
+					FocusOut: false,
+				},
+			}
+
+		case "Agents":
+			opts = []MenuItem{
+				{
+					Name: "NULLSKY",
+					Action: func() {
+						output.Clear()
+						output.AddItem(Agents.DisplayAgentState(), 0, 1, false)
+					},
+					FocusOut: false,
+				},
+			}
+
+		case "Ships":
+			opts = []MenuItem{
+				{
+					Name: "All",
+					Action: func() {
+						output.Clear()
+						output.AddItem(Fleet.DisplayShipState(), 0, 1, true)
+					},
+					FocusOut: false,
+				},
+			}
+		}
+
+		// Add submenu choices
+		for _, item := range opts {
+			mi := item
+			subMenu.AddItem(mi.Name, "", 0, func() {
+				mi.Action()
+				if mi.FocusOut {
+					app.SetFocus(output)
+				}
+			})
+		}
+
+		subMenu.AddItem("Back", "", 'b', func() {
+			subMenu.Clear()
+			output.Clear()
+			app.SetFocus(mainMenu)
+		})
+
+		app.SetFocus(subMenu)
+	}
+
+	// MAIN MENU HANDLER
+	mainMenu.SetSelectedFunc(func(i int, name, second string, r rune) {
+		if name == "Quit" {
+			app.Stop()
+			return
+		}
+		loadSubmenu(name)
+	})
+
+	// RUN APP
+	if err := app.SetRoot(window, true).Run(); err != nil {
+		General.LogErr(err.Error())
+		panic(err)
 	}
 }

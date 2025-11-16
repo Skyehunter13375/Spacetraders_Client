@@ -1,0 +1,16 @@
+##################################
+# Edit and rename to config.yaml #
+##################################
+
+database:
+  type: "postgres"     # Postgres is the only DB supported at this time
+  name: "spacetraders" # Should leave this as "spacetraders" and create your DB accordingly
+  host: "localhost"
+  port: 5432
+  SSL:  "disable"
+  user: "skyehunter"
+  pass: # Leave empty, change pg_hba.conf to MD5 and set up .pgpass
+
+tokens:
+  accnt: ""
+  agent: ""

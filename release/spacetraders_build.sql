@@ -1,7 +1,3 @@
-CREATE TABLE tokens (
-    type  TEXT PRIMARY KEY,
-    token TEXT
-);
 CREATE TABLE server (
     server_up    BOOLEAN,
     game_version TEXT,
@@ -11,9 +7,9 @@ CREATE TABLE server (
     waypoints    BIGINT,
     accounts     BIGINT,
     reset_freq   TEXT,
-    reset_date   TIMESTAMP WITHOUT TIME ZONE,
-    next_reset   TIMESTAMP WITHOUT TIME ZONE,
-    last_updated TIMESTAMP WITHOUT TIME ZONE
+    reset_date   TIMESTAMPTZ,
+    next_reset   TIMESTAMPTZ,
+    last_updated TIMESTAMPTZ
 );
 CREATE TABLE leaderboard_creds (
     agent   TEXT PRIMARY KEY,
@@ -22,7 +18,7 @@ CREATE TABLE leaderboard_creds (
 CREATE TABLE leaderboard_charts (
     agent  TEXT PRIMARY KEY,
     charts BIGINT
-)
+);
 CREATE TABLE agents (
     account_id   TEXT,
     symbol       TEXT PRIMARY KEY,
@@ -30,17 +26,17 @@ CREATE TABLE agents (
     hq           TEXT,
     ships        INT,
     credits      INT,
-    last_updated TIMESTAMP WITHOUT TIME ZONE
+    last_updated TIMESTAMPTZ
 );
 CREATE TABLE ships (
     symbol       TEXT PRIMARY KEY,
     name         TEXT,
     role         TEXT,
     faction      TEXT,
-    last_updated TIMESTAMP WITHOUT TIME ZONE
+    last_updated TIMESTAMPTZ
 );
 CREATE TABLE ship_nav (
-    ship             TEXT PRIMARY KEY REFERENCES ship(symbol) ON DELETE CASCADE,
+    ship             TEXT PRIMARY KEY REFERENCES ships(symbol) ON DELETE CASCADE,
     system           TEXT,
     waypoint         TEXT,
     status           TEXT,
@@ -57,7 +53,7 @@ CREATE TABLE ship_nav (
     departure        TIMESTAMPTZ
 );
 CREATE TABLE ship_crew (
-    ship     TEXT PRIMARY KEY REFERENCES ship(symbol) ON DELETE CASCADE,
+    ship     TEXT PRIMARY KEY REFERENCES ships(symbol) ON DELETE CASCADE,
     current  INT,
     required INT,
     capacity INT,
@@ -66,12 +62,12 @@ CREATE TABLE ship_crew (
     wages    INT
 );
 CREATE TABLE ship_fuel (
-    ship     TEXT PRIMARY KEY REFERENCES ship(symbol) ON DELETE CASCADE,
+    ship     TEXT PRIMARY KEY REFERENCES ships(symbol) ON DELETE CASCADE,
     current  INT,
     capacity INT
 );
 CREATE TABLE ship_frame (
-    ship           TEXT PRIMARY KEY REFERENCES ship(symbol) ON DELETE CASCADE,
+    ship           TEXT PRIMARY KEY REFERENCES ships(symbol) ON DELETE CASCADE,
     symbol         TEXT,
     name           TEXT,
     description    TEXT,
@@ -85,7 +81,7 @@ CREATE TABLE ship_frame (
     crew_required  INT
 );
 CREATE TABLE ship_reactor (
-    ship          TEXT PRIMARY KEY REFERENCES ship(symbol) ON DELETE CASCADE,
+    ship          TEXT PRIMARY KEY REFERENCES ships(symbol) ON DELETE CASCADE,
     symbol        TEXT,
     name          TEXT,
     description   TEXT,
@@ -96,7 +92,7 @@ CREATE TABLE ship_reactor (
     crew_required INT
 );
 CREATE TABLE ship_engine (
-    ship           TEXT PRIMARY KEY REFERENCES ship(symbol) ON DELETE CASCADE,
+    ship           TEXT PRIMARY KEY REFERENCES ships(symbol) ON DELETE CASCADE,
     symbol         TEXT,
     name           TEXT,
     description    TEXT,
@@ -115,13 +111,13 @@ CREATE TABLE contracts (
     pay_on_complete    BIGINT,
     accepted           BOOLEAN,
     fulfilled          BOOLEAN,
-    deadline           TIMESTAMP WITH TIME ZONE,
-    expiration         TIMESTAMP WITH TIME ZONE,
-    deadline_to_accept TIMESTAMP WITH TIME ZONE,
-    last_updated       TIMESTAMP WITHOUT TIME ZONE
+    deadline           TIMESTAMPTZ,
+    expiration         TIMESTAMPTZ,
+    deadline_to_accept TIMESTAMPTZ,
+    last_updated       TIMESTAMPTZ
 );
 CREATE TABLE contract_materials (
-    id              TEXT REFERENCES contract(id) ON DELETE CASCADE,
+    id              TEXT REFERENCES contracts(id) ON DELETE CASCADE,
     material        TEXT,
     destination     TEXT,
     units_required  BIGINT,

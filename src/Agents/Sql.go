@@ -5,7 +5,6 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
-	"strings"
 	"time"
 
 	_ "github.com/lib/pq" // PostgreSQL driver
@@ -13,26 +12,19 @@ import (
 
 func GetAgentState(agent string) AgentData {
 	var a AgentData
-	db, err := sql.Open("postgres", "user=skyehunter dbname=spacetraders sslmode=disable")
-	if err != nil {
-		General.LogErr(fmt.Sprintf("DB open failed: %v", err))
-	}
-	defer db.Close()
 
-	// Check the last update time, if more than 15 mins go grab new info
-	var check_time string
-	err2 := db.QueryRow(`SELECT last_updated FROM agents where symbol = $1`, agent).Scan(&check_time)
-	if err2 == sql.ErrNoRows {
-		check_time = "2025-01-01 13:00:00"
+	var ts time.Time
+	err := General.PG.QueryRow(`SELECT last_updated FROM agents where symbol = $1`, agent).Scan(&ts)
+	if err == sql.ErrNoRows { // No timestamp found, force update
+		ts = time.Unix(0, 0).UTC()
+	} else if err != nil { // DB error, force update
+		General.LogErr(fmt.Sprintf("DB error: %v", err))
+		ts = time.Now().UTC().Add(-24 * time.Hour)
 	}
 
-	t, _ := time.ParseInLocation("2006-01-02 15:04:05", check_time, time.Local)
-	epoch := t.Unix()
-	now := time.Now().Unix()
-	if (now - epoch) > 900 {
-		var sb strings.Builder
-		fmt.Fprintf(&sb, "Updating agent %s status: Over 900 seconds since last refresh (Now:%d - Last:%d)", agent, now, epoch)
-		General.LogActivity(sb.String())
+	// Compare in UTC only
+	if time.Since(ts) > 15*time.Minute {
+		General.LogActivity(fmt.Sprintf("Updating agent status: (Now: %v - Last: %v)", time.Now().UTC(), ts))
 		UpdateAgentState()
 	}
 
@@ -48,7 +40,7 @@ func GetAgentState(agent string) AgentData {
 		FROM agents 
 		WHERE symbol = $1`
 
-	_ = db.QueryRow(query, agent).Scan(
+	_ = General.PG.QueryRow(query, agent).Scan(
 		&a.Data.AccountID,
 		&a.Data.Symbol,
 		&a.Data.Faction,
@@ -67,17 +59,11 @@ func UpdateAgentState() error {
 	jsonStr := General.GetUrlJson("https://api.spacetraders.io/v2/my/agent", "agent")
 	err := json.Unmarshal([]byte(jsonStr), &a)
 	if err != nil {
+		General.LogErr(err.Error())
 		return err
 	}
 
-	db, err := sql.Open("postgres", "user=skyehunter dbname=spacetraders sslmode=disable")
-	if err != nil {
-		General.LogErr(fmt.Sprintf("DB open failed: %v", err))
-		return err
-	}
-	defer db.Close()
-
-	_, err = db.Exec(`
+	_, err = General.PG.Exec(`
 		INSERT INTO agents (
 			account_id,
 			symbol,
@@ -112,6 +98,7 @@ func UpdateAgentState() error {
 		a.Data.Ships,
 	)
 	if err != nil {
+		General.LogErr(err.Error())
 		return err
 	}
 

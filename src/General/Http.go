@@ -9,19 +9,16 @@ import (
 )
 
 func GetUrlJson(url string, tokenType string) string {
+	CFG, _ := GetConfig()
 	var returns strings.Builder
 	req, _ := http.NewRequest(http.MethodGet, url, nil)
 	req.Header.Set("Accept", "application/json")
 
 	switch tokenType {
 	case "agent":
-		tokenParam := "Bearer " + GetToken("agent")
-		req.Header.Add("Authorization", tokenParam)
-
+		req.Header.Add("Authorization", "Bearer "+CFG.Tokens.Agent)
 	case "account":
-		tokenParam := "Bearer " + GetToken("account")
-		req.Header.Add("Authorization", tokenParam)
-
+		req.Header.Add("Authorization", "Bearer "+CFG.Tokens.Account)
 	default:
 	}
 
@@ -45,15 +42,17 @@ func GetUrlJson(url string, tokenType string) string {
 }
 
 func PostUrlJson(url string, tokenType string) (string, error) {
+	CFG, _ := GetConfig()
 	var returns strings.Builder
+
 	req, _ := http.NewRequest(http.MethodPost, url, nil)
 	req.Header.Set("Accept", "application/json")
 
 	switch tokenType {
 	case "agent":
-		req.Header.Add("Authorization", "Bearer "+GetToken("agent"))
+		req.Header.Add("Authorization", "Bearer "+CFG.Tokens.Agent)
 	case "account":
-		req.Header.Add("Authorization", "Bearer "+GetToken("account"))
+		req.Header.Add("Authorization", "Bearer "+CFG.Tokens.Account)
 	default:
 	}
 

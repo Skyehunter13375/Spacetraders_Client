@@ -5,7 +5,6 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
-	"strings"
 	"time"
 
 	_ "github.com/lib/pq" // PostgreSQL driver
@@ -13,32 +12,27 @@ import (
 
 func GetGameServerState() GameState {
 	var g GameState
-	var ts string
-	db, err := sql.Open("postgres", "user=skyehunter dbname=spacetraders sslmode=disable")
-	if err != nil {
-		General.LogErr(fmt.Sprintf("DB open failed: %v", err))
-	}
-	defer db.Close()
+	var ts time.Time
 
-	// Check the last update time, if more than 15 mins go grab new info
-	err2 := db.QueryRow(`SELECT last_updated FROM server`).Scan(&ts)
-	if err2 == sql.ErrNoRows {
-		ts = "2025-01-01 13:00:00"
+	err := General.PG.QueryRow(`SELECT last_updated FROM server`).Scan(&ts)
+	if err == sql.ErrNoRows { // No timestamp found, force update
+		ts = time.Unix(0, 0).UTC()
+	} else if err != nil { // DB error, force update
+		General.LogErr(fmt.Sprintf("DB error: %v", err))
+		ts = time.Now().UTC().Add(-24 * time.Hour)
 	}
 
-	t, _ := time.ParseInLocation("2006-01-02 15:04:05", ts, time.Local)
-	epoch := t.Unix()
-	now := time.Now().Unix()
-	if (now - epoch) > 900 {
-		var sb strings.Builder
-		fmt.Fprintf(&sb, "Updating game server status: Over 900 seconds since last refresh (Now:%d - Last:%d)", now, epoch)
-		General.LogActivity(sb.String())
+	// Compare in UTC only
+	if time.Since(ts) > 15*time.Minute {
+		General.LogActivity(fmt.Sprintf("Grabbing updated game server status: (Now: %v - Last: %v)", time.Now().UTC(), ts))
 		UpdateGameServerState()
 	}
 
-	// Once game state is updated we go collect data
-	_ = db.QueryRow(`
-		SELECT server_up,game_version,agents,ships,systems,waypoints,accounts,reset_date,next_reset,reset_freq,last_updated FROM server`).Scan(
+	// Pull updated values
+	_ = General.PG.QueryRow(`
+        SELECT server_up,game_version,agents,ships,systems,waypoints,accounts,
+               reset_date,next_reset,reset_freq,last_updated
+        FROM server`).Scan(
 		&g.Status,
 		&g.Version,
 		&g.Stats.Agents,
@@ -60,22 +54,17 @@ func UpdateGameServerState() error {
 	jsonStr := General.GetUrlJson("https://api.spacetraders.io/v2", "")
 	err := json.Unmarshal([]byte(jsonStr), &g)
 	if err != nil {
+		General.LogErr(err.Error())
 		return err
 	}
 
-	db, err := sql.Open("postgres", "user=skyehunter dbname=spacetraders sslmode=disable")
+	_, err = General.PG.Exec("DELETE FROM server")
 	if err != nil {
-		General.LogErr(fmt.Sprintf("DB open failed: %v", err))
-		return err
-	}
-	defer db.Close()
-
-	_, err = db.Exec("DELETE FROM server")
-	if err != nil {
+		General.LogErr(err.Error())
 		return err
 	}
 
-	_, err = db.Exec(`
+	_, err = General.PG.Exec(`
 		INSERT INTO server (
 			server_up,
 			game_version,
@@ -116,9 +105,8 @@ func UpdateGameServerState() error {
 		return err
 	}
 
-
 	for i := range g.Leaderboards.MostCredits {
-		_, err = db.Exec(`
+		_, err = General.PG.Exec(`
 			INSERT INTO leaderboard_creds (agent,credits)
 			VALUES ($1,$2)
 			ON CONFLICT (agent) DO UPDATE SET
@@ -134,7 +122,7 @@ func UpdateGameServerState() error {
 	}
 
 	for i := range g.Leaderboards.MostCharted {
-		_, err = db.Exec(`
+		_, err = General.PG.Exec(`
 			INSERT INTO leaderboard_charts (agent,charts)
 			VALUES ($1,$2)
 			ON CONFLICT (agent) DO UPDATE SET

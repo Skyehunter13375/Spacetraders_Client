@@ -5,7 +5,6 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
-	"strings"
 	"time"
 
 	_ "github.com/lib/pq" // PostgreSQL driver
@@ -13,26 +12,19 @@ import (
 
 func GetShipState(symbol string) Ship {
 	var sd Ship
-	db, err := sql.Open("postgres", "user=skyehunter dbname=spacetraders sslmode=disable")
-	if err != nil {
-		General.LogErr(fmt.Sprintf("DB open failed: %v", err))
-	}
-	defer db.Close()
 
-	// Check the last update time, if more than 15 mins go grab new info
-	var check_time string
-	err2 := db.QueryRow(`SELECT last_updated FROM ships where symbol = 'NULL_SKY-1'`).Scan(&check_time)
-	if err2 == sql.ErrNoRows {
-		check_time = "2025-01-01 13:00:00"
+	var ts time.Time
+	err := General.PG.QueryRow(`SELECT last_updated FROM ships where symbol = 'NULL-SKY-1'`).Scan(&ts)
+	if err == sql.ErrNoRows { // No timestamp found, force update
+		ts = time.Unix(0, 0).UTC()
+	} else if err != nil { // DB error, force update
+		General.LogErr(fmt.Sprintf("DB error: %v", err))
+		ts = time.Now().UTC().Add(-24 * time.Hour)
 	}
 
-	t, _ := time.ParseInLocation("2006-01-02 15:04:05", check_time, time.Local)
-	epoch := t.Unix()
-	now := time.Now().Unix()
-	if (now - epoch) > 900 {
-		var sb strings.Builder
-		fmt.Fprintf(&sb, "Updating ships status: Over 900 seconds since last refresh (Now:%d - Last:%d)", now, epoch)
-		General.LogActivity(sb.String())
+	// Compare in UTC only
+	if time.Since(ts) > 15*time.Minute {
+		General.LogActivity(fmt.Sprintf("Updating Fleet status: (Now: %v - Last: %v)", time.Now().UTC(), ts))
 		UpdateShipState()
 	}
 
@@ -47,7 +39,7 @@ func GetShipState(symbol string) Ship {
 		INNER JOIN ship_engine  AS engine  ON engine.ship  = ship.symbol
 		WHERE ship.symbol = $1
 	`
-	_ = db.QueryRow(query, symbol).Scan(
+	_ = General.PG.QueryRow(query, symbol).Scan(
 		&sd.Symbol,
 		&sd.Registration.Name,
 		&sd.Registration.Role,
@@ -139,16 +131,9 @@ func UpdateShipState() error {
 		General.LogErr(fmt.Sprintf("%v", err))
 	}
 
-	db, err := sql.Open("postgres", "user=skyehunter dbname=spacetraders sslmode=disable")
-	if err != nil {
-		General.LogErr(fmt.Sprintf("DB open failed: %v", err))
-		return err
-	}
-	defer db.Close()
-
 	for _, s := range ships {
 		// ┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫ Upsert Ship ┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫
-		_, err := db.Exec(`
+		_, err := General.PG.Exec(`
 			INSERT INTO ships (symbol,name,role,faction,last_updated) 
 			VALUES ($1,$2,$3,$4,NOW())
 			ON CONFLICT (symbol) DO UPDATE SET
@@ -168,7 +153,7 @@ func UpdateShipState() error {
 		}
 
 		// ┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫ Upsert Ship Nav ┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫
-		_, err = db.Exec(`
+		_, err = General.PG.Exec(`
 			INSERT INTO ship_nav (ship,system,waypoint,status,flight_mode,origin,origin_type,origin_x,origin_y,destination,destination_type,destination_x,destination_y,arrival,departure) 
 			VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15)
 			ON CONFLICT (ship) DO UPDATE SET
@@ -209,7 +194,7 @@ func UpdateShipState() error {
 		}
 
 		// ┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫ Upsert Ship Crew ┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫
-		_, err = db.Exec(`
+		_, err = General.PG.Exec(`
 			INSERT INTO ship_crew (ship, current, required, capacity, rotation, morale, wages) 
 			VALUES ($1,$2,$3,$4,$5,$6,$7)
 			ON CONFLICT (ship) DO UPDATE SET
@@ -234,7 +219,7 @@ func UpdateShipState() error {
 		}
 
 		// ┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫ Upsert Ship Fuel ┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫
-		_, err = db.Exec(`
+		_, err = General.PG.Exec(`
 			INSERT INTO ship_fuel (ship,current,capacity)
 			VALUES ($1,$2,$3)
 			ON CONFLICT (ship) DO UPDATE SET
@@ -251,7 +236,7 @@ func UpdateShipState() error {
 		}
 
 		// ┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫ Upsert Ship Frame ┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫
-		_, err = db.Exec(`
+		_, err = General.PG.Exec(`
 			INSERT INTO ship_frame (ship,symbol,name,description,module_slots,mount_points,fuel_capacity,condition,integrity,quality,power_required,crew_required)
 			VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)
 			ON CONFLICT (ship) DO UPDATE SET
@@ -286,7 +271,7 @@ func UpdateShipState() error {
 		}
 
 		// ┣━━━━━━━━━━━━━━━━━━━━━━━━━━━┫ Upsert Ship Reactor ┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫
-		_, err = db.Exec(`
+		_, err = General.PG.Exec(`
 			INSERT INTO ship_reactor (ship,symbol,name,description,condition,integrity,power_output,quality,crew_required)
 			VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9)
 			ON CONFLICT (ship) DO UPDATE SET
@@ -315,7 +300,7 @@ func UpdateShipState() error {
 		}
 
 		// ┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫ Upsert Ship Engine ┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫
-		_, err = db.Exec(`
+		_, err = General.PG.Exec(`
 			INSERT INTO ship_engine (ship,symbol,name,description,condition,integrity,speed,quality,power_required,crew_required)
 			VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)
 			ON CONFLICT (ship) DO UPDATE SET
