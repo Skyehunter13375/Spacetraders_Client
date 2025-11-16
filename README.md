@@ -19,13 +19,13 @@ I wrote this on a RHEL based system with no intention of making it interoperable
 
 # Milestones
 - [ ] Setup
-    - [-] Register a New Agent
-    - [-] Simplify and/or automate new user setup
+    - [ ] Register a New Agent
+    - [ ] Simplify and/or automate new user setup
     - [x] Login with a Preexisting Token
 
 - [ ] Game Server
     - [x] Capture current game server state _**(Stats/Resets/Leaderboards)**_
-    - [-] Display game state + leaderboards
+    - [ ] Display game state + leaderboards
 
 - [ ] Contracts
     - [x] View Contracts
@@ -34,7 +34,7 @@ I wrote this on a RHEL based system with no intention of making it interoperable
     - [ ] Deliver and Fulfil Contracts
 
 - [ ] Fleet
-    - [-] Display ship stats/status
+    - [ ] Display ship stats/status
     - [ ] Manage Ship Inventory  _**(Transfer/Jettison/Extract/Refine)**_
     - [ ] Manage Ship Status     _**(Dock/Orbit/Refuel)**_
     - [ ] Manage Ship Navigation _**(Navigate/Jump/Warp/Flight Mode)**_
