@@ -15,27 +15,20 @@ func GetUrlJson(url string, tokenType string) string {
 	req.Header.Set("Accept", "application/json")
 
 	switch tokenType {
-	case "agent":
-		req.Header.Add("Authorization", "Bearer "+CFG.Tokens.Agent)
-	case "account":
-		req.Header.Add("Authorization", "Bearer "+CFG.Tokens.Account)
-	default:
+		case "agent":
+			req.Header.Add("Authorization", "Bearer "+CFG.Tokens.Agent)
+		case "account":
+			req.Header.Add("Authorization", "Bearer "+CFG.Tokens.Account)
+		default:
 	}
 
 	client := &http.Client{Timeout: 10 * time.Second}
 	resp, err := client.Do(req)
-
-	if err != nil {
-		fmt.Fprintf(&returns, "Error performing request: %v\n", err)
-		return returns.String()
-	}
+	if err != nil { LogErr("GetUrlJson: Connection " + err.Error()); return ""}
 	defer resp.Body.Close()
 
 	body, err := io.ReadAll(resp.Body)
-	if err != nil {
-		fmt.Fprintf(&returns, "Data Read Failed: %s", err)
-		return returns.String()
-	}
+	if err != nil { LogErr("GetUrlJson: Data Read Failed" + err.Error()); return ""}
 
 	fmt.Fprintf(&returns, "%s", body)
 	return returns.String()
@@ -49,27 +42,21 @@ func PostUrlJson(url string, tokenType string) (string, error) {
 	req.Header.Set("Accept", "application/json")
 
 	switch tokenType {
-	case "agent":
-		req.Header.Add("Authorization", "Bearer "+CFG.Tokens.Agent)
-	case "account":
-		req.Header.Add("Authorization", "Bearer "+CFG.Tokens.Account)
-	default:
+		case "agent":
+			req.Header.Add("Authorization", "Bearer "+CFG.Tokens.Agent)
+		case "account":
+			req.Header.Add("Authorization", "Bearer "+CFG.Tokens.Account)
+		default:
 	}
 
 	client := &http.Client{Timeout: 10 * time.Second}
 	resp, err := client.Do(req)
 
-	if err != nil {
-		LogErr(fmt.Sprintf("Error performing request: %v\n", err))
-		return "", err
-	}
+	if err != nil { LogErr("GetUrlJson: Error performing request" + err.Error()); return "", err}
 	defer resp.Body.Close()
 
 	body, err := io.ReadAll(resp.Body)
-	if err != nil {
-		LogErr(fmt.Sprintf("Data Read Failed: %v\n", err))
-		return "", err
-	}
+	if err != nil { LogErr("GetUrlJson: Data Read Failed" + err.Error()); return "", err}
 
 	fmt.Fprintf(&returns, "%s", body)
 	return returns.String(), nil

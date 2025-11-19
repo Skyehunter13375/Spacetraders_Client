@@ -15,10 +15,7 @@ func DB() error {
 
 	var err error
 	PG, err = sql.Open(CFG.DB.Type, connStr)
-	if err != nil {
-		LogErr(err.Error())
-		return err
-	}
+	if err != nil { LogErr("DB: Connection failed: " + err.Error()); return err }
 
 	return PG.Ping()
 }

@@ -1,3 +1,10 @@
+## [0.3.5] - Completed: TBD
+#### 11/18/2025
+- Big changes to the UI builder & associated functions
+- Can now display contracts, systems, waypoints, and ship fleet
+- It's not the cleanest and needs lots of work, especially with resizing and scaling properly to the window size. 
+- I also added lots of logging and 
+
 ## [0.3.0] - Completed: 11/16/2025
 - Another big refactor while I am learning which packages I like
 - Filling in gaps in data collection routines

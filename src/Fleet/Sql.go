@@ -121,15 +121,11 @@ func UpdateShipState() error {
 
 	var wrapper map[string]json.RawMessage
 	err := json.Unmarshal([]byte(data), &wrapper)
-	if err != nil {
-		General.LogErr(fmt.Sprintf("%v", err))
-	}
+	if err != nil { General.LogErr(err.Error()) }
 
 	var ships []Ship
 	err = json.Unmarshal(wrapper["data"], &ships)
-	if err != nil {
-		General.LogErr(fmt.Sprintf("%v", err))
-	}
+	if err != nil { General.LogErr("UpdateShipState JSON: " + err.Error()) }
 
 	for _, s := range ships {
 		// ┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫ Upsert Ship ┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫
@@ -148,9 +144,7 @@ func UpdateShipState() error {
 			s.Registration.Role,
 			s.Registration.FactionSymbol,
 		)
-		if err != nil {
-			General.LogErr(fmt.Sprintf("Ships Insert: %v", err))
-		}
+		if err != nil { General.LogErr("UpdateShipState Ships: " + err.Error()) }
 
 		// ┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫ Upsert Ship Nav ┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫
 		_, err = General.PG.Exec(`
@@ -189,9 +183,7 @@ func UpdateShipState() error {
 			s.Nav.Route.Arrival,
 			s.Nav.Route.DepartureTime,
 		)
-		if err != nil {
-			General.LogErr(fmt.Sprintf("Ship Nav Insert: %v", err))
-		}
+		if err != nil { General.LogErr("UpdateShipState ShipNav: " + err.Error()) }
 
 		// ┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫ Upsert Ship Crew ┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫
 		_, err = General.PG.Exec(`
@@ -214,9 +206,7 @@ func UpdateShipState() error {
 			s.Crew.Morale,
 			s.Crew.Wages,
 		)
-		if err != nil {
-			General.LogErr(fmt.Sprintf("Ship Crew Insert: %v", err))
-		}
+		if err != nil { General.LogErr("UpdateShipState ShipCrew: " + err.Error()) }
 
 		// ┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫ Upsert Ship Fuel ┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫
 		_, err = General.PG.Exec(`
@@ -231,9 +221,7 @@ func UpdateShipState() error {
 			s.Fuel.Current,
 			s.Fuel.Capacity,
 		)
-		if err != nil {
-			General.LogErr(fmt.Sprintf("Ship Fuel Insert: %v", err))
-		}
+		if err != nil { General.LogErr("UpdateShipState ShipFuel: " + err.Error()) }
 
 		// ┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫ Upsert Ship Frame ┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫
 		_, err = General.PG.Exec(`
@@ -266,9 +254,7 @@ func UpdateShipState() error {
 			s.Frame.Requirements.Power,
 			s.Frame.Requirements.Crew,
 		)
-		if err != nil {
-			General.LogErr(fmt.Sprintf("Ship Frame Insert: %v", err))
-		}
+		if err != nil { General.LogErr("UpdateShipState ShipFrame: " + err.Error()) }
 
 		// ┣━━━━━━━━━━━━━━━━━━━━━━━━━━━┫ Upsert Ship Reactor ┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫
 		_, err = General.PG.Exec(`
@@ -295,9 +281,7 @@ func UpdateShipState() error {
 			s.Frame.Requirements.Power,
 			s.Frame.Requirements.Crew,
 		)
-		if err != nil {
-			General.LogErr(fmt.Sprintf("Ship Reactor Insert: %v", err))
-		}
+		if err != nil { General.LogErr("UpdateShipState ShipReactor: " + err.Error()) }
 
 		// ┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫ Upsert Ship Engine ┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫
 		_, err = General.PG.Exec(`
@@ -326,9 +310,7 @@ func UpdateShipState() error {
 			s.Engine.Requirements.Power,
 			s.Engine.Requirements.Crew,
 		)
-		if err != nil {
-			General.LogErr(fmt.Sprintf("Ship Engine Insert: %v", err))
-		}
+		if err != nil { General.LogErr("UpdateShipState ShipEngine: " + err.Error()) }
 	}
 
 	return nil

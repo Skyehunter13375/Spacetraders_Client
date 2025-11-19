@@ -28,13 +28,13 @@ I wrote this on a RHEL based system with no intention of making it interoperable
     - [ ] Display game state + leaderboards
 
 - [ ] Contracts
-    - [x] View Contracts
+    - [x] Display Contracts
     - [x] Accept Contracts
     - [x] Negotiate New Contracts
     - [ ] Deliver and Fulfil Contracts
 
 - [ ] Fleet
-    - [ ] Display ship stats/status
+    - [x] Display ship stats/status
     - [ ] Manage Ship Inventory  _**(Transfer/Jettison/Extract/Refine)**_
     - [ ] Manage Ship Status     _**(Dock/Orbit/Refuel)**_
     - [ ] Manage Ship Navigation _**(Navigate/Jump/Warp/Flight Mode)**_

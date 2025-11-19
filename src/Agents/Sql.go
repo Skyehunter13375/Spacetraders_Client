@@ -17,9 +17,6 @@ func GetAgentState(agent string) AgentData {
 	err := General.PG.QueryRow(`SELECT last_updated FROM agents where symbol = $1`, agent).Scan(&ts)
 	if err == sql.ErrNoRows { // No timestamp found, force update
 		ts = time.Unix(0, 0).UTC()
-	} else if err != nil { // DB error, force update
-		General.LogErr(fmt.Sprintf("DB error: %v", err))
-		ts = time.Now().UTC().Add(-24 * time.Hour)
 	}
 
 	// Compare in UTC only
@@ -58,10 +55,7 @@ func UpdateAgentState() error {
 
 	jsonStr := General.GetUrlJson("https://api.spacetraders.io/v2/my/agent", "agent")
 	err := json.Unmarshal([]byte(jsonStr), &a)
-	if err != nil {
-		General.LogErr(err.Error())
-		return err
-	}
+	if err != nil { General.LogErr("UpdateAgentState: " + err.Error()); return err }
 
 	_, err = General.PG.Exec(`
 		INSERT INTO agents (
@@ -97,10 +91,7 @@ func UpdateAgentState() error {
 		a.Data.HQ,
 		a.Data.Ships,
 	)
-	if err != nil {
-		General.LogErr(err.Error())
-		return err
-	}
+	if err != nil { General.LogErr("UpdateAgentState agents: " + err.Error()); return err }
 
 	return nil
 }

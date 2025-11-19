@@ -3,75 +3,19 @@ package Contracts
 import (
 	"Spacetraders/src/General"
 	"encoding/json"
-	"fmt"
-	"log"
 
 	_ "github.com/lib/pq" // PostgreSQL driver
 )
-
-func GetAllContracts() []Contract {
-	// Get all contract IDs
-	ids, _ := General.PG.Query(`SELECT id FROM contracts`)
-	defer ids.Close()
-
-	var contracts []string
-	for ids.Next() {
-		var s string
-		ids.Scan(&s)
-		contracts = append(contracts, s)
-	}
-
-	// Fill structs for each contract
-	CStruct := make([]Contract, len(contracts)) //> You must instantiate the substruct index before you can .Scan() to it apparently
-	for idx, value := range contracts {
-		data, _ := General.PG.Query(`SELECT * FROM contracts WHERE id = $1`, value)
-		for data.Next() {
-			row := &CStruct[idx]
-			data.Scan(
-				&row.ID,
-				&row.Faction,
-				&row.Type,
-				&row.Terms.Payment.OnAccepted,
-				&row.Terms.Payment.OnFulfilled,
-				&row.Accepted,
-				&row.Fulfilled,
-				&row.Terms.Deadline,
-				&row.Expiration,
-				&row.DeadlineToAccept,
-				&row.LastUpdated,
-			)
-		}
-
-		mats, _ := General.PG.Query(`SELECT material,destination,units_required,units_fulfilled FROM contract_materials WHERE id = $1`, value)
-		for mats.Next() {
-			var deliverData ContractDeliveries
-			mats.Scan(
-				&deliverData.Material,
-				&deliverData.Destination,
-				&deliverData.UnitsRequired,
-				&deliverData.UnitsFulfilled,
-			)
-			CStruct[idx].Terms.Deliver = append(CStruct[idx].Terms.Deliver, deliverData) //> Or you can append to it if you don't know how many elements there will be.
-		}
-	}
-
-	return CStruct
-}
 
 func UpdateContracts() error {
 	jsonStr := General.GetUrlJson("https://api.spacetraders.io/v2/my/contracts", "agent")
 	var wrapper map[string]json.RawMessage
 	err := json.Unmarshal([]byte(jsonStr), &wrapper)
-	if err != nil {
-		General.LogErr(err.Error())
-		log.Fatal(err)
-	}
+	if err != nil { General.LogErr("UpdateContracts: " + err.Error()) }
 
 	var c []Contract
 	err = json.Unmarshal(wrapper["data"], &c)
-	if err != nil {
-		General.LogErr(err.Error())
-	}
+	if err != nil { General.LogErr("UpdateContracts: " + err.Error()) }
 
 	for index := range c {
 		_, err = General.PG.Exec(`
@@ -101,9 +45,7 @@ func UpdateContracts() error {
 			c[index].Expiration,
 			c[index].DeadlineToAccept,
 		)
-		if err != nil {
-			General.LogErr(fmt.Sprintf("%v", err))
-		}
+		if err != nil { General.LogErr("UpdateContracts contracts: " + err.Error()) }
 
 		for idx2 := range c[index].Terms.Deliver {
 			_, err = General.PG.Exec(`
@@ -122,13 +64,47 @@ func UpdateContracts() error {
 				c[index].Terms.Deliver[idx2].UnitsRequired,
 				c[index].Terms.Deliver[idx2].UnitsFulfilled,
 			)
-			if err != nil {
-				General.LogErr(err.Error())
-			}
+		if err != nil { General.LogErr("UpdateContracts contractMats: " + err.Error()) }
 		}
 	}
 
 	return nil
+}
+
+func GetContract(id string) Contract {
+	var result Contract
+
+	// Fill structs for each contract
+	data, _ := General.PG.Query(`SELECT * FROM contracts WHERE id = $1`, id)
+	for data.Next() {
+		data.Scan(
+			&result.ID,
+			&result.Faction,
+			&result.Type,
+			&result.Terms.Payment.OnAccepted,
+			&result.Terms.Payment.OnFulfilled,
+			&result.Accepted,
+			&result.Fulfilled,
+			&result.Terms.Deadline,
+			&result.Expiration,
+			&result.DeadlineToAccept,
+			&result.LastUpdated,
+		)
+	}
+
+	mats, _ := General.PG.Query(`SELECT material,destination,units_required,units_fulfilled FROM contract_materials WHERE id = $1`, id)
+	for mats.Next() {
+		var deliverData ContractDeliveries
+		mats.Scan(
+			&deliverData.Material,
+			&deliverData.Destination,
+			&deliverData.UnitsRequired,
+			&deliverData.UnitsFulfilled,
+		)
+		result.Terms.Deliver = append(result.Terms.Deliver, deliverData) //> Or you can append to it if you don't know how many elements there will be.
+	}
+
+	return result
 }
 
 func NegotiateNewContract(ship string) {

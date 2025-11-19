@@ -17,9 +17,6 @@ func GetGameServerState() GameState {
 	err := General.PG.QueryRow(`SELECT last_updated FROM server`).Scan(&ts)
 	if err == sql.ErrNoRows { // No timestamp found, force update
 		ts = time.Unix(0, 0).UTC()
-	} else if err != nil { // DB error, force update
-		General.LogErr(fmt.Sprintf("DB error: %v", err))
-		ts = time.Now().UTC().Add(-24 * time.Hour)
 	}
 
 	// Compare in UTC only
@@ -53,16 +50,10 @@ func UpdateGameServerState() error {
 	var g GameState
 	jsonStr := General.GetUrlJson("https://api.spacetraders.io/v2", "")
 	err := json.Unmarshal([]byte(jsonStr), &g)
-	if err != nil {
-		General.LogErr(err.Error())
-		return err
-	}
+	if err != nil { General.LogErr("UpdateGameServerState: " + err.Error()); return err }
 
 	_, err = General.PG.Exec("DELETE FROM server")
-	if err != nil {
-		General.LogErr(err.Error())
-		return err
-	}
+	if err != nil { General.LogErr("UpdateGameServerState: Delete failed" + err.Error()); return err }
 
 	_, err = General.PG.Exec(`
 		INSERT INTO server (
@@ -100,10 +91,7 @@ func UpdateGameServerState() error {
 		g.ServerResets.NextReset,
 		g.ServerResets.ResetFreq,
 	)
-	if err != nil {
-		General.LogErr(err.Error())
-		return err
-	}
+	if err != nil { General.LogErr("UpdateGameServerState: Insert server failed" + err.Error()); return err }
 
 	for i := range g.Leaderboards.MostCredits {
 		_, err = General.PG.Exec(`
@@ -116,9 +104,7 @@ func UpdateGameServerState() error {
 			g.Leaderboards.MostCredits[i].Agent,
 			g.Leaderboards.MostCredits[i].Creds,
 		)
-		if err != nil {
-			General.LogErr(err.Error())
-		}
+	if err != nil { General.LogErr("UpdateGameServerState: Insert leadCreds failed" + err.Error()); return err }
 	}
 
 	for i := range g.Leaderboards.MostCharted {
@@ -132,9 +118,7 @@ func UpdateGameServerState() error {
 			g.Leaderboards.MostCharted[i].Agent,
 			g.Leaderboards.MostCharted[i].Charts,
 		)
-		if err != nil {
-			General.LogErr(err.Error())
-		}
+	if err != nil { General.LogErr("UpdateGameServerState: Insert leadCharts failed" + err.Error()); return err }
 	}
 
 	return nil

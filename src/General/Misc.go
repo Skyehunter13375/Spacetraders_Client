@@ -21,24 +21,34 @@ func LogActivity(msg string) {
 	logFile.Close()
 }
 
-func ProgressBar(curr int, max int) string {
+func ProgressBar(curr, req, max int) string {
+	if max <= 0 { return "N/A" }
+
 	var bar strings.Builder
-	var percent int
 	totalWidth := 20
-	if max == 0 {
-		percent = 100
-	} else {
-		percent = (curr / max) * 100
-	}
+
+	// Clamp values so we don't go below 0 or above max
+	if curr < 0   { curr = 0 }
+	if curr > max { curr = max }
+	if req  < 0   { req = 0 }
+	if req  > max { req = max }
+
+	// Compute percentages
+	percent := int(float64(curr) / float64(max) * 100)
 	filled := (percent * totalWidth) / 100
-	empty := totalWidth - filled
+	reqPos := (int(float64(req) / float64(max) * float64(totalWidth)))
 
-	fmt.Fprintf(&bar,
-		"[[green]%s[-][black]%s[-]] %d%%",
-		strings.Repeat("■", filled),
-		strings.Repeat(" ", empty),
-		percent,
-	)
+	// Build the bar
+	for i := range totalWidth {
+		switch {
+			case i < filled:
+				bar.WriteString("■")
+			case i == reqPos:
+				bar.WriteString("|") // marker for required threshold
+			default:
+				bar.WriteString(" ")
+			}
+	}
 
-	return bar.String()
+	return fmt.Sprintf("[[green]%s[-]] %d%%", bar.String(), percent)
 }
