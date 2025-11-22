@@ -1,28 +1,23 @@
 package Registration
 
-import (
-	"Spacetraders/src/General"
-	"bytes"
-	"encoding/json"
-	"fmt"
-	"io"
-	"net/http"
-	"strings"
-	"time"
-)
+import "io"
+import "encoding/json"
+import "bytes"
+import "net/http"
+import "time"
+import "Spacetraders/src/General"
 
 type RegPayload struct {
 	Symbol  string `json:"symbol"`
 	Faction string `json:"faction"`
 }
 
-func RegisterNewAgent(agentSymbol string) string {
+func RegisterNewAgent(agentSymbol string, faction string) (string, error) {
 	CFG, _ := General.GetConfig()
-	var returns strings.Builder
 
 	payload := RegPayload{
 		Symbol:  agentSymbol,
-		Faction: "VOID",
+		Faction: faction,
 	}
 
 	jsonBytes, err := json.Marshal(payload)
@@ -36,13 +31,25 @@ func RegisterNewAgent(agentSymbol string) string {
 
 	client := &http.Client{Timeout: 10 * time.Second}
 	resp, err := client.Do(req)
-	if err != nil { General.LogErr("RegisterNewAgent: Error performing request:" + err.Error()); return returns.String() }
+	if err != nil { General.LogErr("RegisterNewAgent: Error performing request:" + err.Error()); return "",err }
 	defer resp.Body.Close()
 
 	body, err := io.ReadAll(resp.Body)
-	if err != nil { General.LogErr("RegisterNewAgent: Data read failed:" + err.Error()); return returns.String() }
+	if err != nil { General.LogErr("RegisterNewAgent: Data read failed:" + err.Error()); return "", err }
 
-	fmt.Fprintf(&returns, "%s", body)
-	return returns.String()
+	// INFO: Begin unwrapping the json for ingest
+	var wrapper map[string]json.RawMessage
+	json.Unmarshal([]byte(body), &wrapper)
 
+	var data map[string]json.RawMessage
+	json.Unmarshal(wrapper["data"], &data)
+
+	var token string
+	json.Unmarshal(data["token"], &token)
+
+	// TODO: Run the spacetraders_reset.sql file? Or do it manually here? 
+
+	// TODO: Figure out an easier way to update config file with new agent token automagically
+
+	return token, nil
 }

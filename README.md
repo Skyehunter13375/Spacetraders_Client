@@ -1,10 +1,10 @@
 # Welcome to NULL SKY, adventurer!
-This is my most recent attempt at creating a usable client for the [SpaceTraders API](https://spacetraders.io/) MMO RPG. My goal with this project is simply to have a good time learning a new language and DB utility that I have zero prior experience with.
+This is my most recent attempt at creating a usable client for the [SpaceTraders API](https://spacetraders.io/) MMO RPG. My goal with this project is simply to have a good time learning a new language I have zero prior experience with.
 
 If you stumbled across this project looking for some good advice on how to write in Golang or to steal my trade secrets in-game you've come to the wrong place friend! I'm doing this mostly for the data collection and TUI building experience, I'd be lucky if my agent completes even a single contract per bi-weekly reset!
 
 # What this project is:
-- A passion project & academic exercise for me to learn Golang and PostgreSQL.
+- A passion project & academic exercise for me to learn Golang and practice with PostgreSQL.
 - A fun way for me to both justify playing a fun game and also build skills/tools at the same time.
 
 # What this project is NOT:
@@ -19,13 +19,14 @@ I wrote this on a RHEL based system with no intention of making it interoperable
 
 # Milestones
 - [ ] Setup
-    - [ ] Register a New Agent
-    - [ ] Simplify and/or automate new user setup
     - [x] Login with a Preexisting Token
+    - [x] Register a New Agent
+    - [ ] Simplify and/or automate new user setup
 
 - [ ] Game Server
     - [x] Capture current game server state _**(Stats/Resets/Leaderboards)**_
-    - [ ] Display game state + leaderboards
+    - [x] Display game state
+    - [ ] Display leaderboards
 
 - [ ] Contracts
     - [x] Display Contracts

@@ -1,15 +1,15 @@
 package main
 
-import (
-	"Spacetraders/src/Agents"
-	"Spacetraders/src/Contracts"
-	"Spacetraders/src/Fleet"
-	"Spacetraders/src/General"
-	"Spacetraders/src/Server"
-	Waypoints "Spacetraders/src/Systems"
-
-	"github.com/rivo/tview"
-)
+// import "fmt"
+// import "os"
+import "Spacetraders/src/Agents"
+import "Spacetraders/src/Contracts"
+import "Spacetraders/src/Fleet"
+import "Spacetraders/src/General"
+import "Spacetraders/src/Server"
+// import "Spacetraders/src/Registration"
+import "Spacetraders/src/Systems"
+import "github.com/rivo/tview"
 
 type MenuItem struct {
 	Name     string
@@ -75,6 +75,17 @@ func main() {
 				}
 
 			case "Agents":
+				// NewAgentToken, err := Registration.RegisterNewAgent("NULL_SKY", "VOID")
+				// if err != nil { 
+					// General.LogErr("Failed to register new agent: " + err.Error()) 
+					// fmt.Println("Failed to register new agent: " + err.Error())
+					// os.Exit(1)
+				// } else {
+					// fmt.Println("New agent registered: Replace your agent token in the config.yaml file: \n" + NewAgentToken)
+					// os.Exit(0)
+				// }
+				// app.Stop()
+
 				opts = []MenuItem{
 					{
 						Name: "NULLSKY",
