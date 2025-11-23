@@ -21,6 +21,8 @@ I wrote this on a RHEL based system with no intention of making it interoperable
 - [ ] Setup
     - [x] Login with a Preexisting Token
     - [x] Register a New Agent
+    - [x] Display settings config.yaml contents
+    - [ ] Edit settings config.yaml contents in the TUI
     - [ ] Simplify and/or automate new user setup
 
 - [x] Game Server

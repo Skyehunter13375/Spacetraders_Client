@@ -1,4 +1,8 @@
 ## [0.3.5] - Completed: TBD
+#### 11/23/2025
+- Big refactor on the main function and how it handles passing focus around
+- Created logic for displaying (with the intent of editing later) the config.yaml file
+- This should set the stage for all further UI changes and make that substantially easier now that I can pass the entire app back and forth instead of just random flex primitives.
 #### 11/22/2025
 - This is a stub update, life happened and not much progress the last couple days.
 - Initial stages of new agent registration are done.
