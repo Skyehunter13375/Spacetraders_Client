@@ -13,7 +13,7 @@ If you stumbled across this project looking for some good advice on how to write
 - While I've been writing PHP and building tools for several years I'm still VERY new to these topics.
 
 # In theory:
-This project should be entirely portable and agent agnostic. TLDR: it CAN tie into anyone's agent data by just importing your own personal token during setup and off you go....in theory.
+This project should be entirely portable and agent agnostic...as long as you have a postgresql database on your machine and set up your tables exactly like I have in my sample schema files!
 
 I wrote this on a RHEL based system with no intention of making it interoperable with other distros or kernels since this is really just for me.
 
@@ -23,10 +23,10 @@ I wrote this on a RHEL based system with no intention of making it interoperable
     - [x] Register a New Agent
     - [ ] Simplify and/or automate new user setup
 
-- [ ] Game Server
+- [x] Game Server
     - [x] Capture current game server state _**(Stats/Resets/Leaderboards)**_
     - [x] Display game state
-    - [ ] Display leaderboards
+    - [x] Display leaderboards
 
 - [ ] Contracts
     - [x] Display Contracts

@@ -3,6 +3,7 @@
 - This is a stub update, life happened and not much progress the last couple days.
 - Initial stages of new agent registration are done.
 - Needs to be automated and populate the config.yaml file with that token still but it should at least get us registered for now even if the token piece is still manual.
+- Added logic to display leaderboards in the TUI. Still working out what data needs a menu in there as opposed to just running under the hood...
 #### 11/18/2025
 - Big changes to the UI builder & associated functions
 - Can now display contracts, systems, waypoints, and ship fleet
