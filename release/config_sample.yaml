@@ -8,7 +8,7 @@ database:
   host: "localhost"
   port: 5432
   SSL:  "disable"
-  user: "skyehunter"
+  user: ""
   pass: # Leave empty, change pg_hba.conf to MD5 and set up .pgpass
 
 tokens:

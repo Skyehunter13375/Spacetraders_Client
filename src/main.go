@@ -1,190 +1,184 @@
 package main
 
-// import "fmt"
-// import "os"
-import "Spacetraders/src/Agents"
-import "Spacetraders/src/Contracts"
-import "Spacetraders/src/Fleet"
-import "Spacetraders/src/General"
-import "Spacetraders/src/Server"
-// import "Spacetraders/src/Registration"
-import "Spacetraders/src/Systems"
-import "github.com/rivo/tview"
+import (
+	"Spacetraders/src/Fleet"
+	"Spacetraders/src/General"
+	"Spacetraders/src/Server"
+	"Spacetraders/src/Agents"
+	"Spacetraders/src/Settings"
+	"github.com/rivo/tview"
+)
 
-type MenuItem struct {
-	Name     string
-	Action   func()
-	FocusOut bool
+// ────────────────────────────────────────────────────────────────────────────────
+// APPLICATION STRUCTURES
+// ────────────────────────────────────────────────────────────────────────────────
+// Holds dynamic UI component references that screens will update.
+type UIState struct {
+	MainMenu *tview.List
+	SubMenu  *tview.List
+	Output   *tview.Flex
 }
 
+// Global data shared across screens (expand over time).
+type GlobalState struct {
+	// Ships map[string]*Fleet.Ship
+	// Systems map[string]*System
+	// etc.
+}
+
+type App struct {
+	UI      *tview.Application
+	UIState *UIState
+	State   *GlobalState
+}
+
+func NewApp() *App {
+	return &App{
+		UI:      tview.NewApplication(),
+		UIState: &UIState{},
+		State:   &GlobalState{},
+	}
+}
+
+// ────────────────────────────────────────────────────────────────────────────────
+// MAIN LAYOUT SHELL
+// ────────────────────────────────────────────────────────────────────────────────
+func BuildLayoutShell(app *App) tview.Primitive {
+	// MAIN MENU (top-left)
+	mainMenu := tview.NewList()
+	mainMenu.ShowSecondaryText(false)
+	mainMenu.SetBorder(true)
+	mainMenu.SetTitle(" Main Menu ")
+	mainMenu.AddItem("Server",    "", '1', func() { app.UI.SetFocus(app.UIState.SubMenu); ShowServerMenu(app) })
+	mainMenu.AddItem("Agents",    "", '2', func() { app.UI.SetFocus(app.UIState.SubMenu); ShowAgentsMenu(app) })
+	mainMenu.AddItem("Ships",     "", '3', func() { app.UI.SetFocus(app.UIState.SubMenu); ShowShipsMenu(app) })
+	mainMenu.AddItem("Systems",   "", '4', func() { app.UI.SetFocus(app.UIState.SubMenu); ShowSystemsMenu(app) })
+	mainMenu.AddItem("Contracts", "", '5', func() { app.UI.SetFocus(app.UIState.SubMenu); ShowContractsMenu(app) })
+	mainMenu.AddItem("Settings",  "", '9', func() { app.UI.SetFocus(app.UIState.SubMenu); ShowSettingsMenu(app) })
+	mainMenu.AddItem("Quit",      "", 'q', func() { app.UI.Stop() })
+
+	// SUBMENU (bottom-left, dynamic)
+	subMenu := tview.NewList()
+	subMenu.ShowSecondaryText(false)
+	subMenu.SetBorder(true)
+	subMenu.SetTitle(" Submenu ")
+
+	// OUTPUT PANEL (right)
+	output := tview.NewFlex().SetDirection(tview.FlexRow)
+	output.SetBorder(false)
+
+	// LEFT COLUMN (main menu + submenu)
+	left := tview.NewFlex()
+	left.SetDirection(tview.FlexRow)
+	left.AddItem(mainMenu, 0, 2, true)
+	left.AddItem(subMenu,  0, 3, false)
+
+	// FULL WINDOW LAYOUT
+	window := tview.NewFlex()
+	window.AddItem(left,   30, 1, true)
+	window.AddItem(output, 0,  3, false)
+
+	// Store UI references in App.State so other screens can update them
+	app.UIState.MainMenu = mainMenu
+	app.UIState.SubMenu  = subMenu
+	app.UIState.Output   = output
+
+	return window
+}
+
+// ────────────────────────────────────────────────────────────────────────────────
+// SCREEN HANDLERS (UPDATE SUBMENU + OUTPUT)
+// ────────────────────────────────────────────────────────────────────────────────
+func FocusMain(app *App) {
+	ui := app.UIState
+	ui.SubMenu.Clear()
+	ui.Output.Clear()
+	app.UI.SetFocus(app.UIState.MainMenu)
+}
+
+func FocusSub(app *App) {
+	ui := app.UIState
+	ui.Output.Clear()
+	app.UI.SetFocus(app.UIState.MainMenu)
+}
+
+func ShowServerMenu(app *App) {
+	ui := app.UIState
+	ui.SubMenu.Clear()
+	ui.SubMenu.AddItem("Get Server Status", "", 0, func() {
+		ui.Output.Clear()
+		ui.Output.AddItem(Server.DisplayGameServerState() , 0, 1, false)
+	})
+	ui.SubMenu.AddItem("Back", "", 'b', func() { FocusMain(app) } )
+}
+
+func ShowAgentsMenu(app *App) {
+	ui := app.UIState
+	ui.SubMenu.Clear()
+	ui.SubMenu.AddItem("Show Agent Info", "", 0, func() {
+		ui.Output.Clear()
+		ui.Output.AddItem(Agents.DisplayAgentState(), 0, 1, false)
+	})
+	ui.SubMenu.AddItem("Back", "", 'b', func() { FocusMain(app) } )
+}
+
+func ShowShipsMenu(app *App) {
+	ui := app.UIState
+	ui.SubMenu.Clear()
+	ui.SubMenu.AddItem("List Ships", "", 0, func() {
+		ui.Output.Clear()
+		ui.Output.AddItem(Fleet.DisplayShipState() , 0, 1, false)
+	})
+	ui.SubMenu.AddItem("Back", "", 'b', func() { FocusMain(app) } )
+}
+
+func ShowSystemsMenu(app *App) {
+	ui := app.UIState
+	ui.SubMenu.Clear()
+	ui.SubMenu.AddItem("Select System", "", 0, func() {
+		ui.Output.Clear()
+		ui.Output.AddItem(tview.NewTextView().
+			SetText("Systems Placeholder"), 0, 1, false)
+	})
+	ui.SubMenu.AddItem("Back", "", 'b', func() { FocusMain(app) } )
+}
+
+func ShowContractsMenu(app *App) {
+	ui := app.UIState
+	ui.SubMenu.Clear()
+	ui.SubMenu.AddItem("List Contracts", "", 0, func() {
+		ui.Output.Clear()
+		ui.Output.AddItem(tview.NewTextView().
+			SetText("Contracts Placeholder"), 0, 1, false)
+	})
+	ui.SubMenu.AddItem("Back", "", 'b', func() { FocusMain(app) } )
+}
+
+func ShowSettingsMenu(app *App) {
+	ui := app.UIState
+	ui.SubMenu.Clear()
+	ui.SubMenu.AddItem("Toggle Something", "", 0, func() {
+		ui.Output.Clear()
+		ui.Output.AddItem(Settings.DisplaySettings(), 0, 1, false)
+	})
+	ui.SubMenu.AddItem("Back", "", 'b', func() { FocusMain(app) } )
+}
+
+// ────────────────────────────────────────────────────────────────────────────────
+// MAIN
+// ────────────────────────────────────────────────────────────────────────────────
 func main() {
-	// Must initialize the DB connection the first time here.
 	if err := General.DB(); err != nil {
 		General.LogErr(err.Error())
 		panic(err)
 	}
 
-	app := tview.NewApplication()
+	app := NewApp()
+	layout := BuildLayoutShell(app)
 
-	// MAIN MENU (Top-Left)
-	mainMenu := tview.NewList()
-	mainMenu.ShowSecondaryText(false).SetBorder(true).SetTitle(" Main Menu ")
-	mainMenu.AddItem("Server",    "", '1', nil)
-	mainMenu.AddItem("Agents",    "", '2', nil)
-	mainMenu.AddItem("Ships",     "", '3', nil)
-	mainMenu.AddItem("Systems",   "", '4', nil)
-	mainMenu.AddItem("Contracts", "", '5', nil)
-	mainMenu.AddItem("Quit",      "", 'q', func() { app.Stop() })
-
-	// SUB MENU (Bottom-Left)
-	subMenu := tview.NewList()
-	subMenu.ShowSecondaryText(false).SetBorder(true).SetTitle(" Submenu ")
-
-	// OUTPUT BOX (Right Side)
-	output := tview.NewFlex()
-	output.SetBorder(false)
-
-	// LEFT SIDE = main menu (top) + sub menu (bottom)
-	leftSide := tview.NewFlex()
-	leftSide.SetDirection(tview.FlexRow)
-	leftSide.AddItem(mainMenu, 8, 1, true)
-	leftSide.AddItem(subMenu,  0, 1, false)
-
-	// FULL WINDOW = left column + output box
-	window := tview.NewFlex()
-	window.AddItem(leftSide, 30, 1, true)
-	window.AddItem(output,    0, 2, false)
-
-	// Function to load submenu items
-	loadSubmenu := func(category string) {
-		subMenu.Clear()
-
-		var opts []MenuItem // ← FIXED HERE
-
-		switch category {
-			case "Server":
-				opts = []MenuItem{
-					{
-						Name: "Get Server Status",
-						Action: func() {
-							output.Clear()
-							output.AddItem(Server.DisplayGameServerState(), 0, 1, false)
-						},
-						FocusOut: false,
-					},
-				}
-
-			case "Agents":
-				// NewAgentToken, err := Registration.RegisterNewAgent("NULL_SKY", "VOID")
-				// if err != nil { 
-					// General.LogErr("Failed to register new agent: " + err.Error()) 
-					// fmt.Println("Failed to register new agent: " + err.Error())
-					// os.Exit(1)
-				// } else {
-					// fmt.Println("New agent registered: Replace your agent token in the config.yaml file: \n" + NewAgentToken)
-					// os.Exit(0)
-				// }
-				// app.Stop()
-
-				opts = []MenuItem{
-					{
-						Name: "NULLSKY",
-						Action: func() {
-							output.Clear()
-							output.AddItem(Agents.DisplayAgentState(), 0, 1, false)
-						},
-						FocusOut: false,
-					},
-				}
-
-			case "Ships":
-				opts = []MenuItem{
-					{
-						Name: "All",
-						Action: func() {
-							output.Clear()
-							output.AddItem(Fleet.DisplayShipState(), 0, 1, true)
-						},
-						FocusOut: false,
-					},
-				}
-
-			case "Systems":
-				ids,_ := General.PG.Query(`SELECT symbol FROM systems`)
-				var systems []string
-				for ids.Next() {
-					var s string
-					ids.Scan(&s)
-					systems = append(systems, s)
-				}
-
-				for i,v := range systems {
-					opts = append(opts, MenuItem{
-						Name:     systems[i],
-						Action:   func() {
-							output.Clear()
-							output.AddItem(Waypoints.DisplaySystem(v), 0, 1, false)
-						},
-						FocusOut: false,
-					})
-				}
-
-			case "Contracts":
-				// Contracts.NegotiateNewContract("NULL-SKY-1")
-				// Contracts.UpdateContracts()
-				ids,_ := General.PG.Query(`SELECT id FROM contracts`)
-				var contracts []string
-				for ids.Next() {
-					var s string
-					ids.Scan(&s)
-					contracts = append(contracts, s)
-				}
-
-				for i,v := range contracts {
-					opts = append(opts, MenuItem{
-						Name:     contracts[i],
-						Action:   func() {
-							output.Clear()
-							output.AddItem(Contracts.DisplayContract(Contracts.GetContract(v)), 0, 1, false)
-						},
-						FocusOut: false,
-					})
-				}
-
-		}
-
-		// Add submenu choices
-		for _, item := range opts {
-			mi := item
-			subMenu.AddItem(mi.Name, "", 0, func() {
-				mi.Action()
-				if mi.FocusOut {
-					app.SetFocus(output)
-				}
-			})
-		}
-
-		subMenu.AddItem("Back", "", 'b', func() {
-			subMenu.Clear()
-			output.Clear()
-			app.SetFocus(mainMenu)
-		})
-
-		app.SetFocus(subMenu)
-	}
-
-	// MAIN MENU HANDLER
-	mainMenu.SetSelectedFunc(func(i int, name, second string, r rune) {
-		if name == "Quit" {
-			app.Stop()
-			return
-		}
-		loadSubmenu(name)
-	})
-
-	// RUN APP
-	if err := app.SetRoot(window, true).Run(); err != nil {
+	if err := app.UI.SetRoot(layout, true).Run(); err != nil {
 		General.LogErr(err.Error())
 		panic(err)
 	}
 }
+
