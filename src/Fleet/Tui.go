@@ -2,22 +2,60 @@ package Fleet
 
 import "Spacetraders/src/General"
 import "github.com/rivo/tview"
+import "fmt"
 
-func DisplayShipState() tview.Primitive {
-	window := tview.NewFlex()
-	window.SetBorder(false)
-	window.SetDirection(tview.FlexRow)
+func DisplayFleetMenu(app *General.App) tview.Primitive {
+	app.UIState.SubMenu.Clear()
 
-	row_1 := tview.NewFlex()
-	row_1.SetBorder(false)
+	ShipList, err := General.PG.Query("SELECT symbol FROM ships")
+	if err != nil { General.LogErr("DisplayFleetMenu: " + err.Error()) }
 
-	var box_1 tview.Primitive = BuildShipForm("NULL-SKY-1")
-	var box_2 tview.Primitive = BuildShipForm("NULL-SKY-2")
+	window    := tview.NewFlex()
+	ShipsMenu := tview.NewList()
+	ShipsMenu.SetBorder(true)
+	ShipsMenu.SetTitle("  Current Fleet  ")
 
-	row_1.AddItem(box_1, 0, 1, false)
-	row_1.AddItem(box_2, 0, 1, false)
+	// Create a button for each ship in the fleet
+	for ShipList.Next() {
+		var symbol string
+		ShipList.Scan(&symbol)
+		sym  := symbol
+		data := GetShipState(sym)
+		label := fmt.Sprintf(
+			"%-10s | Type: %-10s | Status: %-10s | Fuel: %3d/%-3d | Crew: %3d/%-3d | Morale: %3d/100", 
+			data.Symbol,
+			data.Frame.Name,
+			data.Nav.Status,
+			data.Fuel.Current, 
+			data.Fuel.Capacity,
+			data.Crew.Current,
+			data.Crew.Capacity,
+			data.Crew.Morale,
+		)
 
-	window.AddItem(row_1, 0, 1, false)
+		ShipsMenu.AddItem(label, "", 0, func() {
+			app.UIState.SubMenu.Clear()
+			app.UIState.SubMenu.AddItem("Show Details", "", 0, func() {
+				app.UIState.Output.Clear()
+				app.UIState.Output.AddItem(BuildShipForm(symbol), 0, 1, false)
+			})
+			app.UIState.SubMenu.AddItem("Nav to waypoint", "", 0, nil)
+			app.UIState.SubMenu.AddItem("Scan Waypoint",   "", 0, nil)
+			app.UIState.SubMenu.AddItem("Repair ship",     "", 0, nil)
+			app.UIState.SubMenu.AddItem("Unload cargo",    "", 0, nil)
+			app.UIState.SubMenu.AddItem("Back",            "", 0, func() { app.UIState.Output.Clear(); DisplayFleetMenu(app) } )
+			app.UI.SetFocus(app.UIState.SubMenu)
+		})
+	}
+	
+	// Make sure we always have a back button at the end that takes us to the main menu
+	ShipsMenu.AddItem("Back", "", 0, func() { app.UIState.SubMenu.Clear(); app.UIState.Output.Clear(); app.UI.SetFocus(app.UIState.MainMenu) })
+
+	// Add the menu to the window, add the window to the output and set focus to the output
+	window.AddItem(ShipsMenu, 0, 1, true)
+	app.UIState.Output.AddItem(window, 0, 1, true)
+	app.UI.SetFocus(app.UIState.Output)
+
 	return window
 }
 

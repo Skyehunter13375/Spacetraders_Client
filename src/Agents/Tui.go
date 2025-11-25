@@ -2,9 +2,17 @@ package Agents
 
 import (
 	"fmt"
+	"Spacetraders/src/General"
 
 	"github.com/rivo/tview"
 )
+
+func ShowAgentsMenu(app *General.App) {
+	app.UIState.SubMenu.Clear()
+	app.UIState.Output.Clear()
+	app.UIState.Output.AddItem(DisplayAgentState(), 0, 1, false)
+	app.UI.SetFocus(app.UIState.MainMenu)
+}
 
 func DisplayAgentState() tview.Primitive {
 	agent := GetAgentState("NULL-SKY")
@@ -17,7 +25,6 @@ func DisplayAgentState() tview.Primitive {
 	stats_1.SetBorder(false)
 	box_1 := tview.NewTextView()
 	box_1.SetBorder(true)
-	box_1.SetTitle("  Box 1  ")
 	fmt.Fprintf(box_1, "Account ID:   %s\n", agent.Data.AccountID)
 	fmt.Fprintf(box_1, "Agent Symbol: %s\n", agent.Data.Symbol)
 	fmt.Fprintf(box_1, "Faction:      %s\n", agent.Data.Faction)

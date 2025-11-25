@@ -3,9 +3,21 @@ package Contracts
 import (
 	"fmt"
 	"strconv"
+	"Spacetraders/src/General"
 
 	"github.com/rivo/tview"
 )
+
+func ShowContractsMenu(app *General.App) {
+	ui := app.UIState
+	ui.SubMenu.Clear()
+	ui.SubMenu.AddItem("List Contracts", "", 0, func() {
+		ui.Output.Clear()
+		ui.Output.AddItem(tview.NewTextView().
+			SetText("Contracts Placeholder"), 0, 1, false)
+	})
+	ui.SubMenu.AddItem("Back", "", 'b', func() { General.FocusMain(app) } )
+}
 
 func DisplayContract(data Contract) tview.Primitive {
 	box := tview.NewForm()

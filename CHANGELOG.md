@@ -1,4 +1,9 @@
 ## [0.3.5] - Completed: TBD
+#### 11/24/2025
+- Moved app config structs into General package so they could be available everywhere.
+    - The fact that Golang doesn't have true Global variables is really frustrating...
+- Moved the menu builder funcs into their respective packages now that the structs are global (if imported)
+    - This will let me keep like-code together. Once in a menu like Fleet, the code for the entire fleet menu tree will be together in the Fleet package
 #### 11/23/2025
 - Big refactor on the main function and how it handles passing focus around
 - Created logic for displaying (with the intent of editing later) the config.yaml file

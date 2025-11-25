@@ -22,11 +22,13 @@ func GetShipState(symbol string) Ship {
 		ts = time.Now().UTC().Add(-24 * time.Hour)
 	}
 
-	// Compare in UTC only
-	if time.Since(ts) > 15*time.Minute {
-		General.LogActivity(fmt.Sprintf("Updating Fleet status: (Now: %v - Last: %v)", time.Now().UTC(), ts))
-		UpdateShipState()
-	}
+	// BUGS: THIS IS STILL BROKEN - The "Last" timestamp seems to be 3 days behind for some reason???
+	// if time.Since(ts) > 15*time.Minute {
+		// General.LogActivity(fmt.Sprintf("Updating Fleet status: (Now: %v - Last: %v)", time.Now().UTC(), ts))
+		// UpdateShipState()
+	// }
+	// 2025/11/25 11:07:03 Updating agent status: (Now: 2025-11-25 16:07:03.849331399 +0000 UTC - Last: 2025-11-22 23:00:50.988293 -0500 EST)
+
 
 	query := `
 		SELECT ship.*, navg.*, crew.*, fuel.*, frame.*, reactor.*, engine.*

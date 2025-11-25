@@ -2,9 +2,17 @@ package Server
 
 import (
 	"fmt"
+	"Spacetraders/src/General"
 
 	"github.com/rivo/tview"
 )
+
+func ShowServerMenu(app *General.App) {
+	app.UIState.SubMenu.Clear()
+	app.UIState.Output.Clear()
+	app.UIState.Output.AddItem(DisplayGameServerState(), 0, 1, false)
+	app.UI.SetFocus(app.UIState.MainMenu)
+}
 
 func DisplayGameServerState() tview.Primitive {
 	g := GetGameServerState()

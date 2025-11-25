@@ -8,6 +8,17 @@ import (
 	"github.com/rivo/tview"
 )
 
+func ShowSystemsMenu(app *General.App) {
+	ui := app.UIState
+	ui.SubMenu.Clear()
+	ui.SubMenu.AddItem("Select System", "", 0, func() {
+		ui.Output.Clear()
+		ui.Output.AddItem(tview.NewTextView().
+			SetText("Systems Placeholder"), 0, 1, false)
+	})
+	ui.SubMenu.AddItem("Back", "", 'b', func() { General.FocusMain(app) } )
+}
+
 func DisplaySystem(id string) tview.Primitive {
     System := GetSystem(id)
 
