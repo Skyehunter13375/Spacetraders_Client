@@ -1,4 +1,9 @@
 ## [0.3.5] - Completed: TBD
+#### 11/25/2025
+- Reworked the existing TUI menus, everything now focuses and updates correctly.
+- Starting to build submenus for each section to actually interact with things.
+- Up until today everything was purely displaying information. Next step is to make things interactive and updatable.
+- Added a proper color theme to the global state based on [projekt0n/github-nvim-theme](https://github.com/projekt0n/github-nvim-theme).
 #### 11/24/2025
 - Moved app config structs into General package so they could be available everywhere.
     - The fact that Golang doesn't have true Global variables is really frustrating...

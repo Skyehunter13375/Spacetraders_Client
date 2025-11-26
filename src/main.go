@@ -10,6 +10,7 @@ import (
 	"Spacetraders/src/Settings"
 
 	"github.com/rivo/tview"
+	"github.com/gdamore/tcell/v2"
 )
 
 // ────────────────────────────────────────────────────────────────────────────────
@@ -19,7 +20,18 @@ func NewApp() *General.App {
 	return &General.App{
 		UI:      tview.NewApplication(),
 		UIState: &General.UIState{},
-		State:   &General.GlobalState{},
+		State:   &General.GlobalState{
+			Theme_BgBase:        tcell.GetColor("#22272E"),
+			Theme_BgPanel:       tcell.GetColor("#444C56"),
+			Theme_BgAlt:         tcell.GetColor("#2D333B"),
+			Theme_FgBase:        tcell.GetColor("#C9D1D9"),
+			Theme_FgMuted:       tcell.GetColor("#636E7B"),
+			Theme_AccentBlue:    tcell.GetColor("#58A6FF"),
+			Theme_AccentGreen:   tcell.GetColor("#56D364"),
+			Theme_AccentYellow:  tcell.GetColor("#D29922"),
+			Theme_AccentRed:     tcell.GetColor("#F85149"),
+			Theme_AccentMagenta: tcell.GetColor("#BF4D80"),
+		},
 	}
 }
 
