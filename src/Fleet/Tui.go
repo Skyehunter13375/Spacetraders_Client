@@ -21,16 +21,10 @@ func DisplayFleetMenu(app *General.App) tview.Primitive {
 		ShipList.Scan(&symbol)
 		sym  := symbol
 		data := GetShipState(sym)
-		label := fmt.Sprintf(
-			"%-10s | Type: %-10s | Status: %-10s | Fuel: %3d/%-3d | Crew: %3d/%-3d | Morale: %3d/100", 
+		label := fmt.Sprintf("%-10s | Type: %-10s | Status: %-10s", 
 			data.Symbol,
 			data.Frame.Name,
 			data.Nav.Status,
-			data.Fuel.Current, 
-			data.Fuel.Capacity,
-			data.Crew.Current,
-			data.Crew.Capacity,
-			data.Crew.Morale,
 		)
 
 		ShipsMenu.AddItem(label, "", 0, func() {

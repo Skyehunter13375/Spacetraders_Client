@@ -8,6 +8,56 @@ import (
 	"github.com/rivo/tview"
 )
 
+func DisplayContractMenu(app *General.App) tview.Primitive {
+	app.UIState.SubMenu.Clear()
+
+	CList, err := General.PG.Query("SELECT id FROM contracts")
+	if err != nil { General.LogErr("DisplayFleetMenu: " + err.Error()) }
+
+	window := tview.NewFlex()
+	CMenu  := tview.NewList()
+	CMenu.SetBorder(true)
+	CMenu.SetTitle("  Current Contracts  ")
+
+	// Create a button for each ship in the fleet
+	for CList.Next() {
+		var id string
+		CList.Scan(&id)
+		sym   := id
+		data  := GetContract(sym)
+
+		CStatus := "Unknown"
+		if (data.Accepted == true && data.Fulfilled == false) {
+			CStatus = "Accepted"
+		} else if (data.Accepted == true && data.Fulfilled == true) {
+			CStatus = "Fulfilled"
+		} else {
+			CStatus = "Available"
+		}
+
+		label := fmt.Sprintf("[ %s ] Faction: %-10s | Type: %-10s | Payment: %-10d", CStatus, data.Faction, data.Type, data.Terms.Payment.OnAccepted + data.Terms.Payment.OnFulfilled )
+
+		CMenu.AddItem(label, "", 0, func() {
+			app.UIState.SubMenu.Clear()
+			app.UIState.SubMenu.AddItem("Show Details", "", 0, func() { app.UIState.Output.Clear() })
+			app.UIState.SubMenu.AddItem("Back",         "", 0, func() { app.UIState.Output.Clear(); DisplayContractMenu(app) } )
+			app.UI.SetFocus(app.UIState.SubMenu)
+		})
+	}
+	
+	// Make sure we always have a back button at the end that takes us to the main menu
+	CMenu.AddItem("Back", "", 0, func() { app.UIState.SubMenu.Clear(); app.UIState.Output.Clear(); app.UI.SetFocus(app.UIState.MainMenu) })
+
+	// Add the menu to the window, add the window to the output and set focus to the output
+	window.AddItem(CMenu, 0, 1, true)
+	app.UIState.Output.AddItem(window, 0, 1, true)
+	app.UI.SetFocus(app.UIState.Output)
+
+	return window
+}
+
+
+
 func ShowContractsMenu(app *General.App) {
 	ui := app.UIState
 	ui.SubMenu.Clear()

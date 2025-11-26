@@ -10,8 +10,8 @@ import (
 	_ "github.com/lib/pq" // PostgreSQL driver
 )
 
-func GetAgentState(agent string) AgentData {
-	var a AgentData
+func GetAgentState(agent string) Agent {
+	var a Agent
 
 	var ts time.Time
 	err := General.PG.QueryRow(`SELECT last_updated FROM agents where symbol = $1`, agent).Scan(&ts)
@@ -38,24 +38,28 @@ func GetAgentState(agent string) AgentData {
 		WHERE symbol = $1`
 
 	_ = General.PG.QueryRow(query, agent).Scan(
-		&a.Data.AccountID,
-		&a.Data.Symbol,
-		&a.Data.Faction,
-		&a.Data.HQ,
-		&a.Data.Ships,
-		&a.Data.Credits,
-		&a.Data.LastUpdated,
+		&a.AccountID,
+		&a.Symbol,
+		&a.Faction,
+		&a.HQ,
+		&a.Ships,
+		&a.Credits,
+		&a.LastUpdated,
 	)
 
 	return a
 }
 
 func UpdateAgentState() error {
-	var a AgentData
-
 	jsonStr := General.GetUrlJson("https://api.spacetraders.io/v2/my/agent", "agent")
-	err := json.Unmarshal([]byte(jsonStr), &a)
-	if err != nil { General.LogErr("UpdateAgentState: " + err.Error()); return err }
+	var wrapper map[string]json.RawMessage
+	err := json.Unmarshal([]byte(jsonStr), &wrapper)
+	if err != nil { General.LogErr("UpdateAgentState: " + err.Error()) }
+
+	var a Agent
+	err = json.Unmarshal(wrapper["data"], &a)
+	if err != nil { General.LogErr("UpdateAgentState: " + err.Error()) }
+
 
 	_, err = General.PG.Exec(`
 		INSERT INTO agents (
@@ -84,12 +88,12 @@ func UpdateAgentState() error {
 			faction      = EXCLUDED.faction,
 			last_updated = EXCLUDED.last_updated
 		`,
-		a.Data.AccountID,
-		a.Data.Symbol,
-		a.Data.Credits,
-		a.Data.Faction,
-		a.Data.HQ,
-		a.Data.Ships,
+		a.AccountID,
+		a.Symbol,
+		a.Credits,
+		a.Faction,
+		a.HQ,
+		a.Ships,
 	)
 	if err != nil { General.LogErr("UpdateAgentState agents: " + err.Error()); return err }
 

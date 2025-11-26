@@ -46,7 +46,7 @@ func BuildLayoutShell(app *General.App) tview.Primitive {
 	mainMenu.AddItem("Agent Status",  "", 0, func() { app.UI.SetFocus(app.UIState.SubMenu); app.UIState.Output.Clear(); Agents.ShowAgentsMenu(app) })
 	mainMenu.AddItem("Fleet Status",  "", 0, func() { app.UI.SetFocus(app.UIState.Output);  app.UIState.Output.Clear(); Fleet.DisplayFleetMenu(app) })
 	mainMenu.AddItem("Systems",       "", 0, func() { app.UI.SetFocus(app.UIState.SubMenu); app.UIState.Output.Clear(); Waypoints.ShowSystemsMenu(app) })
-	mainMenu.AddItem("Contracts",     "", 0, func() { app.UI.SetFocus(app.UIState.SubMenu); app.UIState.Output.Clear(); Contracts.ShowContractsMenu(app) })
+	mainMenu.AddItem("Contracts",     "", 0, func() { app.UI.SetFocus(app.UIState.SubMenu); app.UIState.Output.Clear(); Contracts.DisplayContractMenu(app) })
 	mainMenu.AddItem("Settings",      "", 0, func() { app.UI.SetFocus(app.UIState.SubMenu); app.UIState.Output.Clear(); Settings.ShowSettingsMenu(app) })
 	mainMenu.AddItem("Quit",          "", 0, func() { app.UI.Stop() })
 

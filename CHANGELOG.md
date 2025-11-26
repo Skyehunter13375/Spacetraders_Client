@@ -1,4 +1,8 @@
 ## [0.3.5] - Completed: TBD
+#### 11/26/2025
+- Removed unecessary struct in agent data collection routines. Updated functions accordingly.
+- Tested with some new formatting on the lists and graphing and plotting data.
+- Added TUI functions to view contracts in progress.
 #### 11/25/2025
 - Reworked the existing TUI menus, everything now focuses and updates correctly.
 - Starting to build submenus for each section to actually interact with things.

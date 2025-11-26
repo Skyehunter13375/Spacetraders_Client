@@ -1,9 +1,5 @@
 package Agents
 
-type AgentData struct {
-	Data Agent `json:"data"`
-}
-
 type Agent struct {
 	AccountID   string `json:"accountId"`
 	Symbol      string `json:"symbol"`
