@@ -10,6 +10,7 @@ import (
 
 func DisplayContractMenu(app *General.App) tview.Primitive {
 	app.UIState.SubMenu.Clear()
+	app.UIState.Output.Clear()
 
 	CList, err := General.PG.Query("SELECT id FROM contracts")
 	if err != nil { General.LogErr("DisplayFleetMenu: " + err.Error()) }

@@ -7,9 +7,9 @@ func ShowSettingsMenu(app *General.App) {
 	app.UIState.SubMenu.Clear()
 	app.UIState.Output.Clear()
 	app.UIState.Output.AddItem(DisplaySettings(app), 0, 1, false)
-
 	app.UIState.SubMenu.AddItem("Edit", "", 0, func() { app.UI.SetFocus(app.UIState.Output.GetItem(0)) })
 	app.UIState.SubMenu.AddItem("Back", "", 0, func() { General.FocusMain(app) })
+	app.UI.SetFocus(app.UIState.SubMenu)
 }
 
 func DisplaySettings(app *General.App) *tview.Form {
