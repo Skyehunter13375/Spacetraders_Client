@@ -15,16 +15,6 @@ type UIState struct {
 
 // Global data shared across screens (expand over time).
 type GlobalState struct {
-    Theme_BgBase        tcell.Color
-    Theme_BgPanel       tcell.Color
-    Theme_BgAlt         tcell.Color
-    Theme_FgBase        tcell.Color
-    Theme_FgMuted       tcell.Color
-    Theme_AccentBlue    tcell.Color
-    Theme_AccentGreen   tcell.Color
-    Theme_AccentYellow  tcell.Color
-    Theme_AccentRed     tcell.Color
-    Theme_AccentMagenta tcell.Color
 }
 
 // This now contains the app itself and all it's constituant components
@@ -34,3 +24,42 @@ type App struct {
 	State   *GlobalState
 }
 
+type Configs struct {
+	DB struct {
+		Type string `yaml:"type"`
+		Name string `yaml:"name"`
+		Host string `yaml:"host"`
+		Port int32  `yaml:"port"`
+		User string `yaml:"user"`
+		Pass string `yaml:"pass"`
+		SSL  string `yaml:"SSL"`
+	} `yaml:"database"`
+	Tokens struct {
+		Account string `yaml:"accnt"`
+		Agent   string `yaml:"agent"`
+	} `yaml:"tokens"`
+}
+
+type GlobalTheme struct {
+	BgBase        tcell.Color
+	BgBorder      tcell.Color
+	FgBase        tcell.Color
+	FgMuted       tcell.Color
+	AccentBlue    tcell.Color
+	AccentGreen   tcell.Color
+	AccentYellow  tcell.Color
+	AccentRed     tcell.Color
+	AccentMagenta tcell.Color
+}
+
+var Theme = GlobalTheme {
+	BgBase:        tcell.GetColor("#2A2E2A"),
+	BgBorder:      tcell.GetColor("#556B2F"),
+	FgBase:        tcell.GetColor("#D0D2C9"),
+	FgMuted:       tcell.GetColor("#7C8573"),
+	AccentBlue:    tcell.GetColor("#4A6068"),
+	AccentGreen:   tcell.GetColor("#6BA64B"),
+	AccentYellow:  tcell.GetColor("#C2A447"),
+	AccentRed:     tcell.GetColor("#B0493C"),
+	AccentMagenta: tcell.GetColor("#8B4A5A"),
+}

@@ -1,4 +1,8 @@
-## [0.3.5] - Completed: TBD
+## [0.3.5] - Completed: 11/28/2025
+#### 11/27/2025 + 11/28/2025
+- Modifying color theme to be more dark gray and green themed, easier on the eyes when staring at it for hours
+- Converted single line entries for Fleet and Systems into selectable cards
+- Beginning to break down menus into substructures
 #### 11/26/2025
 - Removed unecessary struct in agent data collection routines. Updated functions accordingly.
 - Tested with some new formatting on the lists and graphing and plotting data.

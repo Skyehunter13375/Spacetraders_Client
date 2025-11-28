@@ -1,11 +1,8 @@
 package Waypoints
 
-import (
-	"Spacetraders/src/General"
-	"encoding/json"
-
-	"github.com/lib/pq" // PostgreSQL driver
-)
+import "Spacetraders/src/General"
+import "encoding/json"
+import "github.com/lib/pq" // PostgreSQL driver
 
 func UpdateSystem(symbol string) error {
 	jsonStr := General.GetUrlJson("https://api.spacetraders.io/v2/systems/"+symbol, "")

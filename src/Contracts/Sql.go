@@ -1,11 +1,7 @@
 package Contracts
 
-import (
-	"Spacetraders/src/General"
-	"encoding/json"
-
-	_ "github.com/lib/pq" // PostgreSQL driver
-)
+import "Spacetraders/src/General"
+import "encoding/json"
 
 func UpdateContracts() error {
 	jsonStr := General.GetUrlJson("https://api.spacetraders.io/v2/my/contracts", "agent")

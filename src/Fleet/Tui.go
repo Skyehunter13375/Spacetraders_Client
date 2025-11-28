@@ -7,6 +7,7 @@ import "github.com/gdamore/tcell/v2"
 
 func BuildShipForm(symbol string) tview.Primitive {
 	box  := tview.NewForm()
+	box.SetBackgroundColor(tcell.GetColor("#2A2E2A"))
 	ship := GetShipState(symbol)
 
 	box.AddTextView("Name:",     ship.Symbol, 0, 1, true, true)
@@ -42,7 +43,7 @@ func DisplayFleetMenu(app *General.App) tview.Primitive {
 
 	// Defining some default parameters for how the cards will be displayed in the menu
 	const cardsPerRow = 5
-	const cardHeight  = 19
+	const cardHeight  = 17
 	const cardWidth   = 43
 
 	// Define the submenu for each card when selected

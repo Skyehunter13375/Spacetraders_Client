@@ -1,12 +1,10 @@
 package General
 
-import (
-	"fmt"
-	"io"
-	"net/http"
-	"strings"
-	"time"
-)
+import "fmt"
+import "io"
+import "net/http"
+import "strings"
+import "time"
 
 func GetUrlJson(url string, tokenType string) string {
 	CFG, _ := GetConfig()

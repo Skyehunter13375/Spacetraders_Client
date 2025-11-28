@@ -1,17 +1,13 @@
 package main
 
-import (
-	"Spacetraders/src/Fleet"
-	"Spacetraders/src/General"
-	"Spacetraders/src/Server"
-	"Spacetraders/src/Agents"
-	"Spacetraders/src/Systems"
-	"Spacetraders/src/Contracts"
-	"Spacetraders/src/Settings"
-
-	"github.com/rivo/tview"
-	"github.com/gdamore/tcell/v2"
-)
+import "Spacetraders/src/Fleet"
+import "Spacetraders/src/General"
+import "Spacetraders/src/Server"
+import "Spacetraders/src/Agents"
+import "Spacetraders/src/Systems"
+import "Spacetraders/src/Contracts"
+import "Spacetraders/src/Settings"
+import "github.com/rivo/tview"
 
 // ────────────────────────────────────────────────────────────────────────────────
 // MAIN LAYOUT SHELL
@@ -20,18 +16,7 @@ func NewApp() *General.App {
 	return &General.App{
 		UI:      tview.NewApplication(),
 		UIState: &General.UIState{},
-		State:   &General.GlobalState{
-			Theme_BgBase:        tcell.GetColor("#22272E"),
-			Theme_BgPanel:       tcell.GetColor("#444C56"),
-			Theme_BgAlt:         tcell.GetColor("#2D333B"),
-			Theme_FgBase:        tcell.GetColor("#C9D1D9"),
-			Theme_FgMuted:       tcell.GetColor("#636E7B"),
-			Theme_AccentBlue:    tcell.GetColor("#58A6FF"),
-			Theme_AccentGreen:   tcell.GetColor("#56D364"),
-			Theme_AccentYellow:  tcell.GetColor("#D29922"),
-			Theme_AccentRed:     tcell.GetColor("#F85149"),
-			Theme_AccentMagenta: tcell.GetColor("#BF4D80"),
-		},
+		State:   &General.GlobalState{},
 	}
 }
 
@@ -42,6 +27,7 @@ func BuildLayoutShell(app *General.App) tview.Primitive {
 	mainMenu.ShowSecondaryText(false)
 	mainMenu.SetBorder(true)
 	mainMenu.SetTitle("  Main Menu  ")
+	mainMenu.SetBorderColor(General.Theme.BgBorder)
 	mainMenu.AddItem("Server Status", "", 0, func() { Server.ShowServerMenu(app)         })
 	mainMenu.AddItem("Agent Status",  "", 0, func() { Agents.ShowAgentsMenu(app)         })
 	mainMenu.AddItem("Fleet Status",  "", 0, func() { Fleet.DisplayFleetMenu(app)        })
@@ -55,6 +41,7 @@ func BuildLayoutShell(app *General.App) tview.Primitive {
 	subMenu.ShowSecondaryText(false)
 	subMenu.SetBorder(true)
 	subMenu.SetTitle("  Submenu  ")
+	subMenu.SetBorderColor(General.Theme.BgBorder)
 
 	// OUTPUT PANEL (right)
 	output := tview.NewFlex().SetDirection(tview.FlexRow)

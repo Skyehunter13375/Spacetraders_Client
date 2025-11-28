@@ -44,27 +44,11 @@ I wrote this on a RHEL based system with no intention of making it interoperable
     - [ ] Manage Ship Hardware   _**(Install/Remove Mounts)**_
 
 - [ ] Explore
-    - [ ] View Systems and Waypoints
+    - [x] View Systems and Waypoints
     - [ ] Use Jump Gates
 
 - [ ] Economy
     - [ ] View Markets & Shipyards
     - [ ] Trade Goods & cargo
     - [ ] Purchase Ships
-
-
-# Theme:
-- Based on [projekt0n/github-nvim-theme](https://github.com/projekt0n/github-nvim-theme)
-
-| Role               | Name                  | Hex       | Notes                                                                       |
-| ------------------ | --------------------- | --------- | --------------------------------------------------------------------------- |
-| Background – main  | `Theme_BgBase`        | `#22272E` | Primary background colour                                                   |
-| Background – panel | `Theme_BgPanel`       | `#444C56` | Slightly lighter for sidebars/panels (as per docs) ([GitHub][1])            |
-| Background – alt   | `Theme_BgAlt`         | `#2D333B` | Subtle alternate background for emphasis or hover states                    |
-| Foreground – main  | `Theme_FgBase`        | `#C9D1D9` | Main text / primary content                                                 |
-| Foreground – muted | `Theme_FgMuted`       | `#636E7B` | For comments, placeholders — matches “comment” value in theme ([GitHub][1]) |
-| Accent – blue      | `Theme_AccentBlue`    | `#58A6FF` | For links, buttons, highlights                                              |
-| Accent – green     | `Theme_AccentGreen`   | `#56D364` | Success states / positive values                                            |
-| Accent – yellow    | `Theme_AccentYellow`  | `#D29922` | Warning states / attention                                                  |
-| Accent – red       | `Theme_AccentRed`     | `#F85149` | Errors / critical states                                                    |
-| Accent – magenta   | `Theme_AccentMagenta` | `#BF4D80` | Secondary highlight / semantic accent                                       |
+ 

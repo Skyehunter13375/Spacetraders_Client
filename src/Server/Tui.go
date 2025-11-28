@@ -1,11 +1,8 @@
 package Server
 
-import (
-	"fmt"
-	"Spacetraders/src/General"
-
-	"github.com/rivo/tview"
-)
+import "Spacetraders/src/General"
+import "github.com/rivo/tview"
+import "fmt"
 
 func ShowServerMenu(app *General.App) {
 	app.UIState.SubMenu.Clear()
@@ -31,6 +28,7 @@ func DisplayGameServerState() tview.Primitive {
 	StateBox := tview.NewFlex()
 	StateBox.SetBorder(true)
 	StateBox.SetTitle("Game Server Status")
+	StateBox.SetBorderColor(General.Theme.BgBorder)
 	StateInfo := tview.NewTextView()
 	fmt.Fprintf(StateInfo, "Status:    %s\n", g.Status)
 	fmt.Fprintf(StateInfo, "Version:   %s\n", g.Version)
@@ -44,6 +42,7 @@ func DisplayGameServerState() tview.Primitive {
 	PlayerBox := tview.NewFlex()
 	PlayerBox.SetBorder(true)
 	PlayerBox.SetTitle("Registered Player Stats")
+	PlayerBox.SetBorderColor(General.Theme.BgBorder)
 	PlayerInfo := tview.NewTextView()
 	fmt.Fprintf(PlayerInfo, "Accounts:  %d\n", g.Stats.Accounts)
 	fmt.Fprintf(PlayerInfo, "Agents:    %d\n", g.Stats.Agents)
@@ -57,6 +56,7 @@ func DisplayGameServerState() tview.Primitive {
 	LeaderBox1 := tview.NewFlex()
 	LeaderBox1.SetBorder(true)
 	LeaderBox1.SetTitle("  Leaderboard (Credits)  ")
+	LeaderBox1.SetBorderColor(General.Theme.BgBorder)
 	CredsGrid := tview.NewGrid()
 	CredsGrid.SetRows(1,1,1,1,1,1,1,1,1,1)        // Position | Agent | Credits
 	CredsGrid.SetColumns(5, 25, 25) // Position | Agent | Credits
@@ -92,6 +92,7 @@ func DisplayGameServerState() tview.Primitive {
 	LeaderBox2 := tview.NewFlex()
 	LeaderBox2.SetBorder(true)
 	LeaderBox2.SetTitle("  Leaderboard (Charts)  ")
+	LeaderBox2.SetBorderColor(General.Theme.BgBorder)
 	ChartsGrid := tview.NewGrid()
 	ChartsGrid.SetRows(1,1,1,1,1,1,1,1,1,1)
 	ChartsGrid.SetColumns(5, 25, 20) // position | agent | credits

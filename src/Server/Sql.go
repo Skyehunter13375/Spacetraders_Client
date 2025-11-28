@@ -1,14 +1,10 @@
 package Server
 
-import (
-	"Spacetraders/src/General"
-	"database/sql"
-	"encoding/json"
-	"fmt"
-	"time"
-
-	_ "github.com/lib/pq" // PostgreSQL driver
-)
+import "Spacetraders/src/General"
+import "database/sql"
+import "encoding/json"
+import "fmt"
+import "time"
 
 func UpdateGameServerState() error {
 	var g GameState

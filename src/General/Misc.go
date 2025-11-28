@@ -1,11 +1,9 @@
 package General
 
-import (
-	"fmt"
-	"log"
-	"os"
-	"strings"
-)
+import "fmt"
+import "log"
+import "os"
+import "strings"
 
 func LogErr(msg string) {
 	logFile, _ := os.OpenFile("/var/log/spacetraders/error.log", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)

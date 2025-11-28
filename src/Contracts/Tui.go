@@ -1,12 +1,9 @@
 package Contracts
 
-import (
-	"fmt"
-	"strconv"
-	"Spacetraders/src/General"
-
-	"github.com/rivo/tview"
-)
+import "fmt"
+import "strconv"
+import "Spacetraders/src/General"
+import "github.com/rivo/tview"
 
 func DisplayContractMenu(app *General.App) tview.Primitive {
 	app.UIState.SubMenu.Clear()
@@ -19,6 +16,7 @@ func DisplayContractMenu(app *General.App) tview.Primitive {
 	CMenu  := tview.NewList()
 	CMenu.SetBorder(true)
 	CMenu.SetTitle("  Current Contracts  ")
+	CMenu.SetBorderColor(General.Theme.BgBorder)
 
 	// Create a button for each ship in the fleet
 	for CList.Next() {
@@ -72,6 +70,7 @@ func DisplayContract(data Contract) tview.Primitive {
 	box := tview.NewForm()
 	box.SetBorder(true)
 	box.SetTitle("  " + data.ID + "  ")
+	box.SetBorderColor(General.Theme.BgBorder)
 
 	box.AddTextView("Contract:",  data.ID,       0, 1, true, true)
 	box.AddTextView("Faction:",   data.Faction,  0, 1, true, true)

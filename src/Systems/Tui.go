@@ -1,6 +1,6 @@
 package Waypoints
 
-import "fmt"
+// import "fmt"
 import "strconv"
 import "Spacetraders/src/General"
 import "github.com/rivo/tview"
@@ -16,6 +16,7 @@ func DisplaySystem(id string) tview.Primitive {
 	General.PG.QueryRow("SELECT COUNT(*) FROM waypoints WHERE system = $1 AND 'SHIPYARD'    = ANY(traits)", id).Scan(&Shipyards)
 	form := tview.NewForm()
 	form.SetBorder(false)
+	form.SetBackgroundColor(General.Theme.BgBase)
 	form.AddTextView("Symbol:",    System.Symbol, 0, 1, true, true)
 	form.AddTextView("Type:",      System.Type,   0, 1, true, true)
 	form.AddTextView("Waypoints:", strconv.FormatInt(Waypoints, 10), 0, 1, true, true)
@@ -26,15 +27,16 @@ func DisplaySystem(id string) tview.Primitive {
 
 func DisplayWaypoint(id string) tview.Primitive {
 	Waypoint := GetWaypoint(id)
-	box := tview.NewForm()
-	box.SetBorder(false)
-	box.AddTextView("Symbol",        Waypoint.Symbol,                              0, 1, true, true)
-	box.AddTextView("Type",          Waypoint.Type,                                0, 1, true, true)
-	box.AddTextView("Coords:",       fmt.Sprintf("%d:%d", Waypoint.X, Waypoint.Y), 0, 1, true, true)
-	box.AddTextView("Orbits:",       Waypoint.Orbits,                              0, 1, true, true)
-	box.AddTextView("Construction:", strconv.FormatBool(Waypoint.Construction),    0, 1, true, true)
-	box.AddTextView("Traits:",       "",                                           0, 1, true, true)
-	return box
+	form := tview.NewForm()
+	form.SetBorder(false)
+	form.SetBackgroundColor(General.Theme.BgBase)
+	form.AddTextView("Symbol",        Waypoint.Symbol,                              0, 1, true, true)
+	form.AddTextView("Type",          Waypoint.Type,                                0, 1, true, true)
+	// form.AddTextView("Coords:",       fmt.Sprintf("%d:%d", Waypoint.X, Waypoint.Y), 0, 1, true, true)
+	// form.AddTextView("Orbits:",       Waypoint.Orbits,                              0, 1, true, true)
+	// form.AddTextView("Construction:", strconv.FormatBool(Waypoint.Construction),    0, 1, true, true)
+	// form.AddTextView("Traits:",       "",                                           0, 1, true, true)
+	return form 
 }
 
 func DisplaySystemMenu(app *General.App) tview.Primitive {
@@ -55,7 +57,7 @@ func DisplaySystemMenu(app *General.App) tview.Primitive {
 
 	// Defining some default parameters for how the cards will be displayed in the menu
 	const cardsPerRow = 5
-	const cardHeight  = 15
+	const cardHeight  = 13
 	const cardWidth   = 43
 
 	// Define the submenu for each card when selected
@@ -65,7 +67,7 @@ func DisplaySystemMenu(app *General.App) tview.Primitive {
 		card := General.NewCardButton(
 			DisplaySystem(localSym),
 			"",
-			func() {
+			func() { 
 				DisplayWaypointMenu(app, localSym)
 				// app.UI.SetFocus(app.UIState.SubMenu)
 				// app.UIState.SubMenu.Clear()
@@ -160,6 +162,17 @@ func DisplayWaypointMenu(app *General.App, System string) tview.Primitive {
 	app.UIState.Output.Clear()
 	window := tview.NewFlex().SetDirection(tview.FlexRow)
 
+	// FEATURE: Should split data into segments by type
+	// Planet  := tview.NewFlex().SetDirection(tview.FlexRow)
+	// Fuel    := tview.NewFlex().SetDirection(tview.FlexRow)
+	// Jump    := tview.NewFlex().SetDirection(tview.FlexRow)
+	// Moon    := tview.NewFlex().SetDirection(tview.FlexRow)
+	// Station := tview.NewFlex().SetDirection(tview.FlexRow)
+	// pcontent := tview.NewTextView()
+	// pcontent.SetText("Planets")
+	// Planet.AddItem(pcontent, 0, 1, false)
+	// window.AddItem(pcontent, 1, 1, false)
+
 	// First we need a list of ships to build cards for
 	WayList, err := General.PG.Query("SELECT symbol FROM waypoints WHERE system = $1", System)
 	if err != nil { General.LogErr("DisplaySystemMenu: " + err.Error()) }
@@ -172,9 +185,9 @@ func DisplayWaypointMenu(app *General.App, System string) tview.Primitive {
 	}
 
 	// Defining some default parameters for how the cards will be displayed in the menu
-	const cardsPerRow = 5
-	const cardHeight  = 17
-	const cardWidth   = 43
+	const cardsPerRow = 6 
+	const cardHeight  = 7 
+	const cardWidth   = 32
 
 	// Define the submenu for each card when selected
 	var cards []*General.CardButton

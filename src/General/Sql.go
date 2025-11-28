@@ -1,11 +1,8 @@
 package General
 
-import (
-	"database/sql"
-	"fmt"
-
-	_ "github.com/lib/pq"
-)
+import "database/sql"
+import "fmt"
+import _ "github.com/lib/pq"
 
 var PG *sql.DB
 

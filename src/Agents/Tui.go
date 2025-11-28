@@ -1,10 +1,8 @@
 package Agents
 
-import (
-	"fmt"
-	"Spacetraders/src/General"
-	"github.com/rivo/tview"
-)
+import "fmt"
+import "Spacetraders/src/General"
+import "github.com/rivo/tview"
 
 func ShowAgentsMenu(app *General.App) {
 	app.UIState.SubMenu.Clear()
@@ -24,6 +22,7 @@ func DisplayAgentState() tview.Primitive {
 	stats_1.SetBorder(false)
 	box_1 := tview.NewTextView()
 	box_1.SetBorder(true)
+	box_1.SetBorderColor(General.Theme.BgBorder)
 	fmt.Fprintf(box_1, "Account ID:   %s\n", agent.AccountID)
 	fmt.Fprintf(box_1, "Agent Symbol: %s\n", agent.Symbol)
 	fmt.Fprintf(box_1, "Faction:      %s\n", agent.Faction)
@@ -35,6 +34,7 @@ func DisplayAgentState() tview.Primitive {
 	graph_1 := tview.NewTextArea()
 	graph_1.SetBorder(true)
 	graph_1.SetTitle("  Cash Flow History  ")
+	graph_1.SetBorderColor(General.Theme.BgBorder)
 	graph_1.SetText("Coming Soon...", false)
 
 	window.AddItem(stats_1, 0, 1, false)

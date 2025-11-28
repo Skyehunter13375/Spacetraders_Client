@@ -24,11 +24,12 @@ type CardButton struct {
 
 func NewCardButton(inner tview.Primitive, title string, onSelect func()) *CardButton {
 	frame := tview.NewFrame(inner)
-	frame.SetBorders(1, 1, 1, 1, 1, 1)
 	frame.SetBorder(true)
-	if title != "" {
-		frame.SetTitle(" " + title + " ")
-	}
+	frame.SetBorders(0, 0, 0, 0, 0, 0)
+	frame.SetBorderColor(Theme.BgBorder)
+
+	if title != "" {frame.SetTitle(" " + title + " ")}
+
 	return &CardButton{
 		Frame:    frame,
 		selected: false,
@@ -36,27 +37,14 @@ func NewCardButton(inner tview.Primitive, title string, onSelect func()) *CardBu
 	}
 }
 
-func (c *CardButton) Draw(screen tcell.Screen) {
-	if c.selected {
-		c.Frame.SetBorderColor(tcell.ColorYellow)
-	} else {
-		c.Frame.SetBorderColor(tcell.ColorWhite)
-	}
-	c.Frame.Draw(screen)
-}
-
 func (c *CardButton) InputHandler() func(event *tcell.EventKey, setFocus func(p tview.Primitive)) {
 	return func(event *tcell.EventKey, setFocus func(p tview.Primitive)) {
 		switch event.Key() {
 		case tcell.KeyEnter:
-			if c.onSelect != nil {
-				c.onSelect()
-			}
+			if c.onSelect != nil {c.onSelect()}
 			return
 		}
-		if h := c.Frame.InputHandler(); h != nil {
-			h(event, setFocus)
-		}
+		if h := c.Frame.InputHandler(); h != nil {h(event, setFocus)}
 	}
 }
 
