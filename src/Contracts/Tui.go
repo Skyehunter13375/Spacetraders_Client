@@ -57,8 +57,6 @@ func DisplayContractMenu(app *General.App) tview.Primitive {
 	return window
 }
 
-
-
 func ShowContractsMenu(app *General.App) {
 	ui := app.UIState
 	ui.SubMenu.Clear()

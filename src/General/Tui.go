@@ -26,8 +26,9 @@ func NewCardButton(inner tview.Primitive, title string, onSelect func()) *CardBu
 	frame := tview.NewFrame(inner)
 	frame.SetBorders(1, 1, 1, 1, 1, 1)
 	frame.SetBorder(true)
-	frame.SetTitle(" " + title + " ")
-
+	if title != "" {
+		frame.SetTitle(" " + title + " ")
+	}
 	return &CardButton{
 		Frame:    frame,
 		selected: false,

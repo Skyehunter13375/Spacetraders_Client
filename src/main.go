@@ -45,7 +45,7 @@ func BuildLayoutShell(app *General.App) tview.Primitive {
 	mainMenu.AddItem("Server Status", "", 0, func() { Server.ShowServerMenu(app)         })
 	mainMenu.AddItem("Agent Status",  "", 0, func() { Agents.ShowAgentsMenu(app)         })
 	mainMenu.AddItem("Fleet Status",  "", 0, func() { Fleet.DisplayFleetMenu(app)        })
-	mainMenu.AddItem("Systems",       "", 0, func() { Waypoints.ShowSystemsMenu(app)     })
+	mainMenu.AddItem("Systems",       "", 0, func() { Waypoints.DisplaySystemMenu(app)   })
 	mainMenu.AddItem("Contracts",     "", 0, func() { Contracts.DisplayContractMenu(app) })
 	mainMenu.AddItem("Settings",      "", 0, func() { Settings.ShowSettingsMenu(app)     })
 	mainMenu.AddItem("Quit",          "", 0, func() { app.UI.Stop()                      })
