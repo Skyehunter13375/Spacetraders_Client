@@ -10,9 +10,9 @@ func BuildShipForm(symbol string) tview.Primitive {
 	box.SetBackgroundColor(tcell.GetColor("#2A2E2A"))
 	ship := GetShipState(symbol)
 
-	box.AddTextView("Name:",     ship.Symbol, 0, 1, true, true)
-	box.AddTextView("Role:",     ship.Registration.Role + " (" + ship.Frame.Name + ")", 0, 1, true, true)
-	box.AddTextView("Status:",   ship.Nav.Status + " (" + ship.Nav.FlightMode + ")",    0, 1, true, true)
+	box.AddTextView("Name:", ship.Symbol, 0, 1, true, true)
+	box.AddTextView("Role:", ship.Registration.Role + " (" + ship.Frame.Name + ")", 0, 1, true, true)
+	box.AddTextView("Status:", ship.Nav.Status + " (" + ship.Nav.FlightMode + ")",    0, 1, true, true)
 	if ship.Nav.WaypointSymbol == ship.Nav.Route.Destination.Symbol {
 		box.AddTextView("Waypoint:", ship.Nav.WaypointSymbol, 0, 1, true, true)
 	} else {
@@ -44,7 +44,7 @@ func DisplayFleetMenu(app *General.App) tview.Primitive {
 	// Defining some default parameters for how the cards will be displayed in the menu
 	const cardsPerRow = 5
 	const cardHeight  = 17
-	const cardWidth   = 43
+	const cardWidth   = 41 
 
 	// Define the submenu for each card when selected
 	var cards []*General.CardButton
