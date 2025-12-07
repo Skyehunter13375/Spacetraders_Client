@@ -1,0 +1,16 @@
+##################################
+# Edit and rename to config.yaml #
+##################################
+DB:
+  DbPath:  "SpaceTraders.db"
+  DbBuild: "BuildSqlite.sql"
+  DbReset: "ResetSqlite.sql"
+
+LOG:
+  ErrPath: "logs/Error.log"
+  ActPath: "logs/Activity.log"
+
+API:
+  AccntToken: ""
+  AgentToken: ""
+

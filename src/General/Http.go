@@ -14,9 +14,9 @@ func GetUrlJson(url string, tokenType string) string {
 
 	switch tokenType {
 		case "agent":
-			req.Header.Add("Authorization", "Bearer "+CFG.Tokens.Agent)
+			req.Header.Add("Authorization", "Bearer "+CFG.API.AgentToken)
 		case "account":
-			req.Header.Add("Authorization", "Bearer "+CFG.Tokens.Account)
+			req.Header.Add("Authorization", "Bearer "+CFG.API.AccntToken)
 		default:
 	}
 
@@ -41,9 +41,9 @@ func PostUrlJson(url string, tokenType string) (string, error) {
 
 	switch tokenType {
 		case "agent":
-			req.Header.Add("Authorization", "Bearer "+CFG.Tokens.Agent)
+			req.Header.Add("Authorization", "Bearer "+CFG.API.AgentToken)
 		case "account":
-			req.Header.Add("Authorization", "Bearer "+CFG.Tokens.Account)
+			req.Header.Add("Authorization", "Bearer "+CFG.API.AccntToken)
 		default:
 	}
 

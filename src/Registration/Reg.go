@@ -26,7 +26,7 @@ func RegisterNewAgent(agentSymbol string, faction string) (string, error) {
 	req, _ := http.NewRequest(http.MethodPost, "https://api.spacetraders.io/v2/register", bytes.NewBuffer(jsonBytes))
 	if err != nil { General.LogErr("RegisterNewAgent: " + err.Error()) }
 
-	req.Header.Add("Authorization", "Bearer "+CFG.Tokens.Account)
+	req.Header.Add("Authorization", "Bearer "+CFG.API.AccntToken)
 	req.Header.Add("Content-Type", "application/json")
 
 	client := &http.Client{Timeout: 10 * time.Second}

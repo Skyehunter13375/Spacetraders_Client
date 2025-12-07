@@ -70,7 +70,12 @@ func BuildLayoutShell(app *General.App) tview.Primitive {
 // │                                     Main                                     │
 // └──────────────────────────────────────────────────────────────────────────────┘
 func main() {
-	if err := General.DB(); err != nil {
+	if err := General.CheckDB(); err != nil {
+		General.LogErr(err.Error())
+		panic(err)
+	}
+
+	if err := General.DbLite(); err != nil {
 		General.LogErr(err.Error())
 		panic(err)
 	}

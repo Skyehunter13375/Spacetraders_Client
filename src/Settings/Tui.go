@@ -24,17 +24,12 @@ func DisplaySettings(app *General.App) *tview.Form {
 	data.SetButtonBackgroundColor(General.Theme.BgBase)
 	data.SetButtonTextColor(General.Theme.FgBase)
 
-	data.AddInputField("Database Host:",  s.DB.Host, 30, nil, func(v string) { s.DB.Host = v })
-	data.AddInputField("Database Name:",  s.DB.Name, 30, nil, func(v string) { s.DB.Name = v })
-	data.AddInputField("Database User:",  s.DB.User, 30, nil, func(v string) { s.DB.User = v })
-	data.AddInputField("Database Pass:",  s.DB.Pass, 30, nil, func(v string) { s.DB.Pass = v })
-	data.AddInputField("Database SSL:",   s.DB.SSL,  30, nil, func(v string) { s.DB.SSL  = v })
-	data.AddInputField("Database Type:",  s.DB.Type, 30, nil, func(v string) { s.DB.Type = v })
+	data.AddInputField("Database:",  s.DB.DbPath, 30, nil, func(v string) { s.DB.DbPath = v })
 
 	data.AddTextView(  "──────────────", "", 0, 1, false, false)
 
-	data.AddInputField("Account Token:",  "Hidden", 30, nil, func(v string) { s.Tokens.Account = v })
-	data.AddInputField("Agent Token:",    "Hidden", 30, nil, func(v string) { s.Tokens.Agent   = v })
+	data.AddInputField("Account Token:",  "Hidden", 30, nil, func(v string) { s.API.AccntToken = v })
+	data.AddInputField("Agent Token:",    "Hidden", 30, nil, func(v string) { s.API.AgentToken = v })
 
 	data.AddTextView(  "──────────────", "", 0, 1, false, false)
 	
