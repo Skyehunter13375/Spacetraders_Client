@@ -1,4 +1,5 @@
-PRAGMA foreign_keys = ON;
+PRAGMA foreign_keys    = ON;
+PRAGMA detailed_errors = ON;
 
 CREATE TABLE server (
     server_up    INTEGER, -- boolean (0/1)
@@ -43,7 +44,7 @@ CREATE TABLE ships (
 );
 
 CREATE TABLE ship_nav (
-    ship             TEXT PRIMARY KEY REFERENCES ships(symbol) ON DELETE CASCADE,
+    ship             TEXT PRIMARY KEY,
     system           TEXT,
     waypoint         TEXT,
     status           TEXT,
@@ -57,27 +58,30 @@ CREATE TABLE ship_nav (
     destination_x    INTEGER,
     destination_y    INTEGER,
     arrival          TEXT,
-    departure        TEXT
+    departure        TEXT,
+    FOREIGN KEY(ship) REFERENCES ships(symbol) ON DELETE CASCADE
 );
 
 CREATE TABLE ship_crew (
-    ship     TEXT PRIMARY KEY REFERENCES ships(symbol) ON DELETE CASCADE,
+    ship     TEXT PRIMARY KEY,
     current  INTEGER,
     required INTEGER,
     capacity INTEGER,
     rotation TEXT,
     morale   INTEGER,
-    wages    INTEGER
+    wages    INTEGER,
+    FOREIGN KEY(ship) REFERENCES ships(symbol) ON DELETE CASCADE
 );
 
 CREATE TABLE ship_fuel (
-    ship     TEXT PRIMARY KEY REFERENCES ships(symbol) ON DELETE CASCADE,
+    ship     TEXT PRIMARY KEY,
     current  INTEGER,
-    capacity INTEGER
+    capacity INTEGER,
+    FOREIGN KEY(ship) REFERENCES ships(symbol) ON DELETE CASCADE
 );
 
 CREATE TABLE ship_frame (
-    ship           TEXT PRIMARY KEY REFERENCES ships(symbol) ON DELETE CASCADE,
+    ship           TEXT PRIMARY KEY,
     symbol         TEXT,
     name           TEXT,
     description    TEXT,
@@ -88,11 +92,12 @@ CREATE TABLE ship_frame (
     integrity      INTEGER,
     quality        INTEGER,
     power_required INTEGER,
-    crew_required  INTEGER
+    crew_required  INTEGER,
+    FOREIGN KEY(ship) REFERENCES ships(symbol) ON DELETE CASCADE
 );
 
 CREATE TABLE ship_reactor (
-    ship          TEXT PRIMARY KEY REFERENCES ships(symbol) ON DELETE CASCADE,
+    ship          TEXT PRIMARY KEY,
     symbol        TEXT,
     name          TEXT,
     description   TEXT,
@@ -100,11 +105,12 @@ CREATE TABLE ship_reactor (
     integrity     INTEGER,
     power_output  INTEGER,
     quality       INTEGER,
-    crew_required INTEGER
+    crew_required INTEGER,
+    FOREIGN KEY(ship) REFERENCES ships(symbol) ON DELETE CASCADE
 );
 
 CREATE TABLE ship_engine (
-    ship           TEXT PRIMARY KEY REFERENCES ships(symbol) ON DELETE CASCADE,
+    ship           TEXT PRIMARY KEY,
     symbol         TEXT,
     name           TEXT,
     description    TEXT,
@@ -113,7 +119,8 @@ CREATE TABLE ship_engine (
     speed          INTEGER,
     quality        INTEGER,
     power_required INTEGER,
-    crew_required  INTEGER
+    crew_required  INTEGER,
+    FOREIGN KEY(ship) REFERENCES ships(symbol) ON DELETE CASCADE
 );
 
 CREATE TABLE contracts (
@@ -131,12 +138,13 @@ CREATE TABLE contracts (
 );
 
 CREATE TABLE contract_materials (
-    id              TEXT REFERENCES contracts(id) ON DELETE CASCADE,
+    id              TEXT,
     material        TEXT,
     destination     TEXT,
     units_required  INTEGER,
     units_fulfilled INTEGER,
-    UNIQUE(id, material, destination)
+    UNIQUE(id, material, destination),
+    FOREIGN KEY(id) REFERENCES contracts(id) ON DELETE CASCADE
 );
 
 CREATE TABLE systems (
@@ -151,7 +159,7 @@ CREATE TABLE systems (
 );
 
 CREATE TABLE waypoints (
-    system       TEXT REFERENCES systems(symbol) ON DELETE CASCADE,
+    system       TEXT,
     symbol       TEXT PRIMARY KEY,
     type         TEXT,
     x_coord      INTEGER,
@@ -159,10 +167,12 @@ CREATE TABLE waypoints (
     orbits       TEXT,
     construction INTEGER,-- boolean 0/1
     traits       TEXT,   -- JSON array
-    modifiers    TEXT    -- JSON array
+    modifiers    TEXT,   -- JSON array
+    FOREIGN KEY(system) REFERENCES systems(symbol) ON DELETE CASCADE
 );
 
 CREATE TABLE orbitals (
-    waypoint TEXT REFERENCES waypoints(symbol) ON DELETE CASCADE,
-    symbol   TEXT PRIMARY KEY
+    waypoint TEXT,
+    symbol   TEXT PRIMARY KEY,
+    FOREIGN KEY(waypoint) REFERENCES waypoints(symbol) ON DELETE CASCADE
 );

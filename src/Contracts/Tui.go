@@ -6,18 +6,25 @@ import "github.com/gdamore/tcell/v2"
 import "time"
 
 func DisplayContractMenu(app *General.App) tview.Primitive {
+	CFG, _ := General.GetConfig()
 	app.UIState.SubMenu.Clear()
 	app.UIState.Output.Clear()
 	window := tview.NewFlex().SetDirection(tview.FlexRow)
 
-	// First we need a list of ships to build cards for
-	ShipList, err := General.PG.Query("SELECT id FROM contracts")
+	// TASK: First check if there is any data to show
+	var count int
+	err := General.PG.QueryRow("SELECT COUNT(*) FROM contracts").Scan(&count)
+	if err != nil { General.LogErr("DisplayContractMenu: " + err.Error()) }
+	if count == 0 { NegotiateNewContract(CFG.API.AgentName + "-1") }
+
+	// TASK: Get a list of ships to build cards for
+	ContList, err := General.PG.Query("SELECT id FROM contracts")
 	if err != nil { General.LogErr("DisplayContractMenu: " + err.Error()) }
 
 	var symbols []string
-	for ShipList.Next() {
+	for ContList.Next() {
 		var sym string
-		ShipList.Scan(&sym)
+		ContList.Scan(&sym)
 		symbols = append(symbols, sym)
 	}
 

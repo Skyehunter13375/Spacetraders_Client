@@ -12,7 +12,11 @@ func ShowAgentsMenu(app *General.App) {
 }
 
 func DisplayAgentState() tview.Primitive {
-	agent := GetAgentState("NULL-SKY")
+	// TASK: Get agent name from config file
+	CFG, _ := General.GetConfig()
+
+	// TASK: Display the agent data
+	agent  := GetAgentState(CFG.API.AgentName)
 
 	window := tview.NewFlex()
 	window.SetBorder(false)

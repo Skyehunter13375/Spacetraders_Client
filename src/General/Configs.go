@@ -16,9 +16,10 @@ type Configs struct {
 	} `yaml:"LOG"`
 
 	API struct {
+		AgentName  string `yaml:"AgentName"`
 		AccntToken string `yaml:"AccntToken"`
 		AgentToken string `yaml:"AgentToken"`
-	} `yaml:"tokens"`
+	} `yaml:"API"`
 }
 
 func GetConfig() (*Configs, error) {

@@ -1,30 +1,16 @@
 package Fleet
 
 import "Spacetraders/src/General"
-import "database/sql"
 import "encoding/json"
-import "fmt"
 import "time"
 
 func GetShipState(symbol string) Ship {
 	var sd Ship
 
-	var ts time.Time
-	err := General.PG.QueryRow(`SELECT last_updated FROM ships where symbol = 'NULL-SKY-1'`).Scan(&ts)
-	if err == sql.ErrNoRows { // No timestamp found, force update
-		ts = time.Unix(0, 0).UTC()
-	} else if err != nil { // DB error, force update
-		General.LogErr(fmt.Sprintf("DB error: %v", err))
-		ts = time.Now().UTC().Add(-24 * time.Hour)
-	}
-
-	// BUGS: THIS IS STILL BROKEN - The "Last" timestamp seems to be 3 days behind for some reason???
-	// if time.Since(ts) > 15*time.Minute {
-		// General.LogActivity(fmt.Sprintf("Updating Fleet status: (Now: %v - Last: %v)", time.Now().UTC(), ts))
-		// UpdateShipState()
-	// }
-	// 2025/11/25 11:07:03 Updating agent status: (Now: 2025-11-25 16:07:03.849331399 +0000 UTC - Last: 2025-11-22 23:00:50.988293 -0500 EST)
-
+	tsStr := "1970-01-01T00:00:00Z"
+	General.PG.QueryRow(`SELECT last_updated FROM ships where symbol = ?`, symbol).Scan(&tsStr)
+	ts, _ := time.Parse(time.RFC3339, tsStr)
+	if time.Since(ts) > 15*time.Minute { UpdateShipState() }
 
 	query := `
 		SELECT ship.*, navg.*, crew.*, fuel.*, frame.*, reactor.*, engine.*
@@ -35,7 +21,7 @@ func GetShipState(symbol string) Ship {
 		INNER JOIN ship_frame   AS frame   ON frame.ship   = ship.symbol
 		INNER JOIN ship_reactor AS reactor ON reactor.ship = ship.symbol
 		INNER JOIN ship_engine  AS engine  ON engine.ship  = ship.symbol
-		WHERE ship.symbol = $1
+		WHERE ship.symbol = ?
 	`
 	_ = General.PG.QueryRow(query, symbol).Scan(
 		&sd.Symbol,
@@ -129,7 +115,7 @@ func UpdateShipState() error {
 		// ┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫ Upsert Ship ┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫
 		_, err := General.PG.Exec(`
 			INSERT INTO ships (symbol,name,role,faction,last_updated) 
-			VALUES ($1,$2,$3,$4,NOW())
+			VALUES (?,?,?,?,datetime('now'))
 			ON CONFLICT (symbol) DO UPDATE SET
 				symbol  = EXCLUDED.symbol,
 				name    = EXCLUDED.name,
@@ -147,7 +133,7 @@ func UpdateShipState() error {
 		// ┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫ Upsert Ship Nav ┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫
 		_, err = General.PG.Exec(`
 			INSERT INTO ship_nav (ship,system,waypoint,status,flight_mode,origin,origin_type,origin_x,origin_y,destination,destination_type,destination_x,destination_y,arrival,departure) 
-			VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15)
+			VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
 			ON CONFLICT (ship) DO UPDATE SET
 				ship             = EXCLUDED.ship,
 				system           = EXCLUDED.system,
@@ -186,7 +172,7 @@ func UpdateShipState() error {
 		// ┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫ Upsert Ship Crew ┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫
 		_, err = General.PG.Exec(`
 			INSERT INTO ship_crew (ship, current, required, capacity, rotation, morale, wages) 
-			VALUES ($1,$2,$3,$4,$5,$6,$7)
+			VALUES (?,?,?,?,?,?,?)
 			ON CONFLICT (ship) DO UPDATE SET
 				ship      = EXCLUDED.ship,
 				current   = EXCLUDED.current, 
@@ -209,7 +195,7 @@ func UpdateShipState() error {
 		// ┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫ Upsert Ship Fuel ┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫
 		_, err = General.PG.Exec(`
 			INSERT INTO ship_fuel (ship,current,capacity)
-			VALUES ($1,$2,$3)
+			VALUES (?,?,?)
 			ON CONFLICT (ship) DO UPDATE SET
 				ship     = EXCLUDED.ship,
 				current  = EXCLUDED.current,
@@ -224,7 +210,7 @@ func UpdateShipState() error {
 		// ┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫ Upsert Ship Frame ┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫
 		_, err = General.PG.Exec(`
 			INSERT INTO ship_frame (ship,symbol,name,description,module_slots,mount_points,fuel_capacity,condition,integrity,quality,power_required,crew_required)
-			VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)
+			VALUES (?,?,?,?,?,?,?,?,?,?,?,?)
 			ON CONFLICT (ship) DO UPDATE SET
 				ship           = EXCLUDED.ship,
 				symbol         = EXCLUDED.symbol,
@@ -257,7 +243,7 @@ func UpdateShipState() error {
 		// ┣━━━━━━━━━━━━━━━━━━━━━━━━━━━┫ Upsert Ship Reactor ┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫
 		_, err = General.PG.Exec(`
 			INSERT INTO ship_reactor (ship,symbol,name,description,condition,integrity,power_output,quality,crew_required)
-			VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9)
+			VALUES (?,?,?,?,?,?,?,?,?)
 			ON CONFLICT (ship) DO UPDATE SET
 				ship           = EXCLUDED.ship,
 				symbol         = EXCLUDED.symbol,
@@ -284,7 +270,7 @@ func UpdateShipState() error {
 		// ┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫ Upsert Ship Engine ┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫
 		_, err = General.PG.Exec(`
 			INSERT INTO ship_engine (ship,symbol,name,description,condition,integrity,speed,quality,power_required,crew_required)
-			VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)
+			VALUES (?,?,?,?,?,?,?,?,?,?)
 			ON CONFLICT (ship) DO UPDATE SET
 				ship           = EXCLUDED.ship,
 				symbol         = EXCLUDED.symbol,

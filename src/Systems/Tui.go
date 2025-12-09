@@ -44,7 +44,14 @@ func DisplaySystemMenu(app *General.App) tview.Primitive {
 	app.UIState.Output.Clear()
 	window := tview.NewFlex().SetDirection(tview.FlexRow)
 
-	// First we need a list of ships to build cards for
+	// TASK: First check if there is any data to show
+	var count int
+	err := General.PG.QueryRow("SELECT COUNT(*) FROM systems").Scan(&count)
+	if err != nil { General.LogErr("DisplaySystemMenu: " + err.Error()) }
+	// DEBG: Need a function here to capture starting system
+	if count == 0 { panic("Need a function to capture starting system here") }
+
+	// TASK: Get a list of ships to build cards for
 	SysList, err := General.PG.Query("SELECT symbol FROM systems")
 	if err != nil { General.LogErr("DisplaySystemMenu: " + err.Error()) }
 

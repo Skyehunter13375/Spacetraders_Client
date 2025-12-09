@@ -3,7 +3,6 @@ package Fleet
 import "Spacetraders/src/General"
 import "github.com/rivo/tview"
 import "github.com/gdamore/tcell/v2"
-// import "fmt"
 
 func BuildShipForm(symbol string) tview.Primitive {
 	box  := tview.NewForm()
@@ -30,7 +29,13 @@ func DisplayFleetMenu(app *General.App) tview.Primitive {
 	app.UIState.Output.Clear()
 	window := tview.NewFlex().SetDirection(tview.FlexRow)
 
-	// First we need a list of ships to build cards for
+	// TASK: First check if there is any data to show
+	var count int
+	err := General.PG.QueryRow("SELECT COUNT(*) FROM ships").Scan(&count)
+	if err != nil { General.LogErr("DisplayContractMenu: " + err.Error()) }
+	if count == 0 { UpdateShipState() }
+
+	// TASK: Get a list of ships to build cards for
 	ShipList, err := General.PG.Query("SELECT symbol FROM ships")
 	if err != nil { General.LogErr("DisplayFleetMenu: " + err.Error()) }
 

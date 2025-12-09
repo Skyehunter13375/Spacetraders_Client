@@ -14,9 +14,9 @@ func GetUrlJson(url string, tokenType string) string {
 
 	switch tokenType {
 		case "agent":
-			req.Header.Add("Authorization", "Bearer "+CFG.API.AgentToken)
+			req.Header.Add("Authorization", "Bearer " + CFG.API.AgentToken)
 		case "account":
-			req.Header.Add("Authorization", "Bearer "+CFG.API.AccntToken)
+			req.Header.Add("Authorization", "Bearer " + CFG.API.AccntToken)
 		default:
 	}
 

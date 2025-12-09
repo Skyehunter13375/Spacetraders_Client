@@ -11,6 +11,7 @@ LOG:
   ActPath: "logs/Activity.log"
 
 API:
+  AgentName:  ""
   AccntToken: ""
   AgentToken: ""
 

@@ -18,7 +18,7 @@ func UpdateSystem(symbol string) error {
 
 	_, err = General.PG.Exec(`
 		INSERT INTO systems (symbol, sector, constellation, name, type, x_coord, y_coord)
-		VALUES ($1, $2, $3, $4, $5, $6, $7)
+		VALUES (?,?,?,?,?,?,?)
 		ON CONFLICT (symbol) DO UPDATE SET
 			sector        = EXCLUDED.sector,
 			constellation = EXCLUDED.constellation,
@@ -41,13 +41,13 @@ func UpdateSystem(symbol string) error {
 	// Very heavy on API calls at the moment...
 	// Also not reading asteroids which we will need later on...
 	// I should store the data I have here from the current jsonStr, and only run UpdateWaypoint() later on if needed.
-	for idx := range s.Waypoints {
-		if s.Waypoints[idx].Type == "ASTEROID" {
-			continue
-		}
-		err = UpdateWaypoint(s.Symbol, s.Waypoints[idx].Symbol)
-		if err != nil { General.LogErr("UpdateSystem: Insert loop failure: " + err.Error()) }
-	}
+	// for idx := range s.Waypoints {
+	//	if s.Waypoints[idx].Type == "ASTEROID" {
+	//		continue
+	//	}
+	//	err = UpdateWaypoint(s.Symbol, s.Waypoints[idx].Symbol)
+	//	if err != nil { General.LogErr("UpdateSystem: Insert loop failure: " + err.Error()) }
+	// }
 
 	return nil
 }

@@ -1,7 +1,7 @@
-TRUNCATE TABLE server;
-TRUNCATE TABLE leaderboard_creds;
-TRUNCATE TABLE leaderboard_charts;
-TRUNCATE TABLE agents;
-TRUNCATE TABLE ships CASCADE;
-TRUNCATE TABLE contracts CASCADE;
-TRUNCATE TABLE systems CASCADE;
+DELETE FROM server;
+DELETE FROM leaderboard_creds;
+DELETE FROM leaderboard_charts;
+DELETE FROM agents;
+DELETE FROM ships CASCADE;
+DELETE FROM contracts CASCADE;
+DELETE FROM systems CASCADE;

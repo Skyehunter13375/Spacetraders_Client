@@ -53,5 +53,8 @@ func DbLite() error {
 		LogErr("DB: Connection failed: " + err.Error());
 		return err
 	}
+
+	PG.Exec("PRAGMA foreign_keys = ON")
+	PG.Exec("PRAGMA detailed_errors = ON")
 	return PG.Ping()
 }

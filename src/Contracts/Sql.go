@@ -16,7 +16,7 @@ func UpdateContracts() error {
 	for index := range c {
 		_, err = General.PG.Exec(`
 			INSERT INTO contracts (id,faction,type,deadline,pay_on_accept,pay_on_complete,accepted,fulfilled,expiration,deadline_to_accept,last_updated) 
-			VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,NOW())
+			VALUES (?,?,?,?,?,?,?,?,?,?,datetime('now'))
 			ON CONFLICT (id) DO UPDATE SET
 				id                 = EXCLUDED.id, 
 				faction            = EXCLUDED.faction, 
@@ -46,7 +46,7 @@ func UpdateContracts() error {
 		for idx2 := range c[index].Terms.Deliver {
 			_, err = General.PG.Exec(`
 				INSERT INTO contract_materials (id,material,destination,units_required,units_fulfilled) 
-				VALUES ($1,$2,$3,$4,$5)
+				VALUES (?,?,?,?,?)
 				ON CONFLICT (id,material,destination) DO UPDATE SET
 					id              = EXCLUDED.id, 
 					material        = EXCLUDED.material,
@@ -71,7 +71,7 @@ func GetContract(id string) Contract {
 	var result Contract
 
 	// Fill structs for each contract
-	data, _ := General.PG.Query(`SELECT * FROM contracts WHERE id = $1`, id)
+	data, _ := General.PG.Query(`SELECT * FROM contracts WHERE id = ?`, id)
 	for data.Next() {
 		data.Scan(
 			&result.ID,
@@ -88,7 +88,7 @@ func GetContract(id string) Contract {
 		)
 	}
 
-	mats, _ := General.PG.Query(`SELECT material,destination,units_required,units_fulfilled FROM contract_materials WHERE id = $1`, id)
+	mats, _ := General.PG.Query(`SELECT material,destination,units_required,units_fulfilled FROM contract_materials WHERE id = ?`, id)
 	for mats.Next() {
 		var deliverData ContractDeliveries
 		mats.Scan(
@@ -105,8 +105,10 @@ func GetContract(id string) Contract {
 
 func NegotiateNewContract(ship string) {
 	General.PostUrlJson("https://api.spacetraders.io/v2/my/ships/"+ship+"/negotiate/contract", "agent")
+	UpdateContracts()
 }
 
 func AcceptContract(contract string) {
 	General.PostUrlJson("https://api.spacetraders.io/v2/my/contracts/"+contract+"/accept", "agent")
+	UpdateContracts()
 }

@@ -55,12 +55,14 @@ func UpdateGameServerState() error {
 // FEAT: Get game state from stored SQLite data
 func GetGameServerState() GameState {
 	var g GameState
+	
+	// TASK: Check last updated timestamp, if > 15 mins go pull new data
 	tsStr := "1970-01-01T00:00:00Z"
 	General.PG.QueryRow(`SELECT last_updated FROM server`).Scan(&tsStr)
 	ts, _ := time.Parse(time.RFC3339, tsStr)
 	if time.Since(ts) > 15*time.Minute { UpdateGameServerState() }
 
-	// Pull updated values
+	// TASK: Pull updated values
 	_ = General.PG.QueryRow(`SELECT server_up,game_version,agents,ships,systems,waypoints,accounts,reset_date,next_reset,reset_freq,last_updated FROM server`).Scan(
 		&g.Status,
 		&g.Version,
