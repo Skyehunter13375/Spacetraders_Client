@@ -22,8 +22,9 @@ I wrote this on a RHEL based system with no intention of making it interoperable
     - [x] Login with a Preexisting Token
     - [x] Register a New Agent
     - [x] Display settings config.yaml contents
+    - [x] Simplify and/or automate new user setup
     - [ ] Edit settings config.yaml contents in the TUI
-    - [ ] Simplify and/or automate new user setup
+    - [ ] Automate reset process + archive old DB files for reference
 
 - [x] Game Server
     - [x] Capture current game server state _**(Stats/Resets/Leaderboards)**_

@@ -1,3 +1,10 @@
+#### 12/08/2025
+- Mostly finished conversion back to SQLite
+- Automated most of the first time setup stuff
+- Now you just create the config.yaml file and it should do everything automagically
+- Systems capture is not done yet. I need to actually sit and write my registration function to fill all of that out the first time the agent is registered. Then it becomes a non-issue.
+- Getting close to done with a primitive version of the UI, now I can actually start playing the game and automating ship action.
+
 #### 12/07/2025
 - Converting back to SQLite...again
 - Condensing and simplifying the file structure, getting too large
