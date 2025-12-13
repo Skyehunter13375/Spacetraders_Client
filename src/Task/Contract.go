@@ -1,20 +1,20 @@
-package Contracts
+package Task 
 
-import "Spacetraders/src/General"
+import "Spacetraders/src/Model"
 import "encoding/json"
 
 func UpdateContracts() error {
-	jsonStr := General.GetUrlJson("https://api.spacetraders.io/v2/my/contracts", "agent")
+	jsonStr := GetUrlJson("https://api.spacetraders.io/v2/my/contracts", "agent")
 	var wrapper map[string]json.RawMessage
 	err := json.Unmarshal([]byte(jsonStr), &wrapper)
-	if err != nil { General.LogErr("UpdateContracts: " + err.Error()) }
+	if err != nil { LogErr("UpdateContracts: " + err.Error()) }
 
-	var c []Contract
+	var c []Model.Contract
 	err = json.Unmarshal(wrapper["data"], &c)
-	if err != nil { General.LogErr("UpdateContracts: " + err.Error()) }
+	if err != nil { LogErr("UpdateContracts: " + err.Error()) }
 
 	for index := range c {
-		_, err = General.PG.Exec(`
+		_, err = PG.Exec(`
 			INSERT INTO contracts (id,faction,type,deadline,pay_on_accept,pay_on_complete,accepted,fulfilled,expiration,deadline_to_accept,last_updated) 
 			VALUES (?,?,?,?,?,?,?,?,?,?,datetime('now'))
 			ON CONFLICT (id) DO UPDATE SET
@@ -41,10 +41,10 @@ func UpdateContracts() error {
 			c[index].Expiration,
 			c[index].DeadlineToAccept,
 		)
-		if err != nil { General.LogErr("UpdateContracts contracts: " + err.Error()) }
+		if err != nil { LogErr("UpdateContracts contracts: " + err.Error()) }
 
 		for idx2 := range c[index].Terms.Deliver {
-			_, err = General.PG.Exec(`
+			_, err = PG.Exec(`
 				INSERT INTO contract_materials (id,material,destination,units_required,units_fulfilled) 
 				VALUES (?,?,?,?,?)
 				ON CONFLICT (id,material,destination) DO UPDATE SET
@@ -60,18 +60,18 @@ func UpdateContracts() error {
 				c[index].Terms.Deliver[idx2].UnitsRequired,
 				c[index].Terms.Deliver[idx2].UnitsFulfilled,
 			)
-		if err != nil { General.LogErr("UpdateContracts contractMats: " + err.Error()) }
+		if err != nil { LogErr("UpdateContracts contractMats: " + err.Error()) }
 		}
 	}
 
 	return nil
 }
 
-func GetContract(id string) Contract {
-	var result Contract
+func GetContract(id string) Model.Contract {
+	var result Model.Contract
 
 	// Fill structs for each contract
-	data, _ := General.PG.Query(`SELECT * FROM contracts WHERE id = ?`, id)
+	data, _ := PG.Query(`SELECT * FROM contracts WHERE id = ?`, id)
 	for data.Next() {
 		data.Scan(
 			&result.ID,
@@ -88,9 +88,9 @@ func GetContract(id string) Contract {
 		)
 	}
 
-	mats, _ := General.PG.Query(`SELECT material,destination,units_required,units_fulfilled FROM contract_materials WHERE id = ?`, id)
+	mats, _ := PG.Query(`SELECT material,destination,units_required,units_fulfilled FROM contract_materials WHERE id = ?`, id)
 	for mats.Next() {
-		var deliverData ContractDeliveries
+		var deliverData Model.ContractDeliveries
 		mats.Scan(
 			&deliverData.Material,
 			&deliverData.Destination,
@@ -104,11 +104,11 @@ func GetContract(id string) Contract {
 }
 
 func NegotiateNewContract(ship string) {
-	General.PostUrlJson("https://api.spacetraders.io/v2/my/ships/"+ship+"/negotiate/contract", "agent")
+	PostUrlJson("https://api.spacetraders.io/v2/my/ships/"+ship+"/negotiate/contract", "agent")
 	UpdateContracts()
 }
 
 func AcceptContract(contract string) {
-	General.PostUrlJson("https://api.spacetraders.io/v2/my/contracts/"+contract+"/accept", "agent")
+	PostUrlJson("https://api.spacetraders.io/v2/my/contracts/"+contract+"/accept", "agent")
 	UpdateContracts()
 }

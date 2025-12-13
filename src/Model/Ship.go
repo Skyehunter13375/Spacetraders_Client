@@ -1,4 +1,4 @@
-package Fleet
+package Model
 
 type Ship struct {
 	Symbol       string        `json:"symbol"`
@@ -155,3 +155,4 @@ type ShipFuel struct {
 		Timestamp string `json:"timestamp"`
 	} `json:"consumed"`
 }
+

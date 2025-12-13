@@ -1,47 +1,44 @@
 package main
 
-import "Spacetraders/src/Fleet"
-import "Spacetraders/src/General"
-import "Spacetraders/src/Server"
-import "Spacetraders/src/Agents"
-import "Spacetraders/src/Systems"
-import "Spacetraders/src/Contracts"
-import "Spacetraders/src/Settings"
+import "Spacetraders/src/Tui"
+import "Spacetraders/src/Model"
+import "Spacetraders/src/Task"
 import "github.com/rivo/tview"
 
 // ┌──────────────────────────────────────────────────────────────────────────────┐
 // │                              Main Layout Shell                               │
 // └──────────────────────────────────────────────────────────────────────────────┘
-func NewApp() *General.App {
-	return &General.App{
+// FEAT: Create TUI app to track state
+func NewApp() *Model.App {
+	return &Model.App{
 		UI:      tview.NewApplication(),
-		UIState: &General.UIState{},
-		State:   &General.GlobalState{},
+		UIState: &Model.UIState{},
+		State:   &Model.GlobalState{},
 	}
 }
 
-// INFO: Register all of the standard menus with the app then we can just call and focus them as needed
-func BuildLayoutShell(app *General.App) tview.Primitive {
+// FEAT: Register all of the standard menus with the app then we can just call and focus them as needed
+func BuildLayoutShell(app *Model.App) tview.Primitive {
 	// MAIN MENU (top-left)
 	mainMenu := tview.NewList()
 	mainMenu.ShowSecondaryText(false)
 	mainMenu.SetBorder(true)
 	mainMenu.SetTitle("  Main Menu  ")
-	mainMenu.SetBorderColor(General.Theme.BgBorder)
-	mainMenu.AddItem("Server Status", "", 0, func() { Server.ShowServerMenu(app)         })
-	mainMenu.AddItem("Agent Status",  "", 0, func() { Agents.ShowAgentsMenu(app)         })
-	mainMenu.AddItem("Fleet Status",  "", 0, func() { Fleet.DisplayFleetMenu(app)        })
-	mainMenu.AddItem("Systems",       "", 0, func() { Waypoints.DisplaySystemMenu(app)   })
-	mainMenu.AddItem("Contracts",     "", 0, func() { Contracts.DisplayContractMenu(app) })
-	mainMenu.AddItem("Settings",      "", 0, func() { Settings.ShowSettingsMenu(app)     })
-	mainMenu.AddItem("Quit",          "", 0, func() { app.UI.Stop()                      })
+	mainMenu.SetBorderColor(Model.Theme.BgBorder)
+	mainMenu.AddItem("Server Status", "", 0, func() { Tui.ShowServerMenu(app)      })
+	mainMenu.AddItem("Agent Status",  "", 0, func() { Tui.ShowAgentsMenu(app)      })
+	mainMenu.AddItem("Fleet Status",  "", 0, func() { Tui.DisplayFleetMenu(app)    })
+	mainMenu.AddItem("Systems",       "", 0, func() { Tui.DisplaySystemMenu(app)   })
+	mainMenu.AddItem("Contracts",     "", 0, func() { Tui.DisplayContractMenu(app) })
+	mainMenu.AddItem("Settings",      "", 0, func() { Tui.ShowSettingsMenu(app)    })
+	mainMenu.AddItem("Quit",          "", 0, func() { app.UI.Stop()                })
 
 	// SUBMENU (bottom-left, dynamic)
 	subMenu := tview.NewList()
 	subMenu.ShowSecondaryText(false)
 	subMenu.SetBorder(true)
 	subMenu.SetTitle("  Submenu  ")
-	subMenu.SetBorderColor(General.Theme.BgBorder)
+	subMenu.SetBorderColor(Model.Theme.BgBorder)
 
 	// OUTPUT PANEL (right)
 	output := tview.NewFlex().SetDirection(tview.FlexRow)
@@ -70,13 +67,13 @@ func BuildLayoutShell(app *General.App) tview.Primitive {
 // │                                     Main                                     │
 // └──────────────────────────────────────────────────────────────────────────────┘
 func main() {
-	if err := General.CheckDB(); err != nil {
-		General.LogErr(err.Error())
+	if err := Task.CheckDB(); err != nil {
+		Task.LogErr(err.Error())
 		panic(err)
 	}
 
-	if err := General.DbLite(); err != nil {
-		General.LogErr(err.Error())
+	if err := Task.DbLite(); err != nil {
+		Task.LogErr(err.Error())
 		panic(err)
 	}
 
@@ -84,7 +81,7 @@ func main() {
 	layout := BuildLayoutShell(app)
 
 	if err := app.UI.SetRoot(layout, true).Run(); err != nil {
-		General.LogErr(err.Error())
+		Task.LogErr(err.Error())
 		panic(err)
 	}
 }

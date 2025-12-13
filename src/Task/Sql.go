@@ -1,8 +1,9 @@
-package General
+package Task
 
 import "database/sql"
 import _ "github.com/mattn/go-sqlite3"
 import "os"
+import "fmt"
 
 var PG *sql.DB
 
@@ -13,27 +14,30 @@ func CheckDB() error {
     if err == nil { return nil }
 
     if !os.IsNotExist(err) {
-        // Some other filesystem error
         LogErr("DB: Stat failed: " + err.Error())
+		fmt.Println("Database not found: Creating " + CFG.DB.DbPath + " now...")
         return err
     }
 
-    // DB does not exist — create it by opening SQLite
+	// TASK: Connect to the DB
+	// If the DB doesn't exist this will create it
     db, err := sql.Open("sqlite3", CFG.DB.DbPath)
     if err != nil {
         LogErr("DB: Failed creating SQLite DB: " + err.Error())
+		fmt.Println("Database could not be created...")
         return err
     }
     defer db.Close()
 
-    // Read schema/setup file
+	// TASK: Get table and key info from setup file
+	fmt.Println("Reading in schema setup from " + CFG.DB.DbBuild)
     schema, err := os.ReadFile(CFG.DB.DbBuild)
     if err != nil {
         LogErr("DB: Failed reading setup file: " + err.Error())
         return err
     }
 
-    // Execute setup SQL
+	// TASK: Create tables & Foreign Keys based on setup file
     _, err = db.Exec(string(schema))
     if err != nil {
         LogErr("DB: Failed executing setup SQL: " + err.Error())
@@ -58,3 +62,4 @@ func DbLite() error {
 	PG.Exec("PRAGMA detailed_errors = ON")
 	return PG.Ping()
 }
+

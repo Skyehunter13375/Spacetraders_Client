@@ -1,4 +1,4 @@
-package Agents
+package Model
 
 type Agent struct {
 	AccountID   string `json:"accountId"`
@@ -9,3 +9,4 @@ type Agent struct {
 	Ships       int    `json:"shipCount"`
 	LastUpdated string
 }
+

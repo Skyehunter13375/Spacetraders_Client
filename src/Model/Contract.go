@@ -1,4 +1,4 @@
-package Contracts
+package Model
 
 type Contract struct {
 	ID               string        `json:"id"`

@@ -1,4 +1,4 @@
-package Server
+package Model
 
 type GameState struct {
 	Status       string       `json:"status"`

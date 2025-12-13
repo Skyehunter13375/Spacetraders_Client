@@ -35,6 +35,23 @@ CREATE TABLE agents (
     last_updated TEXT
 );
 
+CREATE TABLE factions (
+    symbol      TEXT PRIMARY KEY,
+    name        TEXT,
+    description TEXT,
+    hq          TEXT,
+    recruiting  TEXT
+);
+
+CREATE TABLE faction_traits (
+    faction     TEXT,
+    symbol      TEXT,
+    name        TEXT,
+    description TEXT,
+    UNIQUE(faction, symbol),
+    FOREIGN KEY(faction) REFERENCES factions(symbol) ON DELETE CASCADE
+);
+
 CREATE TABLE ships (
     symbol       TEXT PRIMARY KEY,
     name         TEXT,

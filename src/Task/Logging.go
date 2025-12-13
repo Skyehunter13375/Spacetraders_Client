@@ -1,4 +1,4 @@
-package General
+package Task
 
 import "log"
 import "os"
@@ -18,4 +18,5 @@ func LogActivity(msg string) {
 	log.Printf("%s", msg)
 	logFile.Close()
 }
+
 

@@ -2,11 +2,7 @@ module Spacetraders
 
 go 1.24.6
 
-require (
-	github.com/lib/pq v1.10.9
-	github.com/rivo/tview v0.42.0
-)
-
+require github.com/rivo/tview v0.42.0
 require github.com/mattn/go-sqlite3 v1.14.32
 
 require (

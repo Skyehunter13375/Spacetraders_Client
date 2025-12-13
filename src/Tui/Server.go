@@ -1,10 +1,11 @@
-package Server
+package Tui
 
-import "Spacetraders/src/General"
+import "Spacetraders/src/Task"
+import "Spacetraders/src/Model"
 import "github.com/rivo/tview"
 import "fmt"
 
-func ShowServerMenu(app *General.App) {
+func ShowServerMenu(app *Model.App) {
 	app.UIState.SubMenu.Clear()
 	app.UIState.Output.Clear()
 	app.UIState.Output.AddItem(DisplayGameServerState(), 0, 1, false)
@@ -12,8 +13,8 @@ func ShowServerMenu(app *General.App) {
 }
 
 func DisplayGameServerState() tview.Primitive {
-	g := GetGameServerState()
-	l := GetLeaderboards()
+	g := Task.GetGameServerState()
+	l := Task.GetLeaderboards()
 
 	window := tview.NewFlex()
 	window.SetBorder(false)
@@ -28,7 +29,7 @@ func DisplayGameServerState() tview.Primitive {
 	StateBox := tview.NewFlex()
 	StateBox.SetBorder(true)
 	StateBox.SetTitle("Game Server Status")
-	StateBox.SetBorderColor(General.Theme.BgBorder)
+	StateBox.SetBorderColor(Model.Theme.BgBorder)
 	StateInfo := tview.NewTextView()
 	fmt.Fprintf(StateInfo, "Status:    %s\n", g.Status)
 	fmt.Fprintf(StateInfo, "Version:   %s\n", g.Version)
@@ -42,7 +43,7 @@ func DisplayGameServerState() tview.Primitive {
 	PlayerBox := tview.NewFlex()
 	PlayerBox.SetBorder(true)
 	PlayerBox.SetTitle("Registered Player Stats")
-	PlayerBox.SetBorderColor(General.Theme.BgBorder)
+	PlayerBox.SetBorderColor(Model.Theme.BgBorder)
 	PlayerInfo := tview.NewTextView()
 	fmt.Fprintf(PlayerInfo, "Accounts:  %d\n", g.Stats.Accounts)
 	fmt.Fprintf(PlayerInfo, "Agents:    %d\n", g.Stats.Agents)
@@ -56,7 +57,7 @@ func DisplayGameServerState() tview.Primitive {
 	LeaderBox1 := tview.NewFlex()
 	LeaderBox1.SetBorder(true)
 	LeaderBox1.SetTitle("  Leaderboard (Credits)  ")
-	LeaderBox1.SetBorderColor(General.Theme.BgBorder)
+	LeaderBox1.SetBorderColor(Model.Theme.BgBorder)
 	CredsGrid := tview.NewGrid()
 	CredsGrid.SetRows(1,1,1,1,1,1,1,1,1,1)        // Position | Agent | Credits
 	CredsGrid.SetColumns(5, 25, 25) // Position | Agent | Credits
@@ -92,7 +93,7 @@ func DisplayGameServerState() tview.Primitive {
 	LeaderBox2 := tview.NewFlex()
 	LeaderBox2.SetBorder(true)
 	LeaderBox2.SetTitle("  Leaderboard (Charts)  ")
-	LeaderBox2.SetBorderColor(General.Theme.BgBorder)
+	LeaderBox2.SetBorderColor(Model.Theme.BgBorder)
 	ChartsGrid := tview.NewGrid()
 	ChartsGrid.SetRows(1,1,1,1,1,1,1,1,1,1)
 	ChartsGrid.SetColumns(5, 25, 20) // position | agent | credits

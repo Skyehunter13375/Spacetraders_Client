@@ -1,10 +1,11 @@
-package Agents
+package Tui 
 
 import "fmt"
-import "Spacetraders/src/General"
+import "Spacetraders/src/Task"
+import "Spacetraders/src/Model"
 import "github.com/rivo/tview"
 
-func ShowAgentsMenu(app *General.App) {
+func ShowAgentsMenu(app *Model.App) {
 	app.UIState.SubMenu.Clear()
 	app.UIState.Output.Clear()
 	app.UIState.Output.AddItem(DisplayAgentState(), 0, 1, false)
@@ -13,10 +14,10 @@ func ShowAgentsMenu(app *General.App) {
 
 func DisplayAgentState() tview.Primitive {
 	// TASK: Get agent name from config file
-	CFG, _ := General.GetConfig()
+	CFG, _ := Task.GetConfig()
 
 	// TASK: Display the agent data
-	agent  := GetAgentState(CFG.API.AgentName)
+	agent  := Task.GetAgentState(CFG.API.AgentName)
 
 	window := tview.NewFlex()
 	window.SetBorder(false)
@@ -26,7 +27,7 @@ func DisplayAgentState() tview.Primitive {
 	stats_1.SetBorder(false)
 	box_1 := tview.NewTextView()
 	box_1.SetBorder(true)
-	box_1.SetBorderColor(General.Theme.BgBorder)
+	box_1.SetBorderColor(Model.Theme.BgBorder)
 	fmt.Fprintf(box_1, "Account ID:   %s\n", agent.AccountID)
 	fmt.Fprintf(box_1, "Agent Symbol: %s\n", agent.Symbol)
 	fmt.Fprintf(box_1, "Faction:      %s\n", agent.Faction)
@@ -38,7 +39,7 @@ func DisplayAgentState() tview.Primitive {
 	graph_1 := tview.NewTextArea()
 	graph_1.SetBorder(true)
 	graph_1.SetTitle("  Cash Flow History  ")
-	graph_1.SetBorderColor(General.Theme.BgBorder)
+	graph_1.SetBorderColor(Model.Theme.BgBorder)
 	graph_1.SetText("Coming Soon...", false)
 
 	window.AddItem(stats_1, 0, 1, false)

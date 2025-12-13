@@ -1,14 +1,14 @@
-package Fleet
+package Task 
 
-import "Spacetraders/src/General"
+import "Spacetraders/src/Model"
 import "encoding/json"
 import "time"
 
-func GetShipState(symbol string) Ship {
-	var sd Ship
+func GetShipState(symbol string) Model.Ship {
+	var sd Model.Ship
 
 	tsStr := "1970-01-01T00:00:00Z"
-	General.PG.QueryRow(`SELECT last_updated FROM ships where symbol = ?`, symbol).Scan(&tsStr)
+	PG.QueryRow(`SELECT last_updated FROM ships where symbol = ?`, symbol).Scan(&tsStr)
 	ts, _ := time.Parse(time.RFC3339, tsStr)
 	if time.Since(ts) > 15*time.Minute { UpdateShipState() }
 
@@ -23,7 +23,7 @@ func GetShipState(symbol string) Ship {
 		INNER JOIN ship_engine  AS engine  ON engine.ship  = ship.symbol
 		WHERE ship.symbol = ?
 	`
-	_ = General.PG.QueryRow(query, symbol).Scan(
+	_ = PG.QueryRow(query, symbol).Scan(
 		&sd.Symbol,
 		&sd.Registration.Name,
 		&sd.Registration.Role,
@@ -95,25 +95,25 @@ func GetShipState(symbol string) Ship {
 
 	//? Debug: Log the entire ship struct to JSON in file
 	// jsonData, _ := json.Marshal(sd)
-	// General.LogActivity(string(jsonData))
+	// LogActivity(string(jsonData))
 
 	return sd
 }
 
 func UpdateShipState() error {
-	data := General.GetUrlJson("https://api.spacetraders.io/v2/my/ships", "agent")
+	data := GetUrlJson("https://api.spacetraders.io/v2/my/ships", "agent")
 
 	var wrapper map[string]json.RawMessage
 	err := json.Unmarshal([]byte(data), &wrapper)
-	if err != nil { General.LogErr(err.Error()) }
+	if err != nil { LogErr(err.Error()) }
 
-	var ships []Ship
+	var ships []Model.Ship
 	err = json.Unmarshal(wrapper["data"], &ships)
-	if err != nil { General.LogErr("UpdateShipState JSON: " + err.Error()) }
+	if err != nil { LogErr("UpdateShipState JSON: " + err.Error()) }
 
 	for _, s := range ships {
 		// ┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫ Upsert Ship ┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫
-		_, err := General.PG.Exec(`
+		_, err := PG.Exec(`
 			INSERT INTO ships (symbol,name,role,faction,last_updated) 
 			VALUES (?,?,?,?,datetime('now'))
 			ON CONFLICT (symbol) DO UPDATE SET
@@ -128,10 +128,10 @@ func UpdateShipState() error {
 			s.Registration.Role,
 			s.Registration.FactionSymbol,
 		)
-		if err != nil { General.LogErr("UpdateShipState Ships: " + err.Error()) }
+		if err != nil { LogErr("UpdateShipState Ships: " + err.Error()) }
 
 		// ┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫ Upsert Ship Nav ┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫
-		_, err = General.PG.Exec(`
+		_, err = PG.Exec(`
 			INSERT INTO ship_nav (ship,system,waypoint,status,flight_mode,origin,origin_type,origin_x,origin_y,destination,destination_type,destination_x,destination_y,arrival,departure) 
 			VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
 			ON CONFLICT (ship) DO UPDATE SET
@@ -167,10 +167,10 @@ func UpdateShipState() error {
 			s.Nav.Route.Arrival,
 			s.Nav.Route.DepartureTime,
 		)
-		if err != nil { General.LogErr("UpdateShipState ShipNav: " + err.Error()) }
+		if err != nil { LogErr("UpdateShipState ShipNav: " + err.Error()) }
 
 		// ┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫ Upsert Ship Crew ┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫
-		_, err = General.PG.Exec(`
+		_, err = PG.Exec(`
 			INSERT INTO ship_crew (ship, current, required, capacity, rotation, morale, wages) 
 			VALUES (?,?,?,?,?,?,?)
 			ON CONFLICT (ship) DO UPDATE SET
@@ -190,10 +190,10 @@ func UpdateShipState() error {
 			s.Crew.Morale,
 			s.Crew.Wages,
 		)
-		if err != nil { General.LogErr("UpdateShipState ShipCrew: " + err.Error()) }
+		if err != nil { LogErr("UpdateShipState ShipCrew: " + err.Error()) }
 
 		// ┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫ Upsert Ship Fuel ┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫
-		_, err = General.PG.Exec(`
+		_, err = PG.Exec(`
 			INSERT INTO ship_fuel (ship,current,capacity)
 			VALUES (?,?,?)
 			ON CONFLICT (ship) DO UPDATE SET
@@ -205,10 +205,10 @@ func UpdateShipState() error {
 			s.Fuel.Current,
 			s.Fuel.Capacity,
 		)
-		if err != nil { General.LogErr("UpdateShipState ShipFuel: " + err.Error()) }
+		if err != nil { LogErr("UpdateShipState ShipFuel: " + err.Error()) }
 
 		// ┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫ Upsert Ship Frame ┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫
-		_, err = General.PG.Exec(`
+		_, err = PG.Exec(`
 			INSERT INTO ship_frame (ship,symbol,name,description,module_slots,mount_points,fuel_capacity,condition,integrity,quality,power_required,crew_required)
 			VALUES (?,?,?,?,?,?,?,?,?,?,?,?)
 			ON CONFLICT (ship) DO UPDATE SET
@@ -238,10 +238,10 @@ func UpdateShipState() error {
 			s.Frame.Requirements.Power,
 			s.Frame.Requirements.Crew,
 		)
-		if err != nil { General.LogErr("UpdateShipState ShipFrame: " + err.Error()) }
+		if err != nil { LogErr("UpdateShipState ShipFrame: " + err.Error()) }
 
 		// ┣━━━━━━━━━━━━━━━━━━━━━━━━━━━┫ Upsert Ship Reactor ┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫
-		_, err = General.PG.Exec(`
+		_, err = PG.Exec(`
 			INSERT INTO ship_reactor (ship,symbol,name,description,condition,integrity,power_output,quality,crew_required)
 			VALUES (?,?,?,?,?,?,?,?,?)
 			ON CONFLICT (ship) DO UPDATE SET
@@ -265,10 +265,10 @@ func UpdateShipState() error {
 			s.Frame.Requirements.Power,
 			s.Frame.Requirements.Crew,
 		)
-		if err != nil { General.LogErr("UpdateShipState ShipReactor: " + err.Error()) }
+		if err != nil { LogErr("UpdateShipState ShipReactor: " + err.Error()) }
 
 		// ┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫ Upsert Ship Engine ┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫
-		_, err = General.PG.Exec(`
+		_, err = PG.Exec(`
 			INSERT INTO ship_engine (ship,symbol,name,description,condition,integrity,speed,quality,power_required,crew_required)
 			VALUES (?,?,?,?,?,?,?,?,?,?)
 			ON CONFLICT (ship) DO UPDATE SET
@@ -294,7 +294,7 @@ func UpdateShipState() error {
 			s.Engine.Requirements.Power,
 			s.Engine.Requirements.Crew,
 		)
-		if err != nil { General.LogErr("UpdateShipState ShipEngine: " + err.Error()) }
+		if err != nil { LogErr("UpdateShipState ShipEngine: " + err.Error()) }
 	}
 
 	return nil

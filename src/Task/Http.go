@@ -1,4 +1,4 @@
-package General
+package Task
 
 import "fmt"
 import "io"
@@ -59,3 +59,4 @@ func PostUrlJson(url string, tokenType string) (string, error) {
 	fmt.Fprintf(&returns, "%s", body)
 	return returns.String(), nil
 }
+

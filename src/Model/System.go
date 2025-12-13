@@ -1,6 +1,4 @@
-package Waypoints
-
-import "Spacetraders/src/Fleet"
+package Model
 
 // ┣━━━━━━━━━━━━━━━━━━━━━┫ System (All at once - no detail) ┣━━━━━━━━━━━━━━━━━━━━━┫
 type System struct {
@@ -167,12 +165,12 @@ type SY_Ship struct {
 	Activity    string              `json:"activity"`
 	Price       int64               `json:"shipPrice"`
 	ModFee      int64               `json:"modificationsFee"`
-	Frame       Fleet.ShipFrame     `json:"frame"`
-	Reactor     Fleet.ShipReactor   `json:"reactor"`
-	Engine      Fleet.ShipEngine    `json:"engine"`
-	Modules     []Fleet.ShipModules `json:"modules"`
-	Mounts      []Fleet.ShipMounts  `json:"mounts"`
-	Crew        Fleet.ShipCrew      `json:"crew"`
+	Frame       ShipFrame     `json:"frame"`
+	Reactor     ShipReactor   `json:"reactor"`
+	Engine      ShipEngine    `json:"engine"`
+	Modules     []ShipModules `json:"modules"`
+	Mounts      []ShipMounts  `json:"mounts"`
+	Crew        ShipCrew      `json:"crew"`
 }
 
 // {

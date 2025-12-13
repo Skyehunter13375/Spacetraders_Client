@@ -1,7 +1,4 @@
-package General
-
-import "os"
-import "gopkg.in/yaml.v3"
+package Model
 
 type Configs struct {
 	DB struct {
@@ -20,15 +17,4 @@ type Configs struct {
 		AccntToken string `yaml:"AccntToken"`
 		AgentToken string `yaml:"AgentToken"`
 	} `yaml:"API"`
-}
-
-func GetConfig() (*Configs, error) {
-	data, err := os.ReadFile("config.yaml")
-	if err != nil { LogErr("GetConfig: " + err.Error()); return nil, err }
-
-	var cfg Configs
-	err = yaml.Unmarshal(data, &cfg)
-	if err != nil { LogErr("GetConfig: " + err.Error()); return nil, err }
-
-	return &cfg, nil
 }

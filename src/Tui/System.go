@@ -1,22 +1,23 @@
-package Waypoints
+package Tui
 
 // import "fmt"
 import "strconv"
-import "Spacetraders/src/General"
+import "Spacetraders/src/Task"
+import "Spacetraders/src/Model"
 import "github.com/rivo/tview"
 import "github.com/gdamore/tcell/v2"
 
 func DisplaySystem(id string) tview.Primitive {
-	System := GetSystem(id)
+	System := Task.GetSystem(id)
 	var Waypoints int64
 	var Markets   int64
 	var Shipyards int64
-	General.PG.QueryRow("SELECT COUNT(*) FROM waypoints WHERE system = $1", id).Scan(&Waypoints)
-	General.PG.QueryRow("SELECT COUNT(*) FROM waypoints WHERE system = $1 AND 'MARKETPLACE' = ANY(traits)", id).Scan(&Markets)
-	General.PG.QueryRow("SELECT COUNT(*) FROM waypoints WHERE system = $1 AND 'SHIPYARD'    = ANY(traits)", id).Scan(&Shipyards)
+	Task.PG.QueryRow("SELECT COUNT(*) FROM waypoints WHERE system = $1", id).Scan(&Waypoints)
+	Task.PG.QueryRow("SELECT COUNT(*) FROM waypoints WHERE system = $1 AND 'MARKETPLACE' = ANY(traits)", id).Scan(&Markets)
+	Task.PG.QueryRow("SELECT COUNT(*) FROM waypoints WHERE system = $1 AND 'SHIPYARD'    = ANY(traits)", id).Scan(&Shipyards)
 	form := tview.NewForm()
 	form.SetBorder(false)
-	form.SetBackgroundColor(General.Theme.BgBase)
+	form.SetBackgroundColor(Model.Theme.BgBase)
 	form.AddTextView("Symbol:",    System.Symbol, 0, 1, true, true)
 	form.AddTextView("Type:",      System.Type,   0, 1, true, true)
 	form.AddTextView("Waypoints:", strconv.FormatInt(Waypoints, 10), 0, 1, true, true)
@@ -26,10 +27,10 @@ func DisplaySystem(id string) tview.Primitive {
 }
 
 func DisplayWaypoint(id string) tview.Primitive {
-	Waypoint := GetWaypoint(id)
+	Waypoint := Task.GetWaypoint(id)
 	form := tview.NewForm()
 	form.SetBorder(false)
-	form.SetBackgroundColor(General.Theme.BgBase)
+	form.SetBackgroundColor(Model.Theme.BgBase)
 	form.AddTextView("Symbol",        Waypoint.Symbol,                              0, 1, true, true)
 	form.AddTextView("Type",          Waypoint.Type,                                0, 1, true, true)
 	// form.AddTextView("Coords:",       fmt.Sprintf("%d:%d", Waypoint.X, Waypoint.Y), 0, 1, true, true)
@@ -39,21 +40,21 @@ func DisplayWaypoint(id string) tview.Primitive {
 	return form 
 }
 
-func DisplaySystemMenu(app *General.App) tview.Primitive {
+func DisplaySystemMenu(app *Model.App) tview.Primitive {
 	app.UIState.SubMenu.Clear()
 	app.UIState.Output.Clear()
 	window := tview.NewFlex().SetDirection(tview.FlexRow)
 
 	// TASK: First check if there is any data to show
 	var count int
-	err := General.PG.QueryRow("SELECT COUNT(*) FROM systems").Scan(&count)
-	if err != nil { General.LogErr("DisplaySystemMenu: " + err.Error()) }
+	err := Task.PG.QueryRow("SELECT COUNT(*) FROM systems").Scan(&count)
+	if err != nil { Task.LogErr("DisplaySystemMenu: " + err.Error()) }
 	// DEBG: Need a function here to capture starting system
 	if count == 0 { panic("Need a function to capture starting system here") }
 
 	// TASK: Get a list of ships to build cards for
-	SysList, err := General.PG.Query("SELECT symbol FROM systems")
-	if err != nil { General.LogErr("DisplaySystemMenu: " + err.Error()) }
+	SysList, err := Task.PG.Query("SELECT symbol FROM systems")
+	if err != nil { Task.LogErr("DisplaySystemMenu: " + err.Error()) }
 
 	var symbols []string
 	for SysList.Next() {
@@ -68,10 +69,10 @@ func DisplaySystemMenu(app *General.App) tview.Primitive {
 	const cardWidth   = 43
 
 	// Define the submenu for each card when selected
-	var cards []*General.CardButton
+	var cards []*Task.CardButton
 	for _, sym := range symbols {
 		localSym := sym // capture loop variable
-		card := General.NewCardButton(
+		card := Task.NewCardButton(
 			DisplaySystem(localSym),
 			"",
 			func() { 
@@ -85,7 +86,7 @@ func DisplaySystemMenu(app *General.App) tview.Primitive {
 	}
 
 	// Define the grid for the cards to live in, this way they can be selected with arrow keys
-	var grid [][]*General.CardButton
+	var grid [][]*Task.CardButton
 	for i := 0; i < len(cards); i += cardsPerRow {
 		end := i + cardsPerRow
 		end  = min(end, len(cards)) // if end > len(cards) { end = len(cards) }
@@ -164,7 +165,7 @@ func DisplaySystemMenu(app *General.App) tview.Primitive {
 	return window
 }
 
-func DisplayWaypointMenu(app *General.App, System string) tview.Primitive {
+func DisplayWaypointMenu(app *Model.App, System string) tview.Primitive {
 	app.UIState.SubMenu.Clear()
 	app.UIState.Output.Clear()
 	window := tview.NewFlex().SetDirection(tview.FlexRow)
@@ -181,8 +182,8 @@ func DisplayWaypointMenu(app *General.App, System string) tview.Primitive {
 	// window.AddItem(pcontent, 1, 1, false)
 
 	// First we need a list of ships to build cards for
-	WayList, err := General.PG.Query("SELECT symbol FROM waypoints WHERE system = $1", System)
-	if err != nil { General.LogErr("DisplaySystemMenu: " + err.Error()) }
+	WayList, err := Task.PG.Query("SELECT symbol FROM waypoints WHERE system = $1", System)
+	if err != nil { Task.LogErr("DisplaySystemMenu: " + err.Error()) }
 
 	var symbols []string
 	for WayList.Next() {
@@ -197,10 +198,10 @@ func DisplayWaypointMenu(app *General.App, System string) tview.Primitive {
 	const cardWidth   = 32
 
 	// Define the submenu for each card when selected
-	var cards []*General.CardButton
+	var cards []*Task.CardButton
 	for _, sym := range symbols {
 		localSym := sym // capture loop variable
-		card := General.NewCardButton(
+		card := Task.NewCardButton(
 			DisplayWaypoint(localSym),
 			"",
 			func() {
@@ -213,7 +214,7 @@ func DisplayWaypointMenu(app *General.App, System string) tview.Primitive {
 	}
 
 	// Define the grid for the cards to live in, this way they can be selected with arrow keys
-	var grid [][]*General.CardButton
+	var grid [][]*Task.CardButton
 	for i := 0; i < len(cards); i += cardsPerRow {
 		end := i + cardsPerRow
 		end  = min(end, len(cards)) // if end > len(cards) { end = len(cards) }

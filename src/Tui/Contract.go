@@ -1,25 +1,26 @@
-package Contracts
+package Tui 
 
-import "Spacetraders/src/General"
+import "Spacetraders/src/Task"
+import "Spacetraders/src/Model"
 import "github.com/rivo/tview"
 import "github.com/gdamore/tcell/v2"
 import "time"
 
-func DisplayContractMenu(app *General.App) tview.Primitive {
-	CFG, _ := General.GetConfig()
+func DisplayContractMenu(app *Model.App) tview.Primitive {
+	CFG, _ := Task.GetConfig()
 	app.UIState.SubMenu.Clear()
 	app.UIState.Output.Clear()
 	window := tview.NewFlex().SetDirection(tview.FlexRow)
 
 	// TASK: First check if there is any data to show
 	var count int
-	err := General.PG.QueryRow("SELECT COUNT(*) FROM contracts").Scan(&count)
-	if err != nil { General.LogErr("DisplayContractMenu: " + err.Error()) }
-	if count == 0 { NegotiateNewContract(CFG.API.AgentName + "-1") }
+	err := Task.PG.QueryRow("SELECT COUNT(*) FROM contracts").Scan(&count)
+	if err != nil { Task.LogErr("DisplayContractMenu: " + err.Error()) }
+	if count == 0 { Task.NegotiateNewContract(CFG.API.AgentName + "-1") }
 
 	// TASK: Get a list of ships to build cards for
-	ContList, err := General.PG.Query("SELECT id FROM contracts")
-	if err != nil { General.LogErr("DisplayContractMenu: " + err.Error()) }
+	ContList, err := Task.PG.Query("SELECT id FROM contracts")
+	if err != nil { Task.LogErr("DisplayContractMenu: " + err.Error()) }
 
 	var symbols []string
 	for ContList.Next() {
@@ -34,10 +35,10 @@ func DisplayContractMenu(app *General.App) tview.Primitive {
 	const cardWidth   = 43 
 
 	// Define the submenu for each card when selected
-	var cards []*General.CardButton
+	var cards []*Task.CardButton
 	for _, sym := range symbols {
 		localSym := sym // capture loop variable
-		card := General.NewCardButton(
+		card := Task.NewCardButton(
 			BuildContractForm(localSym),
 			"",
 			func() {
@@ -54,7 +55,7 @@ func DisplayContractMenu(app *General.App) tview.Primitive {
 	}
 
 	// Define the grid for the cards to live in, this way they can be selected with arrow keys
-	var grid [][]*General.CardButton
+	var grid [][]*Task.CardButton
 	for i := 0; i < len(cards); i += cardsPerRow {
 		end := i + cardsPerRow
 		end  = min(end, len(cards)) // if end > len(cards) { end = len(cards) }
@@ -136,7 +137,7 @@ func DisplayContractMenu(app *General.App) tview.Primitive {
 func BuildContractForm(id string) tview.Primitive {
 	box  := tview.NewForm()
 	box.SetBackgroundColor(tcell.GetColor("#2A2E2A"))
-	data := GetContract(id)
+	data := Task.GetContract(id)
 
 	status := "Available"
 	if data.Accepted == true && data.Fulfilled == true {
@@ -146,10 +147,10 @@ func BuildContractForm(id string) tview.Primitive {
 	}
 
 	accepttimestamp, err := time.Parse(time.RFC3339Nano, data.DeadlineToAccept)
-	if err != nil { General.LogErr("BuildContractForm: accepttimestampconvert: " + err.Error()) }
+	if err != nil { Task.LogErr("BuildContractForm: accepttimestampconvert: " + err.Error()) }
 
 	deadlinetimestamp, err := time.Parse(time.RFC3339Nano, data.Terms.Deadline)
-	if err != nil { General.LogErr("BuildContractForm: deadlinetimestampconvert: " + err.Error()) }
+	if err != nil { Task.LogErr("BuildContractForm: deadlinetimestampconvert: " + err.Error()) }
 
 
 	box.AddTextView("ID:",           data.ID,               0, 1, true, true)

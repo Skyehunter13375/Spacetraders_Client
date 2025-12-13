@@ -1,19 +1,25 @@
+#### 12/12/2025
+- Big simplification of package structures so there's less cross importing avoiding conflicts.
+- Working on initial registration script so that it captures preliminary data to kickstart the process after a reset.
+- Created models for the entire registration process so it can be automated now.
+- Set up new tables for factions
+
 #### 12/08/2025
-- Mostly finished conversion back to SQLite
-- Automated most of the first time setup stuff
-- Now you just create the config.yaml file and it should do everything automagically
+- Mostly finished conversion back to SQLite.
+- Automated most of the first time setup stuff.
+- Now you just create the config.yaml file and it should do everything automagically.
 - Systems capture is not done yet. I need to actually sit and write my registration function to fill all of that out the first time the agent is registered. Then it becomes a non-issue.
 - Getting close to done with a primitive version of the UI, now I can actually start playing the game and automating ship action.
 
 #### 12/07/2025
-- Converting back to SQLite...again
-- Condensing and simplifying the file structure, getting too large
-- Reworking comment structure as well as I've fully switched from VsCode to NeoVim now
+- Converting back to SQLite...again.
+- Condensing and simplifying the file structure, getting too large.
+- Reworking comment structure as well as I've fully switched from VsCode to NeoVim now.
 
 #### 11/27/2025 + 11/28/2025
-- Modifying color theme to be more dark gray and green themed, easier on the eyes when staring at it for hours
-- Converted single line entries for Fleet and Systems into selectable cards
-- Beginning to break down menus into substructures
+- Modifying color theme to be more dark gray and green themed, easier on the eyes when staring at it for hours.
+- Converted single line entries for Fleet and Systems into selectable cards.
+- Beginning to break down menus into substructures.
 
 #### 11/26/2025
 - Removed unecessary struct in agent data collection routines. Updated functions accordingly.
@@ -29,12 +35,12 @@
 #### 11/24/2025
 - Moved app config structs into General package so they could be available everywhere.
     - The fact that Golang doesn't have true Global variables is really frustrating...
-- Moved the menu builder funcs into their respective packages now that the structs are global (if imported)
-    - This will let me keep like-code together. Once in a menu like Fleet, the code for the entire fleet menu tree will be together in the Fleet package
+- Moved the menu builder funcs into their respective packages now that the structs are global (if imported).
+    - This will let me keep like-code together. Once in a menu like Fleet, the code for the entire fleet menu tree will be together in the Fleet package.
 
 #### 11/23/2025
-- Big refactor on the main function and how it handles passing focus around
-- Created logic for displaying (with the intent of editing later) the config.yaml file
+- Big refactor on the main function and how it handles passing focus around.
+- Created logic for displaying (with the intent of editing later) the config.yaml file.
 - This should set the stage for all further UI changes and make that substantially easier now that I can pass the entire app back and forth instead of just random flex primitives.
 
 #### 11/22/2025
@@ -44,14 +50,14 @@
 - Added logic to display leaderboards in the TUI. Still working out what data needs a menu in there as opposed to just running under the hood...
 
 #### 11/18/2025
-- Big changes to the UI builder & associated functions
-- Can now display contracts, systems, waypoints, and ship fleet
-- It's not the cleanest and needs lots of work, especially with resizing and scaling properly to the window size. 
-- I also added lots of logging and 
+- Big changes to the UI builder & associated functions.
+- Can now display contracts, systems, waypoints, and ship fleet.
+- It's not the cleanest and needs lots of work, especially with resizing and scaling properly to the window size.
+- I also added lots of logging.
 
 #### 11/16/2025
-- Another big refactor while I am learning which packages I like
-- Filling in gaps in data collection routines
+- Another big refactor while I am learning which packages I like.
+- Filling in gaps in data collection routines.
 
 #### 11/16/2025
 - Complete overhaul of postgres connections. Simplified and trimmed lots of fat.
@@ -69,32 +75,32 @@
 - Created structs and function template for shipyard data collection but can't test until next reset or I move systems.
 
 #### 11/10/2025
-- Fixed my ingest routines to properly use json.Unmarshal() with wrappers to get rid of the "data" fields
-- Rebuilt my structs for all data types for ease of using interfaces and SQL tuning later on
+- Fixed my ingest routines to properly use json.Unmarshal() with wrappers to get rid of the "data" fields.
+- Rebuilt my structs for all data types for ease of using interfaces and SQL tuning later on.
 - Gave up on SQLite and switched back to PostgreSQL. I need the ability to store arrays in a single column for cross reference later.
 - Rebuilt the PSQL DB and updated all functions to write data there again.
 
 #### 11/09/2025
-- Added system and waypoint data collection routines
-- Built DB tables to contain that data
+- Added system and waypoint data collection routines.
+- Built DB tables to contain that data.
 
 #### 11/04/2025
-- Added contract tables to DB and built associated structs
+- Added contract tables to DB and built associated structs.
 - Built Get,Update,Display routine framework for the contract data.
 
 #### 11/03/2025
 - Moved development environment to a local machine from a remote server.
-- Switched from Tview to BubbleTea
+- Switched from Tview to BubbleTea.
 - Abandoned the server performance data for now, not really relevant and distracting.
 
 #### 11/01/2025
-- Switched from PostgreSQL to SQLite
+- Switched from PostgreSQL to SQLite.
 
 #### 10/20/2025
 - Project start
 - Registering an agent
-- Laying the basic foundation for how the TUI is going to work
-- Gathering the information required from both the host server and the SpaceTraders web API
-- Found and installed the base packages I'll be using for this project
-- Created and set up the PGSQL DB and all permissions
+- Laying the basic foundation for how the TUI is going to work.
+- Gathering the information required from both the host server and the SpaceTraders web API.
+- Found and installed the base packages I'll be using for this project.
+- Created and set up the PGSQL DB and all permissions.
 - Started pre-defining some of the tables I knew I'd need.

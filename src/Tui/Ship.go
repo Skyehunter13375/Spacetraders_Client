@@ -1,13 +1,14 @@
-package Fleet
+package Tui 
 
-import "Spacetraders/src/General"
+import "Spacetraders/src/Task"
+import "Spacetraders/src/Model"
 import "github.com/rivo/tview"
 import "github.com/gdamore/tcell/v2"
 
 func BuildShipForm(symbol string) tview.Primitive {
 	box  := tview.NewForm()
 	box.SetBackgroundColor(tcell.GetColor("#2A2E2A"))
-	ship := GetShipState(symbol)
+	ship := Task.GetShipState(symbol)
 
 	box.AddTextView("Name:", ship.Symbol, 0, 1, true, true)
 	box.AddTextView("Role:", ship.Registration.Role + " (" + ship.Frame.Name + ")", 0, 1, true, true)
@@ -17,27 +18,27 @@ func BuildShipForm(symbol string) tview.Primitive {
 	} else {
 		box.AddTextView("Waypoint:", ship.Nav.WaypointSymbol + " -> " + ship.Nav.Route.Destination.Symbol, 0, 1, true, true)
 	}
-	box.AddTextView("Crew:",     General.ProgressBar(ship.Crew.Current, ship.Crew.Required, ship.Crew.Capacity), 0, 1, true, true)
-	box.AddTextView("Fuel:",     General.ProgressBar(ship.Fuel.Current, 0,                  ship.Fuel.Capacity), 0, 1, true, true)
-	box.AddTextView("Morale:",   General.ProgressBar(ship.Crew.Morale,  0,                  100),                0, 1, true, true)
+	box.AddTextView("Crew:",     Task.ProgressBar(ship.Crew.Current, ship.Crew.Required, ship.Crew.Capacity), 0, 1, true, true)
+	box.AddTextView("Fuel:",     Task.ProgressBar(ship.Fuel.Current, 0,                  ship.Fuel.Capacity), 0, 1, true, true)
+	box.AddTextView("Morale:",   Task.ProgressBar(ship.Crew.Morale,  0,                  100),                0, 1, true, true)
 
 	return box
 }
 
-func DisplayFleetMenu(app *General.App) tview.Primitive {
+func DisplayFleetMenu(app *Model.App) tview.Primitive {
 	app.UIState.SubMenu.Clear()
 	app.UIState.Output.Clear()
 	window := tview.NewFlex().SetDirection(tview.FlexRow)
 
 	// TASK: First check if there is any data to show
 	var count int
-	err := General.PG.QueryRow("SELECT COUNT(*) FROM ships").Scan(&count)
-	if err != nil { General.LogErr("DisplayContractMenu: " + err.Error()) }
-	if count == 0 { UpdateShipState() }
+	err := Task.PG.QueryRow("SELECT COUNT(*) FROM ships").Scan(&count)
+	if err != nil { Task.LogErr("DisplayContractMenu: " + err.Error()) }
+	if count == 0 { Task.UpdateShipState() }
 
 	// TASK: Get a list of ships to build cards for
-	ShipList, err := General.PG.Query("SELECT symbol FROM ships")
-	if err != nil { General.LogErr("DisplayFleetMenu: " + err.Error()) }
+	ShipList, err := Task.PG.Query("SELECT symbol FROM ships")
+	if err != nil { Task.LogErr("DisplayFleetMenu: " + err.Error()) }
 
 	var symbols []string
 	for ShipList.Next() {
@@ -52,10 +53,10 @@ func DisplayFleetMenu(app *General.App) tview.Primitive {
 	const cardWidth   = 41 
 
 	// Define the submenu for each card when selected
-	var cards []*General.CardButton
+	var cards []*Task.CardButton
 	for _, sym := range symbols {
 		localSym := sym // capture loop variable
-		card := General.NewCardButton(
+		card := Task.NewCardButton(
 			BuildShipForm(localSym),
 			"",
 			func() {
@@ -74,7 +75,7 @@ func DisplayFleetMenu(app *General.App) tview.Primitive {
 	}
 
 	// Define the grid for the cards to live in, this way they can be selected with arrow keys
-	var grid [][]*General.CardButton
+	var grid [][]*Task.CardButton
 	for i := 0; i < len(cards); i += cardsPerRow {
 		end := i + cardsPerRow
 		end  = min(end, len(cards)) // if end > len(cards) { end = len(cards) }

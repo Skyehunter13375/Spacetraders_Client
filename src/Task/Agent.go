@@ -1,15 +1,15 @@
-package Agents
+package Task
 
-import "Spacetraders/src/General"
+import "Spacetraders/src/Model"
 import "encoding/json"
 import "time"
 
-func GetAgentState(agent string) Agent {
-	var a Agent
+func GetAgentState(agent string) Model.Agent {
+	var a Model.Agent
 
 	// TASK: Check last updated timestamp, if > 15 mins go pull new data
 	tsStr := "1970-01-01T00:00:00Z"
-	General.PG.QueryRow(`SELECT last_updated FROM agents where symbol = ?`, agent).Scan(&tsStr)
+	PG.QueryRow(`SELECT last_updated FROM agents where symbol = ?`, agent).Scan(&tsStr)
 	ts, _ := time.Parse(time.RFC3339, tsStr)
 	if time.Since(ts) > 15*time.Minute { UpdateAgentState() }
 
@@ -18,7 +18,7 @@ func GetAgentState(agent string) Agent {
 		FROM agents 
 		WHERE symbol = ?
 	`
-	_ = General.PG.QueryRow(query, agent).Scan(
+	_ = PG.QueryRow(query, agent).Scan(
 		&a.AccountID,
 		&a.Symbol,
 		&a.Faction,
@@ -32,16 +32,16 @@ func GetAgentState(agent string) Agent {
 }
 
 func UpdateAgentState() error {
-	jsonStr := General.GetUrlJson("https://api.spacetraders.io/v2/my/agent", "agent")
+	jsonStr := GetUrlJson("https://api.spacetraders.io/v2/my/agent", "agent")
 	var wrapper map[string]json.RawMessage
 	err := json.Unmarshal([]byte(jsonStr), &wrapper)
-	if err != nil { General.LogErr("UpdateAgentState: " + err.Error()) }
+	if err != nil { LogErr("UpdateAgentState: " + err.Error()) }
 
-	var a Agent
+	var a Model.Agent
 	err = json.Unmarshal(wrapper["data"], &a)
-	if err != nil { General.LogErr("UpdateAgentState: " + err.Error()) }
+	if err != nil { LogErr("UpdateAgentState: " + err.Error()) }
 
-	_, err = General.PG.Exec(`
+	_, err = PG.Exec(`
 		INSERT INTO agents (account_id, symbol, credits, faction, hq, ships, last_updated) 
 		VALUES (?,?,?,?,?,?,datetime('now'))
 		ON CONFLICT (symbol) DO UPDATE SET
@@ -60,7 +60,7 @@ func UpdateAgentState() error {
 		a.HQ,
 		a.Ships,
 	)
-	if err != nil { General.LogErr("UpdateAgentState agents: " + err.Error()); return err }
+	if err != nil { LogErr("UpdateAgentState agents: " + err.Error()); return err }
 
 	return nil
 }

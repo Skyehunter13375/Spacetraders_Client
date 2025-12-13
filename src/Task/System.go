@@ -1,22 +1,21 @@
-package Waypoints
+package Task
 
-import "Spacetraders/src/General"
+import "Spacetraders/src/Model"
 import "encoding/json"
-import "github.com/lib/pq" // PostgreSQL driver
 
 func UpdateSystem(symbol string) error {
-	jsonStr := General.GetUrlJson("https://api.spacetraders.io/v2/systems/"+symbol, "")
-	// General.LogActivity(string(jsonStr))
+	jsonStr := GetUrlJson("https://api.spacetraders.io/v2/systems/"+symbol, "")
+	// LogActivity(string(jsonStr))
 
 	var wrapper map[string]json.RawMessage
 	err := json.Unmarshal([]byte(jsonStr), &wrapper)
-	if err != nil { General.LogErr("UpdateSystem: " + err.Error()) }
+	if err != nil { LogErr("UpdateSystem: " + err.Error()) }
 
-	var s System
+	var s Model.System
 	err = json.Unmarshal(wrapper["data"], &s)
-	if err != nil { General.LogErr("UpdateSystem: " + err.Error()) }
+	if err != nil { LogErr("UpdateSystem: " + err.Error()) }
 
-	_, err = General.PG.Exec(`
+	_, err = PG.Exec(`
 		INSERT INTO systems (symbol, sector, constellation, name, type, x_coord, y_coord)
 		VALUES (?,?,?,?,?,?,?)
 		ON CONFLICT (symbol) DO UPDATE SET
@@ -35,46 +34,54 @@ func UpdateSystem(symbol string) error {
 		s.Xcoord,
 		s.Ycoord,
 	)
-	if err != nil { General.LogErr("UpdateSystem: Insert system failed: " + err.Error()) }
+	if err != nil { LogErr("UpdateSystem: Insert system failed: " + err.Error()) }
 
 	// PERF:
 	// Very heavy on API calls at the moment...
 	// Also not reading asteroids which we will need later on...
 	// I should store the data I have here from the current jsonStr, and only run UpdateWaypoint() later on if needed.
-	// for idx := range s.Waypoints {
-	//	if s.Waypoints[idx].Type == "ASTEROID" {
-	//		continue
-	//	}
-	//	err = UpdateWaypoint(s.Symbol, s.Waypoints[idx].Symbol)
-	//	if err != nil { General.LogErr("UpdateSystem: Insert loop failure: " + err.Error()) }
-	// }
+	for idx := range s.Waypoints {
+		if s.Waypoints[idx].Type == "ASTEROID" {
+			continue
+		}
+		err = UpdateWaypoint(s.Symbol, s.Waypoints[idx].Symbol)
+		if err != nil { LogErr("UpdateSystem: Insert loop failure: " + err.Error()) }
+	 }
 
 	return nil
 }
 
 func UpdateWaypoint(system string, waypoint string) error {
-	jsonStr := General.GetUrlJson("https://api.spacetraders.io/v2/systems/"+system+"/waypoints/"+waypoint, "")
+	jsonStr := GetUrlJson("https://api.spacetraders.io/v2/systems/"+system+"/waypoints/"+waypoint, "")
 
 	var wrapper map[string]json.RawMessage
 	json.Unmarshal([]byte(jsonStr), &wrapper)
 
-	var w Waypoint
+	var w Model.Waypoint
 	err := json.Unmarshal(wrapper["data"], &w)
-	if err != nil { General.LogErr("UpdateWaypoint: " + err.Error()) }
+	if err != nil { LogErr("UpdateWaypoint: " + err.Error()) }
 
-	traitArr := make([]string, len(w.Traits))
+	traitStr := ""
 	for idx, val := range w.Traits {
-		traitArr[idx] = val.Symbol
+		if idx == 0 {
+			traitStr = val.Symbol
+		} else {
+			traitStr = traitStr + "," + val.Symbol
+		}
 	}
 
-	modArr := make([]string, len(w.Modifiers))
+	modStr := ""
 	for idx, val := range w.Modifiers {
-		modArr[idx] = val.Symbol
+		if idx == 0 {
+			modStr = val.Symbol
+		} else {
+			modStr = modStr + "," + val.Symbol
+		}
 	}
 
-	_, err = General.PG.Exec(`
+	_, err = PG.Exec(`
 		INSERT INTO waypoints (system,symbol,type,x_coord,y_coord,orbits,construction,traits,modifiers)
-		VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9)
+		VALUES (?,?,?,?,?,?,?,?,?)
 		ON CONFLICT (symbol) DO UPDATE SET
 			system       = EXCLUDED.system, 
 			symbol       = EXCLUDED.symbol, 
@@ -93,31 +100,31 @@ func UpdateWaypoint(system string, waypoint string) error {
 		w.Y,
 		w.Orbits,
 		w.Construction,
-		pq.Array(traitArr),
-		pq.Array(modArr),
+		traitStr,
+		modStr,
 	)
-	if err != nil { General.LogErr("UpdateWaypoint: Insert failed: " + err.Error()) }
+	if err != nil { LogErr("UpdateWaypoint: Insert failed: " + err.Error()) }
 
 	return nil
 }
 
 func UpdateShipyard(system string, symbol string) error {
-	jsonStr := General.GetUrlJson("https://api.spacetraders.io/v2/systems/"+system+"/waypoints/"+symbol+"/shipyard", "")
+	jsonStr := GetUrlJson("https://api.spacetraders.io/v2/systems/"+system+"/waypoints/"+symbol+"/shipyard", "")
 
 	var wrapper map[string]json.RawMessage
 	json.Unmarshal([]byte(jsonStr), &wrapper)
 
-	var y Shipyard
+	var y Model.Shipyard
 	err := json.Unmarshal(wrapper["data"], &y)
-	if err != nil { General.LogErr("UpdateShipyard: " + err.Error()) }
+	if err != nil { LogErr("UpdateShipyard: " + err.Error()) }
 
 	// TODO: Write SQL to upsert data
 
 	return nil
 }
 
-func GetSystem(id string) System {
-	var Result System
+func GetSystem(id string) Model.System {
+	var Result Model.System
 
 	query := `
 		SELECT 
@@ -132,7 +139,7 @@ func GetSystem(id string) System {
 		WHERE symbol = $1
 	`
 
-	err := General.PG.QueryRow(query, id).Scan(
+	err := PG.QueryRow(query, id).Scan(
 		&Result.Symbol, 
 		&Result.Sector, 
 		&Result.Constellation, 
@@ -141,15 +148,15 @@ func GetSystem(id string) System {
 		&Result.Xcoord, 
 		&Result.Ycoord, 
 	)
-	if err != nil { General.LogErr("GetSystem: " + err.Error()); return Result }
+	if err != nil { LogErr("GetSystem: " + err.Error()); return Result }
 
 	return Result
 }
 
-func GetWaypoint(id string) Waypoint {
-	var result Waypoint
+func GetWaypoint(id string) Model.Waypoint {
+	var result Model.Waypoint
 
-	General.PG.QueryRow(`SELECT system,symbol,type,x_coord,y_coord,orbits,construction FROM waypoints WHERE symbol = $1`, id).Scan(
+	PG.QueryRow(`SELECT system,symbol,type,x_coord,y_coord,orbits,construction FROM waypoints WHERE symbol = $1`, id).Scan(
 		&result.System,
 		&result.Symbol,
 		&result.Type,
