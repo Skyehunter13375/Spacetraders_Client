@@ -10,7 +10,7 @@ func GetShipState(symbol string) Model.Ship {
 	tsStr := "1970-01-01T00:00:00Z"
 	PG.QueryRow(`SELECT last_updated FROM ships where symbol = ?`, symbol).Scan(&tsStr)
 	ts, _ := time.Parse(time.RFC3339, tsStr)
-	if time.Since(ts) > 15*time.Minute { UpdateShipState() }
+	if time.Since(ts) > 15*time.Minute { UpdateShipState(nil) }
 
 	query := `
 		SELECT ship.*, navg.*, crew.*, fuel.*, frame.*, reactor.*, engine.*
@@ -100,16 +100,17 @@ func GetShipState(symbol string) Model.Ship {
 	return sd
 }
 
-func UpdateShipState() error {
-	data := GetUrlJson("https://api.spacetraders.io/v2/my/ships", "agent")
+func UpdateShipState(ships []Model.Ship) error {
+	if ships == nil {
+		data := GetUrlJson("https://api.spacetraders.io/v2/my/ships", "agent")
 
-	var wrapper map[string]json.RawMessage
-	err := json.Unmarshal([]byte(data), &wrapper)
-	if err != nil { LogErr(err.Error()) }
+		var wrapper map[string]json.RawMessage
+		err := json.Unmarshal([]byte(data), &wrapper)
+		if err != nil { LogErr(err.Error()) }
 
-	var ships []Model.Ship
-	err = json.Unmarshal(wrapper["data"], &ships)
-	if err != nil { LogErr("UpdateShipState JSON: " + err.Error()) }
+		err = json.Unmarshal(wrapper["data"], &ships)
+		if err != nil { LogErr("UpdateShipState JSON: " + err.Error()) }
+	}
 
 	for _, s := range ships {
 		// ┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫ Upsert Ship ┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫

@@ -11,7 +11,7 @@ func GetAgentState(agent string) Model.Agent {
 	tsStr := "1970-01-01T00:00:00Z"
 	PG.QueryRow(`SELECT last_updated FROM agents where symbol = ?`, agent).Scan(&tsStr)
 	ts, _ := time.Parse(time.RFC3339, tsStr)
-	if time.Since(ts) > 15*time.Minute { UpdateAgentState() }
+	if time.Since(ts) > 15*time.Minute { UpdateAgentState(nil) }
 
 	query := `
 		SELECT account_id, symbol, faction, hq, ships, credits, last_updated 
@@ -31,15 +31,17 @@ func GetAgentState(agent string) Model.Agent {
 	return a
 }
 
-func UpdateAgentState() error {
-	jsonStr := GetUrlJson("https://api.spacetraders.io/v2/my/agent", "agent")
-	var wrapper map[string]json.RawMessage
-	err := json.Unmarshal([]byte(jsonStr), &wrapper)
-	if err != nil { LogErr("UpdateAgentState: " + err.Error()) }
+func UpdateAgentState(a *Model.Agent) error {
+	var err error
+	if a == nil {
+		jsonStr := GetUrlJson("https://api.spacetraders.io/v2/my/agent", "agent")
+		var wrapper map[string]json.RawMessage
+		err := json.Unmarshal([]byte(jsonStr), &wrapper)
+		if err != nil { LogErr("UpdateAgentState: " + err.Error()) }
 
-	var a Model.Agent
-	err = json.Unmarshal(wrapper["data"], &a)
-	if err != nil { LogErr("UpdateAgentState: " + err.Error()) }
+		err = json.Unmarshal(wrapper["data"], &a)
+		if err != nil { LogErr("UpdateAgentState: " + err.Error()) }
+	}
 
 	_, err = PG.Exec(`
 		INSERT INTO agents (account_id, symbol, credits, faction, hq, ships, last_updated) 

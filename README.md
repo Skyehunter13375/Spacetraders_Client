@@ -23,8 +23,8 @@ I wrote this on a RHEL based system with no intention of making it interoperable
     - [x] Register a New Agent
     - [x] Display settings config.yaml contents
     - [x] Simplify and/or automate new user setup
+    - [x] Automate reset process + archive old DB files for reference
     - [ ] Edit settings config.yaml contents in the TUI
-    - [ ] Automate reset process + archive old DB files for reference
 
 - [x] Game Server
     - [x] Capture current game server state _**(Stats/Resets/Leaderboards)**_

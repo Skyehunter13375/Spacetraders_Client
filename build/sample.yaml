@@ -1,17 +1,12 @@
-##################################
-# Edit and rename to config.yaml #
-##################################
 DB:
-  DbPath:  "SpaceTraders.db"
-  DbBuild: "BuildSqlite.sql"
-  DbReset: "ResetSqlite.sql"
-
+    DbPath: SpaceTraders.db
+    DbBuild: BuildSqlite.sql
+    DbReset: ResetSqlite.sql
 LOG:
-  ErrPath: "logs/Error.log"
-  ActPath: "logs/Activity.log"
-
+    ErrPath: logs/Error.log
+    ActPath: logs/Activity.log
 API:
-  AgentName:  ""
-  AccntToken: ""
-  AgentToken: ""
-
+    AgentName: NULLSKY
+    AgentFaction: VOID
+    AccntToken: 
+    AgentToken: 

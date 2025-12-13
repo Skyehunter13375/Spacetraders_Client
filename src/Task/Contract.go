@@ -3,15 +3,17 @@ package Task
 import "Spacetraders/src/Model"
 import "encoding/json"
 
-func UpdateContracts() error {
-	jsonStr := GetUrlJson("https://api.spacetraders.io/v2/my/contracts", "agent")
-	var wrapper map[string]json.RawMessage
-	err := json.Unmarshal([]byte(jsonStr), &wrapper)
-	if err != nil { LogErr("UpdateContracts: " + err.Error()) }
+func UpdateContracts(c []Model.Contract) error {
+	var err error
+	if c == nil {
+		jsonStr := GetUrlJson("https://api.spacetraders.io/v2/my/contracts", "agent")
+		var wrapper map[string]json.RawMessage
+		err := json.Unmarshal([]byte(jsonStr), &wrapper)
+		if err != nil { LogErr("UpdateContracts: " + err.Error()) }
 
-	var c []Model.Contract
-	err = json.Unmarshal(wrapper["data"], &c)
-	if err != nil { LogErr("UpdateContracts: " + err.Error()) }
+		err = json.Unmarshal(wrapper["data"], &c)
+		if err != nil { LogErr("UpdateContracts: " + err.Error()) }
+	}
 
 	for index := range c {
 		_, err = PG.Exec(`
@@ -105,10 +107,10 @@ func GetContract(id string) Model.Contract {
 
 func NegotiateNewContract(ship string) {
 	PostUrlJson("https://api.spacetraders.io/v2/my/ships/"+ship+"/negotiate/contract", "agent")
-	UpdateContracts()
+	UpdateContracts(nil)
 }
 
 func AcceptContract(contract string) {
 	PostUrlJson("https://api.spacetraders.io/v2/my/contracts/"+contract+"/accept", "agent")
-	UpdateContracts()
+	UpdateContracts(nil)
 }

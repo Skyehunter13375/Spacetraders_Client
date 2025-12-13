@@ -67,14 +67,23 @@ func BuildLayoutShell(app *Model.App) tview.Primitive {
 // │                                     Main                                     │
 // └──────────────────────────────────────────────────────────────────────────────┘
 func main() {
+	// FEAT: Test the DB to make sure it's set up correctly
 	if err := Task.CheckDB(); err != nil {
 		Task.LogErr(err.Error())
 		panic(err)
 	}
 
+	// FEAT: Connect to DB and store connection interface globally
 	if err := Task.DbLite(); err != nil {
 		Task.LogErr(err.Error())
 		panic(err)
+	}
+
+	// FEAT: Register new agent if needed - Post Reset
+	CFG,_ := Task.GetConfig()
+	if CFG.API.AgentToken == "" {
+		err := Task.RegisterNewAgent()
+		if err != nil { Task.LogErr("Main: RegisterNewAgent: " + err.Error()); panic(err) }
 	}
 
 	app := NewApp()

@@ -34,7 +34,7 @@ func DisplayFleetMenu(app *Model.App) tview.Primitive {
 	var count int
 	err := Task.PG.QueryRow("SELECT COUNT(*) FROM ships").Scan(&count)
 	if err != nil { Task.LogErr("DisplayContractMenu: " + err.Error()) }
-	if count == 0 { Task.UpdateShipState() }
+	if count == 0 { Task.UpdateShipState(nil) }
 
 	// TASK: Get a list of ships to build cards for
 	ShipList, err := Task.PG.Query("SELECT symbol FROM ships")

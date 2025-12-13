@@ -13,8 +13,9 @@ type Configs struct {
 	} `yaml:"LOG"`
 
 	API struct {
-		AgentName  string `yaml:"AgentName"`
-		AccntToken string `yaml:"AccntToken"`
-		AgentToken string `yaml:"AgentToken"`
+		AgentName    string `yaml:"AgentName"`
+		AgentFaction string `yaml:"AgentFaction"`
+		AccntToken   string `yaml:"AccntToken"`
+		AgentToken   string `yaml:"AgentToken"`
 	} `yaml:"API"`
 }

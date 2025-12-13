@@ -1,3 +1,9 @@
+#### 12/13/2025
+- Completed registration automation feature.
+- Now the config program will automagically register a new agent after a reset (as long as the agent token is removed from the config. This will be changed later on.
+- Initial capture of Agent, System, Fleet, and Contract data is done during registration of the new agent to minimize calls to the API.
+- I also updated some of the logging routines and error handling to be a bit more verbose going forward.
+
 #### 12/12/2025
 - Big simplification of package structures so there's less cross importing avoiding conflicts.
 - Working on initial registration script so that it captures preliminary data to kickstart the process after a reset.

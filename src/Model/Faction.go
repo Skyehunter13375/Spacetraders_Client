@@ -5,7 +5,7 @@ type Faction struct {
 	Name        string `json:"name"`
 	Description string `json:"description"`
 	HQ          string `json:"headquarters"`
-	Traits      struct{
+	Traits      []struct{
 		Symbol  string `json:"symbol"`
 		Name    string `json:"name"`
 		Description string `json:"description"`
