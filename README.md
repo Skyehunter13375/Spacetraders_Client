@@ -52,4 +52,8 @@ I wrote this on a RHEL based system with no intention of making it interoperable
     - [ ] View Markets & Shipyards
     - [ ] Trade Goods & cargo
     - [ ] Purchase Ships
- 
+
+- [ ] Web UI
+    - [x] Create a Front End framework/template to display data from the DB
+    - [ ] Tie in existing Golang code to actually interact with the game
+    - [ ] Convert current tailwind styling to pure CSS???

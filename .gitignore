@@ -1,5 +1,8 @@
-Activity.log
-Error.log
-SpaceTraders.tui
-SpaceTraders.db*
+Go_Activity.log
+Go_Error.log
+Php_Activity.log
+Php_Error.log
+Web_Activity.log
+Web_Error.log
 config.yaml
+SpaceTraders.db

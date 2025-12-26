@@ -63,12 +63,11 @@ func DisplaySystemMenu(app *Model.App) tview.Primitive {
 		symbols = append(symbols, sym)
 	}
 
-	// Defining some default parameters for how the cards will be displayed in the menu
 	const cardsPerRow = 5
 	const cardHeight  = 13
 	const cardWidth   = 43
 
-	// Define the submenu for each card when selected
+	// TASK: Define the submenu for each card when selected
 	var cards []*Task.CardButton
 	for _, sym := range symbols {
 		localSym := sym // capture loop variable
@@ -85,7 +84,7 @@ func DisplaySystemMenu(app *Model.App) tview.Primitive {
 		cards = append(cards, card)
 	}
 
-	// Define the grid for the cards to live in, this way they can be selected with arrow keys
+	// TASK: Define the grid for the cards to live in, this way they can be selected with arrow keys
 	var grid [][]*Task.CardButton
 	for i := 0; i < len(cards); i += cardsPerRow {
 		end := i + cardsPerRow
@@ -93,7 +92,7 @@ func DisplaySystemMenu(app *Model.App) tview.Primitive {
 		grid = append(grid, cards[i:end])
 	}
 
-	// Insert the built cards into their rows
+	// TASK: Insert the built cards into their rows
 	for _, rowCards := range grid {
 		rowFlex := tview.NewFlex().SetDirection(tview.FlexColumn)
 		rowFlex.SetBorder(false)
@@ -105,7 +104,7 @@ func DisplaySystemMenu(app *Model.App) tview.Primitive {
 		window.AddItem(rowFlex, cardHeight, 0, false)
 	}
 
-	// Create input capture rules because by default flex objects cannot be focused so we have to define that logic manually
+	// TASK: Create input capture rules because by default flex objects cannot be focused so we have to define that logic manually
 	row, col := 0, 0
 	window.SetInputCapture(func(ev *tcell.EventKey) *tcell.EventKey {
 		switch ev.Key() {

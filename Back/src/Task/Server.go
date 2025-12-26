@@ -1,4 +1,4 @@
-package Task 
+package Task
 
 import "Spacetraders/src/Model"
 import "encoding/json"

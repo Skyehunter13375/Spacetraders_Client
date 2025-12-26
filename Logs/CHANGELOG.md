@@ -1,3 +1,10 @@
+#### 12/26/2025
+- Merged my PHP and Golang projects together into one package.
+- From now on I will serve a PHP based web UI to view and interact with the game.
+- Golang will serve as the backbone still to update and maintain the SQLite database.
+- Today's commits will be strictly for getting the baseline of that merger up and running.
+- Will attempt to maintain all previous git history, not ready for a rebase just yet.
+
 #### 12/13/2025
 - Completed registration automation feature.
 - Now the config program will automagically register a new agent after a reset (as long as the agent token is removed from the config. This will be changed later on.
