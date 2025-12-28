@@ -1,14 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>NULL SKYE</title>
-        <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
-        <link href="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.css" rel="stylesheet" />
-        <?php $thisFileName = basename($_SERVER['SCRIPT_FILENAME']); ?>
+        <meta   name="viewport">
+        <meta   charset="UTF-8">
+        <meta   content="width=device-width, initial-scale=1.0">
+        <link   rel="stylesheet" href="style.css">
+        <!-- <script src="https://unpkg.com/@tailwindcss/browser@4"></script> -->
+        <!-- <script src="https://unpkg.com/flowbite@1.6.5/dist/flowbite.min.js"></script> -->
         <?php 
+            $thisFileName = basename($_SERVER['SCRIPT_FILENAME']);
             require_once("subroutines/Main.php");
+            require_once("subroutines/Sql.php");
         ?>
     </head>
 
