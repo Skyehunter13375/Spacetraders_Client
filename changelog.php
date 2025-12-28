@@ -18,29 +18,21 @@
 
     <body>
         <?php print_header($thisFileName); ?>
-        <div class="min-h-screen text-primary">
-            <div class="container px-4 py-8 space-y-8">
-                <div class="grid">
-                    <div class="panel text-white">
-                        <textarea id="editor" style="width:50%;" hidden>
-                            <?php print(file_get_contents("Logs/CHANGELOG.md")) ?>
-                        </textarea>
-                        <div id="preview" style="width: 50%;"></div>
-                    </div>
-                </div>
+        <div class="container px-4 py-8 space-y-8">
+            <div class="panel text-white">
+                <div id="preview"></div>
             </div>
         </div>
         <script src="https://unpkg.com/flowbite@1.6.5/dist/flowbite.min.js"></script>
     </body>
+
     <script>
-        const editor = document.getElementById("editor");
         const preview = document.getElementById("preview");
-
-        function render() {
-            preview.innerHTML = marked.parse(editor.value);
+        async function loadMarkdown() {
+            const response = await fetch("Logs/CHANGELOG.md");
+            const markdown = await response.text();
+            preview.innerHTML = marked.parse(markdown);
         }
-
-        editor.addEventListener("input", render);
-        render();
+        loadMarkdown();
     </script>
 </html>
