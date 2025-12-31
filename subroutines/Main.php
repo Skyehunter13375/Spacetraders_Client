@@ -25,7 +25,7 @@ function print_header($current) {
     print("
         <div class='container flex'>
             <nav>
-                <div class='flex' style='padding-top: 1rem; margin-bottom: -10px'>
+                <div class='flex'>
                     <a href='{$baseUrl}/index.php'><img src='Media/images/NullSkyLight.png' style='width: 3.75rem; height: 3.75rem;' alt='Logo'></a>
                     <div class='hidden md:block'>
                         <ul class='flex md:flex-row md:space-x-8'>
@@ -49,12 +49,12 @@ function print_header($current) {
 
 function create_table($HEADERS, $DATA) {
     print("
-        <table class='w-full border-collapse border border-gray-700'>
+        <table class=''>
             <thead>
-                <tr class='bg-purple-700 text-white'>
+                <tr class=''>
     ");
     foreach ($HEADERS as $key) {
-        print("     <th class='border border-gray-600 px-4 py-2 text-left whitespace-nowrap'>{$key}</th>");
+        print("     <th class=''>{$key}</th>");
     }
 
     print("
@@ -64,9 +64,9 @@ function create_table($HEADERS, $DATA) {
     ");
 
     foreach ($DATA as $dKey => $dVals) {
-        print("<tr class='odd:bg-gray-700 even:bg-gray-800'>");
+        print("<tr class=''>");
         foreach ($HEADERS as $hKey) {
-            print("<td class='border border-gray-600 px-4 py-2'>{$dVals[$hKey]}</td>");
+            print("<td class=''>{$dVals[$hKey]}</td>");
         }
         print("</tr>");
     }

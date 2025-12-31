@@ -13,6 +13,8 @@ func UpdateGameServerState() error {
 	if err != nil { LogErr("UpdateGameServerState: " + err.Error()); return err }
 
 	_, err = PG.Exec("DELETE FROM server")
+	_, err = PG.Exec("DELETE FROM leaderboard_creds")
+	_, err = PG.Exec("DELETE FROM leaderboard_charts")
 	if err != nil { LogErr("UpdateGameServerState: Delete failed" + err.Error()); return err }
 
 	// TASK: Capture and store server state

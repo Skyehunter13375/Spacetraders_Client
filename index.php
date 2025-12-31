@@ -2,13 +2,11 @@
 <html lang="en">
     <head>
         <title>NULL SKYE</title>
-        <meta   name="viewport">
-        <meta   charset="UTF-8">
-        <meta   content="width=device-width, initial-scale=1.0">
-        <link   rel="stylesheet" href="style.css">
-        <!-- <script src="https://unpkg.com/@tailwindcss/browser@4"></script> -->
-        <!-- <script src="https://unpkg.com/flowbite@1.6.5/dist/flowbite.min.js"></script> -->
-        <?php 
+        <meta name="viewport">
+        <meta charset="UTF-8">
+        <meta content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="Style/style.css">
+        <?php
             $thisFileName = basename($_SERVER['SCRIPT_FILENAME']);
             require_once("subroutines/Main.php");
             require_once("subroutines/Sql.php");
@@ -20,14 +18,17 @@
         <?php print_header($thisFileName); ?>
 
         <div class="min-h-screen text-primary">
-            <div class="container px-4 py-8 space-y-8">
+            <div class="container">
                 <!-- Welcome Section -->
                 <div class="grid">
                     <div class="panel">
-                        <h2 class="text-xl font-bold mb-4">Welcome to NULLSKY, adventurer</h2>
-                        <blockquote class="italic text-sm text-secondary mb-4" cite="https://api.spacetraders.io/v2">
+                        <h2 class="text-xl section-title">Welcome to the Null Sky</h2>
+                        <blockquote class="italic text-sm text-secondary" cite="https://api.spacetraders.io/v2">
                             “SpaceTraders is an open-universe space-themed game that offers a set of HTTP endpoints to control a fleet of ships. All players operate their fleet in the same universe, and the game is currently in alpha.”<br>
                             – SpaceTraders Dev Team
+                        </blockquote><br><br>
+                        <blockquote class="italic text-sm text-secondary" cite="">
+                            “Between quiet stars, the abyss invites thought. I look inward and find room to grow, echoes turning into possibility. The universe holds its silence gently, and I meet it with calm awareness, learning beneath the Null Sky.”<br>
                         </blockquote>
                     </div>
                 </div>
@@ -41,6 +42,7 @@
                             <tbody>
                                 <tr> <td>Status:</td>            <td class="text-right"><?= $ServerStatus['server_up'] ?>    </td></tr>
                                 <tr> <td>Version:</td>           <td class="text-right"><?= $ServerStatus['game_version'] ?> </td></tr>
+                                <tr> <td>Last Reset:</td>        <td class="text-right">01/01/2001</td></tr>
                                 <tr> <td>Next Reset:</td>        <td class="text-right"><?= $ServerStatus['next_reset'] ?>   </td></tr>
                             </tbody>
                         </table>
@@ -82,6 +84,7 @@
                             </tbody>
                         </table>
                     </div>
+
                     <div class="panel">
                         <h3 class="text-lg section-title">Leaderboard (Charts)</h3>
                         <table class="table">
@@ -95,7 +98,7 @@
                                 <?php 
                                     $Leaderboard = SELECT("SELECT * FROM leaderboard_charts");
                                     foreach ($Leaderboard as $key => $vals) {
-                                        print("<tr");
+                                        print("<tr>");
                                         print("<td>{$vals['agent']}</td>");
                                         print("<td>{$vals['charts']}</td>");
                                         print("</tr>");
@@ -104,8 +107,8 @@
                             </tbody>
                         </table>
                     </div>
-                </div>
 
+                </div>
             </div>
         </div>
     </body>

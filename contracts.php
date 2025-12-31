@@ -2,13 +2,11 @@
 <html lang="en">
     <head>
         <title>NULL SKYE</title>
-        <meta   name="viewport">
-        <meta   charset="UTF-8">
-        <meta   content="width=device-width, initial-scale=1.0">
-        <link   rel="stylesheet" href="style.css">
-        <!-- <script src="https://unpkg.com/@tailwindcss/browser@4"></script> -->
-        <!-- <script src="https://unpkg.com/flowbite@1.6.5/dist/flowbite.min.js"></script> -->
-        <?php 
+        <meta name="viewport">
+        <meta charset="UTF-8">
+        <meta content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="Style/style.css">
+        <?php
             $thisFileName = basename($_SERVER['SCRIPT_FILENAME']);
             require_once("subroutines/Main.php");
             require_once("subroutines/Sql.php");
@@ -18,41 +16,23 @@
     <body>
         <?php 
             print_header($thisFileName); 
-//             $CONTRACTS = pg_raw(FALSE, "SELECT
-//                                             *,
-//                                             array_to_string(deliver_material, ',') AS materials,
-//                                             array_to_string(deliver_destination, ',') AS destinations,
-//                                             array_to_string(deliver_required, ',') AS required_quantity,
-//                                             array_to_string(deliver_fulfilled, ',') AS fulfilled_quantity
-//                                         FROM contracts;"
-//             );
+            $CONTRACTS = SELECT("SELECT id,faction,type,pay_on_accept,pay_on_complete,accepted,fulfilled,deadline,expiration,deadline_to_accept FROM contracts");
         ?>
-        <div class="min-h-screen bg-neutral-800 bg-opacity-70 text-green-400 font-mono">
-            <div class="max-w-7/8 mx-auto px-4 py-8 space-y-8">
-                <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
-                    <?php 
-                        foreach ($CONTRACTS as $cKey => $cVals) {
-                            $materials = explode(",", str_replace("'", '', $cVals['materials']));
-                            $destinate = explode(",", str_replace("'", '', $cVals['destinations']));
-                            $required  = explode(",", str_replace("'", '', $cVals['required_quantity']));
-                            $fulfilled = explode(",", str_replace("'", '', $cVals['fulfilled_quantity']));
-
+        <div class="min-h-screen text-primary">
+            <div class="container">
+                <div class="grid grid-4">
+                    <?php
+                        foreach ($CONTRACTS as $key => $vals) {
                             print("
-                                <div class='bg-neutral-800 bg-opacity-70 border border-green-800 p-4 rounded shadow-lg overflow-x-hidden'>
-                                    <table class='w-full text-sm'>
+                                <div class='panel'>
+                                    <h3 class='text-lg section-title'>{$vals['id']}</h3>
+                                    <table class='table'>
                                         <tbody>
-                                            <tr><td class='py-1'>Faction:</td><td class='text-right text-white'>{$cVals['faction']}</td></tr>
-                                            <tr><td class='py-1'>Type:</td><td class='text-right text-white'>{$cVals['type']}</td></tr>
-                                            <tr><td class='py-1'>Payment:</td><td class='text-right text-white'>". ($cVals['payment_upfront'] + $cVals['payment_completion']) ."</td></tr>
-                            ");
-                            foreach ($materials as $mKey => $garbage) {
-                                print("<tr><td class='py-1'>Material:</td><td class='text-right text-white'>{$materials[$mKey]} ({$fulfilled[$mKey]}/{$required[$mKey]})</td></tr>");
-                            }
-                            print("
-                                            <tr><td class='py-1'>Accepted:</td><td class='text-right text-white'>". ($cVals['accepted'] == 1 ? 'Yes' : 'No') ."</td></tr>
-                                            <tr><td class='py-1'>Fulfilled:</td><td class='text-right text-white'>".($cVals['fulfilled'] == 1 ? 'Yes' : 'No') ."</td></tr>
-                                            <tr><td class='py-1'>Expires:</td><td class='text-right text-white'>{$cVals['expires']}</td></tr>
-                                            <tr><td class='py-1'>Deadline:</td><td class='text-right text-white'>{$cVals['deadline']}</td></tr>
+                                            <tr> <td>Type:</td>  <td class='text-right'>{$vals['type']}</td></tr>
+                                            <tr> <td>Upfront Pay:</td>  <td class='text-right'>{$vals['pay_on_accept']}</td></tr>
+                                            <tr> <td>Complete Pay:</td>  <td class='text-right'>{$vals['pay_on_complete']}</td></tr>
+                                            <tr> <td>Deadline:</td>  <td class='text-right'>{$vals['deadline']}</td></tr>
+                                            <tr> <td>Expiration:</td>  <td class='text-right'>{$vals['deadline_to_accept']}</td></tr>
                                         </tbody>
                                     </table>
                                 </div>
@@ -63,20 +43,11 @@
                         $remainder = count($CONTRACTS) % 4;
                         $loopCount = $remainder == 0 ? 0 : (4 - $remainder);
                         for ($i = 0; $i < $loopCount; $i++) {
-                            print("
-                                <div class='bg-neutral-800 bg-opacity-70 border border-green-800 p-4 rounded shadow-lg overflow-x-hidden'>
-                                    <div class='flex items-center justify-between border-b border-green-800 pb-1 mb-2'>
-                                        <h3 class='text-lg'>To Be Announced...</h3>
-                                    </div>
-                                </div>
-                            ");
+                            print("<div class='panel'></div>");
                         }
                     ?>
                 </div>
             </div>
         </div>
-
-        <!------------------------------------------------------------------ BEGIN MODAL STUFF HERE ------------------------------------------------------------------>
-        <script src="https://unpkg.com/flowbite@1.6.5/dist/flowbite.min.js"></script>
     </body>
 </html>
