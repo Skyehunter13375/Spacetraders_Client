@@ -22,7 +22,7 @@
                 <!-- Welcome Section -->
                 <div class="grid">
                     <div class="panel">
-                        <h2 class="text-xl section-title">Welcome to the Null Sky</h2>
+                        <h2 class="text-xl section-title">Welcome to Null Sky</h2>
                         <p class='text-white'>
                             Welcome to my passion project / fever dream / insomnia fueled effort to build something cool for myself! First off, if you came here looking for tips on playing this wonderful game you have sadly come to the wrong place adventurer!<br>
                             I work on this purely in my spare time as a fun way to kill time and also build some skills while doing it. To be brutally honest it's a good escape from video games until Resident Evil 9 releases in Feb 2026!<br><br>
@@ -45,7 +45,7 @@
                             <tbody>
                                 <tr> <td>Status:</td>            <td class="text-right"><?= $ServerStatus['server_up'] ?>    </td></tr>
                                 <tr> <td>Version:</td>           <td class="text-right"><?= $ServerStatus['game_version'] ?> </td></tr>
-                                <tr> <td>Last Reset:</td>        <td class="text-right">01/01/2001</td></tr>
+                                <tr> <td>Last Reset:</td>        <td class="text-right">PLACEHOLDER TEXT</td></tr>
                                 <tr> <td>Next Reset:</td>        <td class="text-right"><?= $ServerStatus['next_reset'] ?>   </td></tr>
                             </tbody>
                         </table>

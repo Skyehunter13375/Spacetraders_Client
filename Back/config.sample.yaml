@@ -1,10 +1,10 @@
 DB:
-    DbPath:  /var/www/html/SpaceTraders/Data/SpaceTraders.db
-    DbBuild: /var/www/html/SpaceTraders/Data/BuildSqlite.sql
-    DbReset: /var/www/html/SpaceTraders/Data/ResetSqlite.sql
+    DbPath:  /var/www/html/Data/SpaceTraders.db
+    DbBuild: /var/www/html/Data/BuildSqlite.sql
+    DbReset: /var/www/html/Data/ResetSqlite.sql
 LOG:
-    ErrPath: /var/www/html/SpaceTraders/Logs/Go_Error.log
-    ActPath: /var/www/html/SpaceTraders/Logs/Go_Activity.log
+    ErrPath: /var/www/html/Logs/Go_Error.log
+    ActPath: /var/www/html/Logs/Go_Activity.log
 API:
     AgentName: NULLSKY
     AgentFaction: VOID

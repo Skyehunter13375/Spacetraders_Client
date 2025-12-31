@@ -4,7 +4,7 @@
     ini_set('log_errors', 1);
 
     function SELECT($statement) {
-        $db     = new SQLite3('/var/www/html/SpaceTraders/Data/SpaceTraders.db');
+        $db     = new SQLite3('/var/www/html/Data/SpaceTraders.db');
         $result = $db->query($statement);
 
         $rows = [];

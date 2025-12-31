@@ -19,11 +19,13 @@
             <div class='panel' style='margin-bottom: 1rem;'>
             <h2 class='text-primary'>12/31/2025</h2>
             <ul class='text-white'>
-                <li>Cleaned up a ton of the broken CSS that was left over from switching back from Tailwind to pure CSS.</li>
+                <li>Cleaned up a ton of the redundant CSS that was left over from switching back from Tailwind to pure CSS.</li>
                 <li>Dabbled with importing a Github activity calendar but ultimately decided not to include it for now.</li>
                 <li>Removed the javascript I used to read markdown for the about me and changelog and just converted it to pure HTML.</li>
+                <li>Created the bones of a method to display how a system actually looks by plotting points in a JS chart and drawing fake orbit circles.</li>
                 <li>Cobbled together a baseline for the poem that defines the theme of this project.</li>
                 <li>Today is mostly stylistic changes before I get back into Golang and rip out all the TUI components leaving just the CLI.</li>
+                <li>Set up cloudflare app path so I can finally share the link now that all pages are at least semi-functional again!!!</li>
             </ul>
             </div>
 
