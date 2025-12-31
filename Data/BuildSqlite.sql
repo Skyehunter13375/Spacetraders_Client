@@ -170,8 +170,8 @@ CREATE TABLE systems (
     constellation TEXT,
     name          TEXT,
     type          TEXT,
-    x_coord       INTEGER,
-    y_coord       INTEGER,
+    x             INTEGER,
+    y             INTEGER,
     factions      TEXT -- JSON array
 );
 
@@ -179,8 +179,8 @@ CREATE TABLE waypoints (
     system       TEXT,
     symbol       TEXT PRIMARY KEY,
     type         TEXT,
-    x_coord      INTEGER,
-    y_coord      INTEGER,
+    x            INTEGER,
+    y            INTEGER,
     orbits       TEXT,
     construction INTEGER,-- boolean 0/1
     traits       TEXT,   -- JSON array

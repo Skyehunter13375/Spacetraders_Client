@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
-        <title>NULL SKYE</title>
+        <title>NULL SKY</title>
         <meta name="viewport">
         <meta charset="UTF-8">
         <meta content="width=device-width, initial-scale=1.0">
