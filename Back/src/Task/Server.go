@@ -6,7 +6,7 @@ import "time"
 
 // FEAT: Capture and store the state of the game
 func UpdateGameServerState() error {
-	var g Model.GameState
+	var g Model.ServerState
 	jsonStr := GetUrlJson("https://api.spacetraders.io/v2", "")
 
 	err := json.Unmarshal([]byte(jsonStr), &g)
@@ -55,8 +55,8 @@ func UpdateGameServerState() error {
 }
 
 // FEAT: Get game state from stored SQLite data
-func GetGameServerState() Model.GameState {
-	var g Model.GameState
+func GetGameServerState() Model.ServerState {
+	var g Model.ServerState
 	
 	// TASK: Check last updated timestamp, if > 15 mins go pull new data
 	tsStr := "1970-01-01T00:00:00Z"

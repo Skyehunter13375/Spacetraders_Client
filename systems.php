@@ -17,98 +17,68 @@
         <?php print_header($thisFileName); ?>
         <div class="min-h-screen text-primary">
             <div class="container">
-                <div class="panel" style="max-width: 600px; max-height: 600px;">
-                    <?php
-                        $WAYPOINTS = SELECT('SELECT symbol,x,y FROM waypoints'); 
-                        $jsonData = json_encode($WAYPOINTS);
-                    ?>
-                    <canvas id="myChart" style='width: 250px; height: 250px;'></canvas>
-                </div>
+                <?php
+                    $WAYPOINTS = SELECT('SELECT symbol AS id,x,y FROM waypoints'); 
+                    $jsonData = json_encode($WAYPOINTS);
+                ?>
+                <div id="orbitChart" style="width:900px; height: 900px;"></div>
             </div>
         </div>
     </body>
 
+    <script src="https://cdn.plot.ly/plotly-2.30.0.min.js"></script>
     <script>
-        // Create plugin for building orbital path tracking
-        const orbitPlugin = {
-            id: 'orbitPlugin',
-            beforeDatasetsDraw(chart) {
-                const { ctx, scales } = chart;
-                const xScale = scales.x;
-                const yScale = scales.y;
+        const planets = <?php echo $jsonData; ?>;
 
-                // Pixel location of origin
-                const cx = xScale.getPixelForValue(0);
-                const cy = yScale.getPixelForValue(0);
+        // Calculate max radii so the data is plotted correctly
+        const radii = planets.map(p =>
+          Math.sqrt(p.x * p.x + p.y * p.y)
+        );
 
-                ctx.save();
-                ctx.strokeStyle = 'rgba(255,255,255,0.15)';
-                ctx.lineWidth = 1;
+        const maxRadius = Math.max(...radii);
+        const padding = 50;
+        const chartLimit = maxRadius + padding;
 
-                xyValues.forEach(p => {
-                    if (p.x === 0 && p.y === 0) return;
+        // Only build unique orbit radii lines
+        const uniqueRadii = [...new Set(radii.map(r => Math.round(r)))];
+        const orbits = uniqueRadii.map(r => ({
+          type: 'circle',
+          x0: -r,
+          y0: -r,
+          x1: r,
+          y1: r,
+          line: { dash: 'dot', width: 1, color: 'rgba(255,255,255,0.3)' }
+        }));
 
-                    // Pixel location of the planet
-                    const px = xScale.getPixelForValue(p.x);
-                    const py = yScale.getPixelForValue(p.y);
-
-                    // TRUE pixel-space Euclidean radius
-                    const radius = Math.hypot(px - cx, py - cy);
-
-                    ctx.beginPath();
-                    ctx.arc(cx, cy, radius, 0, Math.PI * 2);
-                    ctx.stroke();
-                });
-
-                ctx.restore();
-            }
+        const trace = {
+          x:            planets.map(p => p.x),
+          y:            planets.map(p => p.y),
+          text:         planets.map(p => p.id),
+          mode:         'markers+text',
+          textposition: 'top center',
+          type:         'scatter',
+          marker:       { size: 10 },
+          customdata:   planets
         };
 
-        // Get data from PHP array
-        const xyValues = <?php echo $jsonData; ?>;
+        const layout = {
+          paper_bgcolor: 'rgba(38, 38, 38, 0.7)',
+          plot_bgcolor:  'rgba(38, 38, 38, 0.7)',
 
-        // Store data for concentric orbital data
-        const orbitRadii = [...new Set(
-            xyValues
-                .map(p => Math.sqrt(p.x * p.x + p.y * p.y))
-                .filter(r => r > 0)
-        )].sort((a, b) => a - b);
+          xaxis: {
+            range: [-chartLimit, chartLimit],
+            zeroline: true,
+            scaleanchor: 'y'
+          },
+          yaxis: {
+            range: [-chartLimit, chartLimit],
+            zeroline: true
+          },
+          shapes: orbits,
+          showlegend: false,
+        };
 
-        // Create the chart using the data captured above
-        const maxOrbitRadius = Math.max(...orbitRadii);
-        document.addEventListener('DOMContentLoaded', function () {
-            const ctx = document.getElementById('myChart').getContext('2d');
-            new Chart(ctx, {
-                type: 'scatter',
-                plugins: [orbitPlugin],
-                data: {
-                    datasets: [{
-                        data: xyValues,
-                        pointRadius: 5,
-                        pointBackgroundColor: '#4ade80'
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    plugins: {
-                        legend:  { display: false },
-                        tooltip: { enabled: true }
-                    },
-                    scales: {
-                        x: {
-                            display: false,
-                            suggestedMin: -maxOrbitRadius,
-                            suggestedMax:  maxOrbitRadius
-                        },
-                        y: {
-                            display: false,
-                            suggestedMin: -maxOrbitRadius,
-                            suggestedMax:  maxOrbitRadius
-                        }
-                    }
-                }
-            });
-        });
+        Plotly.newPlot('orbitChart', [trace], layout);
     </script>
 </html>
 

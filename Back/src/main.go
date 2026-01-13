@@ -1,72 +1,19 @@
 package main
 
-import "Spacetraders/src/Tui"
+import "time"
 import "Spacetraders/src/Model"
 import "Spacetraders/src/Task"
-import "github.com/rivo/tview"
 
-// ┌──────────────────────────────────────────────────────────────────────────────┐
-// │                              Main Layout Shell                               │
-// └──────────────────────────────────────────────────────────────────────────────┘
-// FEAT: Create TUI app to track state
-func NewApp() *Model.App {
-	return &Model.App{
-		UI:      tview.NewApplication(),
-		UIState: &Model.UIState{},
-		State:   &Model.GlobalState{},
-	}
+// ┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫ General Funcs ┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫
+// Functional sleep to prevent reaching request limit on the server
+func Tick() {
+	time.Sleep(10 * time.Second)
 }
 
-// FEAT: Register all of the standard menus with the app then we can just call and focus them as needed
-func BuildLayoutShell(app *Model.App) tview.Primitive {
-	// MAIN MENU (top-left)
-	mainMenu := tview.NewList()
-	mainMenu.ShowSecondaryText(false)
-	mainMenu.SetBorder(true)
-	mainMenu.SetTitle("  Main Menu  ")
-	mainMenu.SetBorderColor(Model.Theme.BgBorder)
-	mainMenu.AddItem("Server Status", "", 0, func() { Tui.ShowServerMenu(app)      })
-	mainMenu.AddItem("Agent Status",  "", 0, func() { Tui.ShowAgentsMenu(app)      })
-	mainMenu.AddItem("Fleet Status",  "", 0, func() { Tui.DisplayFleetMenu(app)    })
-	mainMenu.AddItem("Systems",       "", 0, func() { Tui.DisplaySystemMenu(app)   })
-	mainMenu.AddItem("Contracts",     "", 0, func() { Tui.DisplayContractMenu(app) })
-	mainMenu.AddItem("Settings",      "", 0, func() { Tui.ShowSettingsMenu(app)    })
-	mainMenu.AddItem("Quit",          "", 0, func() { app.UI.Stop()                })
-
-	// SUBMENU (bottom-left, dynamic)
-	subMenu := tview.NewList()
-	subMenu.ShowSecondaryText(false)
-	subMenu.SetBorder(true)
-	subMenu.SetTitle("  Submenu  ")
-	subMenu.SetBorderColor(Model.Theme.BgBorder)
-
-	// OUTPUT PANEL (right)
-	output := tview.NewFlex().SetDirection(tview.FlexRow)
-	output.SetBorder(false)
-
-	// LEFT COLUMN (main menu + submenu)
-	left := tview.NewFlex()
-	left.SetDirection(tview.FlexRow)
-	left.AddItem(mainMenu, 0, 2, true)
-	left.AddItem(subMenu,  0, 3, false)
-
-	// FULL WINDOW LAYOUT
-	window := tview.NewFlex()
-	window.AddItem(left,   30, 1, true)
-	window.AddItem(output, 0,  3, false)
-
-	// Store UI references in App.State so other screens can update them
-	app.UIState.MainMenu = mainMenu
-	app.UIState.SubMenu  = subMenu
-	app.UIState.Output   = output
-
-	return window
-}
-
-// ┌──────────────────────────────────────────────────────────────────────────────┐
-// │                                     Main                                     │
-// └──────────────────────────────────────────────────────────────────────────────┘
+// ┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫ Main ┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫
 func main() {
+	var CurrentState = Model.GameState{}
+	
 	// FEAT: Test the DB to make sure it's set up correctly
 	if err := Task.CheckDB(); err != nil {
 		Task.LogErr(err.Error())
@@ -85,13 +32,32 @@ func main() {
 		err := Task.RegisterNewAgent()
 		if err != nil { Task.LogErr("Main: RegisterNewAgent: " + err.Error()); panic(err) }
 	}
+	
+	// TASK: Create function here to keep the process running and monitoring all ships in the fleet
+	for {
+		CurrentState = Task.GetClientState()
 
-	app := NewApp()
-	layout := BuildLayoutShell(app)
+		// If we paused the game, do not execute any scheduled commands.
+		if CurrentState.IsPaused == 1 { 
+			Task.LogActivity("Game state is paused: Performing only manual tasks")
 
-	if err := app.UI.SetRoot(layout, true).Run(); err != nil {
-		Task.LogErr(err.Error())
-		panic(err)
+			// Execute tasks requested from the message table
+
+			// Sleep briefly
+			Tick()
+			
+			// Recheck the client state in case things need to be paused
+			CurrentState = Task.GetClientState()
+		} else {
+			// Execute all scheduled tasks
+
+			// Execute tasks requested from the message table
+			
+			// Sleep briefly
+			Tick()
+			
+			// Recheck the client state in case things need to be paused
+			CurrentState = Task.GetClientState()
+		}
 	}
 }
-

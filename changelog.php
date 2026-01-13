@@ -17,6 +17,18 @@
         <?php print_header($thisFileName); ?>
         <div class="container">
             <div class='panel' style='margin-bottom: 1rem;'>
+            <h2 class='text-primary'>01/13/2026</h2>
+            <ul class='text-white'>
+                <p>Took a short break for Xmas/New Year and to focus on my Linux+ certification training</p>
+                <li>Stripped out the TUI entirely, I do still have that code but it's been removed from the project dirs.</li>
+                <li>Converting everything over use proper state control that way PHP and Golang can intermingle and automation can be paused for manual intervention via the web UI.</li>
+                <li>Go will run the entire project under the hood, PHP web pages will serve as the user interface, allowing the user to pause the game and manually interact with the pieces.</li>
+                <li>Each component (fleet, agent, contracts etc) will have it's own scheduled interval to be updated on automagically unless the client is paused.</li>
+                <li>Reworked the system display page to use Plotly.js instead of Chart.js. Looks much better this way in my opinion.</li>
+            </ul>
+            </div>
+
+            <div class='panel' style='margin-bottom: 1rem;'>
             <h2 class='text-primary'>12/31/2025</h2>
             <ul class='text-white'>
                 <li>Cleaned up a ton of the redundant CSS that was left over from switching back from Tailwind to pure CSS.</li>

@@ -15,6 +15,15 @@ CREATE TABLE server (
     last_updated TEXT
 );
 
+CREATE TABLE client (
+    is_paused         INTEGER, -- boolean (0/1)
+    server_udpated    TEXT,
+    agent_updated     TEXT,
+    fleet_updated     TEXT,
+    contracts_updated TEXT,
+    systems_updated   TEXT
+);
+
 CREATE TABLE leaderboard_creds (
     agent   TEXT PRIMARY KEY,
     credits INTEGER
