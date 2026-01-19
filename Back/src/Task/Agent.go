@@ -7,7 +7,7 @@ import "time"
 func GetAgentState(agent string) Model.Agent {
 	var a Model.Agent
 
-	// TASK: Check last updated timestamp, if > 15 mins go pull new data
+	// TASK Check last updated timestamp, if > 15 mins go pull new data
 	tsStr := "1970-01-01T00:00:00Z"
 	PG.QueryRow(`SELECT last_updated FROM agents where symbol = ?`, agent).Scan(&tsStr)
 	ts, _ := time.Parse(time.RFC3339, tsStr)

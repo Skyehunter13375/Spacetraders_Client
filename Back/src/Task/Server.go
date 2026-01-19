@@ -4,7 +4,7 @@ import "Spacetraders/src/Model"
 import "encoding/json"
 import "time"
 
-// FEAT: Capture and store the state of the game
+// FEAT Capture and store the state of the game
 func UpdateGameServerState() error {
 	var g Model.ServerState
 	jsonStr := GetUrlJson("https://api.spacetraders.io/v2", "")
@@ -17,7 +17,7 @@ func UpdateGameServerState() error {
 	_, err = PG.Exec("DELETE FROM leaderboard_charts")
 	if err != nil { LogErr("UpdateGameServerState: Delete failed" + err.Error()); return err }
 
-	// TASK: Capture and store server state
+	// TASK Capture and store server state
 	STMT1 := `
 		INSERT INTO server (server_up,game_version,agents,ships,systems,waypoints,accounts,reset_date,next_reset,reset_freq,last_updated) 
 		VALUES (1,?,?,?,?,?,?,?,?,?,strftime('%Y-%m-%dT%H:%M:%fZ','now'))
@@ -25,7 +25,7 @@ func UpdateGameServerState() error {
 	_, err = PG.Exec(STMT1, g.Version, g.Stats.Agents, g.Stats.Ships, g.Stats.Systems, g.Stats.Waypoints, g.Stats.Accounts, g.LastReset, g.ServerResets.NextReset, g.ServerResets.ResetFreq)
 	if err != nil { LogErr("UpdateGameServerState: Insert server failed: " + STMT1 + err.Error()); return err }
 
-	// TASK: Capture and store current leaderboard (credits)
+	// TASK Capture and store current leaderboard (credits)
 	STMT2 := `
 		INSERT INTO leaderboard_creds (agent,credits)
 		VALUES (?,?)
@@ -38,7 +38,7 @@ func UpdateGameServerState() error {
 		if err != nil { LogErr("UpdateGameServerState: Insert leadCreds failed:" + STMT2 + err.Error()); return err }
 	}
 
-	// TASK: Capture and store current leaderboard (charts)
+	// TASK Capture and store current leaderboard (charts)
 	STMT3 := `
 		INSERT INTO leaderboard_charts (agent,charts)
 		VALUES (?,?)
@@ -54,17 +54,17 @@ func UpdateGameServerState() error {
 	return nil
 }
 
-// FEAT: Get game state from stored SQLite data
+// FEAT Get game state from stored SQLite data
 func GetGameServerState() Model.ServerState {
 	var g Model.ServerState
 	
-	// TASK: Check last updated timestamp, if > 15 mins go pull new data
+	// TASK Check last updated timestamp, if > 15 mins go pull new data
 	tsStr := "1970-01-01T00:00:00Z"
 	PG.QueryRow(`SELECT last_updated FROM server`).Scan(&tsStr)
 	ts, _ := time.Parse(time.RFC3339, tsStr)
 	if time.Since(ts) > 15*time.Minute { UpdateGameServerState() }
 
-	// TASK: Pull updated values
+	// TASK Pull updated values
 	_ = PG.QueryRow(`SELECT server_up,game_version,agents,ships,systems,waypoints,accounts,reset_date,next_reset,reset_freq,last_updated FROM server`).Scan(
 		&g.Status,
 		&g.Version,
@@ -82,7 +82,7 @@ func GetGameServerState() Model.ServerState {
 	return g
 }
 
-// FEAT: Get leaderboard state from SQLite data
+// FEAT Get leaderboard state from SQLite data
 func GetLeaderboards() Model.Leaderboards {
 	var result Model.Leaderboards
 

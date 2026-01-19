@@ -7,37 +7,40 @@ import "Spacetraders/src/Task"
 // ┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫ General Funcs ┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫
 // Functional sleep to prevent reaching request limit on the server
 func Tick() {
-	time.Sleep(10 * time.Second)
+	// TODO Make this sleep async so that we can still run manual tasks while the automation is paused
+	time.Sleep(300 * time.Second)
 }
 
 // ┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫ Main ┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫
 func main() {
 	var CurrentState = Model.GameState{}
-	
-	// FEAT: Test the DB to make sure it's set up correctly
+
+	// TASK  Test the DB to make sure it's set up correctly
 	if err := Task.CheckDB(); err != nil {
 		Task.LogErr(err.Error())
 		panic(err)
 	}
 
-	// FEAT: Connect to DB and store connection interface globally
+	// TASK Connect to DB and store connection interface globally
 	if err := Task.DbLite(); err != nil {
 		Task.LogErr(err.Error())
 		panic(err)
 	}
 
-	// FEAT: Register new agent if needed - Post Reset
-	CFG,_ := Task.GetConfig()
-	if CFG.API.AgentToken == "" {
-		err := Task.RegisterNewAgent()
-		if err != nil { Task.LogErr("Main: RegisterNewAgent: " + err.Error()); panic(err) }
-	}
-	
-	// TASK: Create function here to keep the process running and monitoring all ships in the fleet
 	for {
+		CFG,_ := Task.GetConfig()
+
+		// TASK Register a new agent if the server just reset (Will crash the program if fails)
+		// TODO Create new logic for determining if we need a new agent or not.
+		if CFG.API.AgentToken == "" {
+			Task.LogActivity("No agent token found, registering a new agent")
+			err := Task.RegisterNewAgent()
+			if err != nil { Task.LogErr("Main: DoPostResetStuff: " + err.Error()); panic(err) }
+		}
+
 		CurrentState = Task.GetClientState()
 
-		// If we paused the game, do not execute any scheduled commands.
+		// TASK If we paused the game, do not execute any scheduled commands.
 		if CurrentState.IsPaused == 1 { 
 			Task.LogActivity("Game state is paused: Performing only manual tasks")
 
@@ -50,6 +53,7 @@ func main() {
 			CurrentState = Task.GetClientState()
 		} else {
 			// Execute all scheduled tasks
+			Task.LogActivity("Game state NOT paused: Performing all scheduled tasks")
 
 			// Execute tasks requested from the message table
 			

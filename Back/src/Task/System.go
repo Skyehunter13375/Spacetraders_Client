@@ -4,7 +4,7 @@ import "Spacetraders/src/Model"
 import "encoding/json"
 
 func UpdateSystem(symbol string) error {
-	jsonStr := GetUrlJson("https://api.spacetraders.io/v2/systems/"+symbol, "")
+	jsonStr := GetUrlJson("https://api.spacetraders.io/v2/systems/" + symbol, "")
 	// LogActivity(string(jsonStr))
 
 	var wrapper map[string]json.RawMessage
@@ -16,23 +16,23 @@ func UpdateSystem(symbol string) error {
 	if err != nil { LogErr("UpdateSystem: " + err.Error()) }
 
 	_, err = PG.Exec(`
-		INSERT INTO systems (symbol, sector, constellation, name, type, x_coord, y_coord)
+		INSERT INTO systems (symbol, sector, constellation, name, type, x, y)
 		VALUES (?,?,?,?,?,?,?)
 		ON CONFLICT (symbol) DO UPDATE SET
 			sector        = EXCLUDED.sector,
 			constellation = EXCLUDED.constellation,
 			name          = EXCLUDED.name,
 			type          = EXCLUDED.type,
-			x_coord       = EXCLUDED.x_coord,
-			y_coord       = EXCLUDED.y_coord
+			x             = EXCLUDED.x,
+			y             = EXCLUDED.y
 		`,
 		s.Symbol,
 		s.Sector,
 		s.Constellation,
 		s.Name,
 		s.Type,
-		s.Xcoord,
-		s.Ycoord,
+		s.X,
+		s.Y,
 	)
 	if err != nil { LogErr("UpdateSystem: Insert system failed: " + err.Error()) }
 
@@ -80,15 +80,15 @@ func UpdateWaypoint(system string, waypoint string) error {
 	}
 
 	_, err = PG.Exec(`
-		INSERT INTO waypoints (system,symbol,type,x_coord,y_coord,orbits,construction,traits,modifiers)
+		INSERT INTO waypoints (system,symbol,type,x,y,orbits,construction,traits,modifiers)
 		VALUES (?,?,?,?,?,?,?,?,?)
 		ON CONFLICT (symbol) DO UPDATE SET
-			system       = EXCLUDED.system, 
-			symbol       = EXCLUDED.symbol, 
-			type         = EXCLUDED.type, 
-			x_coord      = EXCLUDED.x_coord, 
-			y_coord      = EXCLUDED.y_coord, 
-			orbits       = EXCLUDED.orbits, 
+			system       = EXCLUDED.system,
+			symbol       = EXCLUDED.symbol,
+			type         = EXCLUDED.type,
+			x            = EXCLUDED.x,
+			y            = EXCLUDED.y,
+			orbits       = EXCLUDED.orbits,
 			construction = EXCLUDED.construction,
 			traits       = EXCLUDED.traits,
 			modifiers    = EXCLUDED.modifiers
@@ -133,20 +133,20 @@ func GetSystem(id string) Model.System {
 			constellation,
 			name,
 			type,
-			x_coord,
-			y_coord
+			x,
+			y
 		FROM systems
 		WHERE symbol = $1
 	`
 
 	err := PG.QueryRow(query, id).Scan(
-		&Result.Symbol, 
-		&Result.Sector, 
-		&Result.Constellation, 
-		&Result.Name, 
-		&Result.Type, 
-		&Result.Xcoord, 
-		&Result.Ycoord, 
+		&Result.Symbol,
+		&Result.Sector,
+		&Result.Constellation,
+		&Result.Name,
+		&Result.Type,
+		&Result.X,
+		&Result.Y,
 	)
 	if err != nil { LogErr("GetSystem: " + err.Error()); return Result }
 
@@ -156,7 +156,7 @@ func GetSystem(id string) Model.System {
 func GetWaypoint(id string) Model.Waypoint {
 	var result Model.Waypoint
 
-	PG.QueryRow(`SELECT system,symbol,type,x_coord,y_coord,orbits,construction FROM waypoints WHERE symbol = $1`, id).Scan(
+	PG.QueryRow(`SELECT system,symbol,type,x,y,orbits,construction FROM waypoints WHERE symbol = $1`, id).Scan(
 		&result.System,
 		&result.Symbol,
 		&result.Type,

@@ -7,16 +7,16 @@ type System struct {
 	Constellation string         `json:"constellation"`
 	Name          string         `json:"name"`
 	Type          string         `json:"type"`
-	Xcoord        int            `json:"x"`
-	Ycoord        int            `json:"y"`
+	X             int            `json:"x"`
+	Y             int            `json:"y"`
 	Waypoints     []SysWaypoints `json:"waypoints"`
 }
 
 type SysWaypoints struct {
 	Symbol string `json:"symbol"`
 	Type   string `json:"type"`
-	Xcoord int    `json:"x"`
-	Ycoord int    `json:"y"`
+	X      int    `json:"x"`
+	Y      int    `json:"y"`
 	Orbits string `json:"orbits"`
 }
 

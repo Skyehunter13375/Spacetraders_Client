@@ -10,7 +10,7 @@ ini_set('display_errors', 1);
 ini_set('log_errors', 1);
 
 function print_header($current) {
-    $baseUrl   = "http://spacetraders.skye-tech.org";
+    $baseUrl   = "http://nullsky.skye-tech.org";
     $currClass = "class='nav-link nav-link-active'";
     $notCurrnt = "class='nav-link'";
     $menuItems = [

@@ -6,7 +6,6 @@
         <meta charset="UTF-8">
         <meta content="width=device-width, initial-scale=1.0">
         <link rel="stylesheet" href="Style/style.css">
-        <link rel="stylesheet" href="Style/githb.css">
         <?php
             $thisFileName = basename($_SERVER['SCRIPT_FILENAME']);
             require_once("subroutines/Main.php");
@@ -17,8 +16,8 @@
         <?php print_header($thisFileName); ?>
         <div class="container text-primary">
             <div class="panel">
-                <h2 class="text-xl section-title">Who am I?</h2>
-                <p class='text-white'>
+                <h2 class="text-xl section-title">About Me</h2>
+                <p style="color: var(--text-secondary);">
                     I am a Linux system administrator and software engineer with roughly a decade of experience working at the intersection of technical support and software development.<br>
                     Building tools to resolve common issues or prevent them from ever appearing in the first place is my passion.<br><br>
 
@@ -32,11 +31,9 @@
         </div>
         <div class="container text-primary">
             <div class="panel">
-                <h2 class="text-lx section-title">Where can you find me?</h3>
-                <ul class='text-white'>
-                    <li>Github: <a target="_blank" href="https://github.com/Skyehunter13375">Skyehunter13375</a></li>
-                    <li>LinkedIn: <a target="_blank" href="https://www.linkedin.com/in/patrick-kelley-19490b132/">Patrick Kelley</a></lib>
-                </ul>
+                <h2 class="text-lx section-title">Links</h3>
+                <div class="grid"><div class="panel" style="width: 250px;">LinkedIn: <a target="_blank" style="color: var(--text-secondary);" href=" https://www.linkedin.com/in/patrick-kelley-19490b132/">Patrick Kelley</a></div></div>
+                <div class="grid"><div class="panel" style="width: 250px;">Github:   <a target="_blank" style="color: var(--text-secondary);" href="https://github.com/Skyehunter13375">Skyehunter13375</a></div></div>
             </div>
         </div>
     </body>

@@ -8,7 +8,7 @@ import _ "github.com/mattn/go-sqlite3"
 
 var PG *sql.DB
 
-// FEAT: Connect to SQLite database
+// FEAT Connect to SQLite database
 func DbLite() error {
 	var err error
 	CFG, _ := GetConfig()
@@ -23,7 +23,7 @@ func DbLite() error {
 	return PG.Ping()
 }
 
-// FEAT: Check if DB file exists, if not create it
+// FEAT Check if DB file exists, if not create it
 func CheckDB() error {
     CFG, _ := GetConfig()
     _, err := os.Stat(CFG.DB.DbPath)
@@ -35,7 +35,7 @@ func CheckDB() error {
         return err
     }
 
-	// TASK: Connect to the DB
+	// TASK Connect to the DB
 	// If the DB doesn't exist this will create it
     db, err := sql.Open("sqlite3", CFG.DB.DbPath)
     if err != nil {
@@ -45,7 +45,7 @@ func CheckDB() error {
     }
     defer db.Close()
 
-	// TASK: Get table and key info from setup file
+	// TASK Get table and key info from setup file
 	fmt.Println("Reading in schema setup from " + CFG.DB.DbBuild)
     schema, err := os.ReadFile(CFG.DB.DbBuild)
     if err != nil {
@@ -53,7 +53,7 @@ func CheckDB() error {
         return err
     }
 
-	// TASK: Create tables & Foreign Keys based on setup file
+	// TASK Create tables & Foreign Keys based on setup file
     _, err = db.Exec(string(schema))
     if err != nil {
         LogErr("DB: Failed executing setup SQL: " + err.Error())
@@ -65,18 +65,18 @@ func CheckDB() error {
 }
 
 
-// FEAT: Reset the database after each server wipe
+// FEAT Reset the database after each server wipe
 // Archive the previous one in case we want to look back
 func ResetDB() error {
     CFG, _ := GetConfig()
 
-	// TASK: Disconnect from existing DB file
+	// TASK Disconnect from existing DB file
 	if PG != nil {
 		if err := PG.Close(); err != nil { return err }
 		PG = nil
 	}
 
-	// TASK: Archive the current DB
+	// TASK Archive the current DB
 	if _, err := os.Stat(CFG.DB.DbPath); err == nil {
 		archive := CFG.DB.DbPath + "_" + time.Now().Format("01_02_2006")
 		if err := os.Rename(CFG.DB.DbPath, archive); err != nil {
@@ -84,13 +84,13 @@ func ResetDB() error {
 		}
 	}
 
-	// TASK: Create the new DB by connecting to it.
+	// TASK Create the new DB by connecting to it.
 	if err := DbLite(); err != nil {
 		LogErr(err.Error())
 		return err
 	}
 
-	// TASK: Get table and key info from setup file
+	// TASK Get table and key info from setup file
 	fmt.Println("Reading in schema setup from " + CFG.DB.DbBuild)
     schema, err := os.ReadFile(CFG.DB.DbBuild)
     if err != nil {
@@ -98,7 +98,7 @@ func ResetDB() error {
         return err
     }
 
-	// TASK: Create tables & Foreign Keys based on setup file
+	// TASK Create tables & Foreign Keys based on setup file
     _, err = PG.Exec(string(schema))
     if err != nil {
         LogErr("DB: Failed executing setup SQL: " + err.Error())

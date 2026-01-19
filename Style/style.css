@@ -18,6 +18,10 @@ body {
     background-color: rgba(38, 38, 38, 1);
 }
 
+a {
+    color: var(--text-primary);
+}
+
 /* ┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫ Layout Utils ┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫ */
 .min-h-screen { min-height: 100vh; }
 

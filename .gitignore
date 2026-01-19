@@ -5,6 +5,6 @@ Php_Error.log
 Web_Activity.log
 Web_Error.log
 config.yaml
-SpaceTraders.db
+SpaceTraders.db*
 ABOUTME.md
 .htaccess

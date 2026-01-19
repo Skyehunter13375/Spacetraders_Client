@@ -4,7 +4,7 @@ This is my most recent attempt at creating a usable client for the [SpaceTraders
 If you stumbled across this project looking for some good advice on how to write in Golang or to steal my trade secrets in-game you've come to the wrong place friend! I'm doing this mostly for the data collection and TUI building experience, I'd be lucky if my agent completes even a single contract per bi-weekly reset!
 
 # What this project is:
-- A passion project & academic exercise for me to learn Golang and practice with PostgreSQL.
+- A passion project & academic exercise for me to learn Golang and practice with SQL.
 - A fun way for me to both justify playing a fun game and also build skills/tools at the same time.
 
 # What this project is NOT:
@@ -23,7 +23,7 @@ I wrote this on a RHEL based system with no intention of making it interoperable
     - [x] Register a New Agent
     - [ ] Display settings config.yaml contents
     - [x] Simplify and/or automate new user setup
-    - [ ] Automate reset process + archive old DB files for reference
+    - [ ] Automate reet process + archive old DB files for reference
     - [ ] Edit settings config.yaml contents in the GUI
 
 - [x] Game Server
@@ -56,4 +56,4 @@ I wrote this on a RHEL based system with no intention of making it interoperable
 - [ ] Web UI
     - [x] Create a Front End framework/template to display data from the DB
     - [ ] Tie in existing Golang code to actually interact with the game
-    - [ ] Convert current tailwind styling to pure CSS???
+    - [x] Convert old tailwind styling to pure CSS

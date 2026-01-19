@@ -17,7 +17,7 @@ CREATE TABLE server (
 
 CREATE TABLE client (
     is_paused         INTEGER, -- boolean (0/1)
-    server_udpated    TEXT,
+    server_updated    TEXT,
     agent_updated     TEXT,
     fleet_updated     TEXT,
     contracts_updated TEXT,
