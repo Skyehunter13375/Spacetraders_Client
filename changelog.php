@@ -17,6 +17,18 @@
         <?php print_header($thisFileName); ?>
         <div class="container">
             <div class='panel' style='margin-bottom: 1rem;'>
+            <h2 class='text-primary'>01/19/2026</h2>
+            <ul class='text-white'>
+                <li>Finished and tested the new agent registration code.</li>
+                <li>It works as intended now, resetting everything and grabbing initial data from the registration response.</li>
+                <li>Fixed a typo in my sqlitedb builder.</li>
+                <li>Starting to work on the new main script so that it just runs autonomously as a systemd service.</li>
+                <li>Eventually it will always be running and just run jobs placed in the SQLitedb automagically as manual tasks between scheduled events/listeners.</li>
+                <li>I also realized I am mapping the system incorrectly, I currently have everything orbiting 0,0 by mistake. Moons and space stations might orbit planets so I'll fix that later tonight and add color schemes to the web UI.</li>
+            </ul>
+            </div>
+
+            <div class='panel' style='margin-bottom: 1rem;'>
             <h2 class='text-primary'>01/13/2026</h2>
             <ul class='text-white'>
                 <p>Took a short break for Xmas/New Year and to focus on my Linux+ certification training</p>

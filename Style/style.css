@@ -1,7 +1,5 @@
-/* ┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫ Global ┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫ */
 :root {
     --bg-main:        rgba(38, 38, 38, 0.7);
-    --bg-panel:       rgba(38, 38, 38, 0.7);
     --text-primary:   #4ade80;
     --text-secondary: #9ca3af;
     --border-accent:  #166534;
@@ -22,7 +20,14 @@ a {
     color: var(--text-primary);
 }
 
-/* ┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫ Layout Utils ┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫ */
+button {
+    background-color: var(--bg-main);
+    color:            var(--text-white);
+    border-radius:    0.5rem;
+    border:           solid 1px;
+    border-color:     var(--border-accent);
+}
+
 .min-h-screen { min-height: 100vh; }
 
 .container {
@@ -32,7 +37,6 @@ a {
 }
 
 
-/* ┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫ Flexbox ┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫ */
 .flex     { display: flex;          }
 .flex-col { flex-direction: column; }
 .flex-row { flex-direction: row;    }
@@ -44,7 +48,6 @@ a {
 .justify-between { justify-content: space-between; }
 
 
-/* ┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫ Grid ┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫ */
 .grid {
     gap:            1.5rem;
     display:        grid;
@@ -61,18 +64,16 @@ a {
 }
 
 
-/* ┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫ Panels ┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫ */
 .panel {
     border: 1px solid var(--border-accent);
     padding: 1rem;
     box-shadow: var(--shadow);
     overflow-x: hidden;
     border-radius: var(--radius);
-    background-color: var(--bg-panel);
+    background-color: var(--bg-main);
 }
 
 
-/* ┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫ Typography ┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫ */
 .text-primary   { color: var(--text-primary); }
 .text-secondary { color: var(--text-secondary); }
 .text-white     { color: var(--text-white); }
@@ -86,7 +87,6 @@ a {
 .text-right { text-align:  right;  }
 
 
-/* ┣━━━━━━━━━━━━━━━━━━━━━━━━━━━┫ Headings / Dividers ┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫ */
 .section-title {
     margin-top:     -5px;
     border-bottom:  1px solid var(--border-accent);
@@ -95,7 +95,6 @@ a {
 }
 
 
-/* ┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫ Tables ┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫ */
 .table {
     width: 100%;
     border: none;
@@ -121,7 +120,6 @@ a {
     color: var(--text-white);
 }
 
-/* Zebra striping */
 .table tbody tr:nth-child(odd) {
     background-color: var(--table-row-odd);
 }
@@ -131,7 +129,6 @@ a {
 }
 
 
-/* ┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫ Quotes ┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫ */
 blockquote {
     border-left: 4px solid var(--border-accent);
     padding-left: 1rem;
@@ -139,11 +136,9 @@ blockquote {
 }
 
 
-/* ┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫ Visibility ┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫ */
 .hidden { display: none; }
 
 
-/* ┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫ Responsive (md) ┣━━━━━━━━━━━━━━━━━━━━━━━━━━┫ */
 @media (max-width: 768px) {
     .grid-2 {
         grid-template-columns: 1fr;
@@ -162,7 +157,6 @@ blockquote {
     .md\:p-0 { padding: 0; }
 }
 
-/* ┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫ Header Nav Links ┣━━━━━━━━━━━━━━━━━━━━━━━━━━━┫ */
 
 .nav-link {
     display: block;
@@ -180,5 +174,38 @@ blockquote {
 .nav-link-active {
     color: var(--text-primary);
     border-bottom: 2px solid var(--border-accent);
+}
+
+
+/*
+ * Modal data
+*/
+.modal-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+
+    background: rgba(0, 0, 0, 0.6);
+
+    align-items: center;
+    justify-content: center;
+
+    z-index: 99999;
+}
+
+.modal-window {
+    background: #ffffff;
+    color: #000000;
+
+    min-width: 400px;
+    max-width: 90vw;
+    max-height: 80vh;
+
+    padding: 1rem;
+    overflow: auto;
+
+    box-shadow: 0 10px 40px rgba(0,0,0,0.5);
 }
 

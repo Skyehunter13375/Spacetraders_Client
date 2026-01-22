@@ -28,11 +28,11 @@
                                     <h3 class='text-lg section-title'>{$vals['id']}</h3>
                                     <table class='table'>
                                         <tbody>
-                                            <tr> <td>Type:</td>  <td class='text-right'>{$vals['type']}</td></tr>
+                                            <tr> <td>Type:</td>         <td class='text-right'>{$vals['type']}</td></tr>
                                             <tr> <td>Upfront Pay:</td>  <td class='text-right'>{$vals['pay_on_accept']}</td></tr>
-                                            <tr> <td>Complete Pay:</td>  <td class='text-right'>{$vals['pay_on_complete']}</td></tr>
-                                            <tr> <td>Deadline:</td>  <td class='text-right'>{$vals['deadline']}</td></tr>
-                                            <tr> <td>Expiration:</td>  <td class='text-right'>{$vals['deadline_to_accept']}</td></tr>
+                                            <tr> <td>Complete Pay:</td> <td class='text-right'>{$vals['pay_on_complete']}</td></tr>
+                                            <tr> <td>Deadline:</td>     <td class='text-right'>{$vals['deadline']}</td></tr>
+                                            <tr> <td>Expiration:</td>   <td class='text-right'>{$vals['deadline_to_accept']}</td></tr>
                                         </tbody>
                                     </table>
                                 </div>
@@ -40,11 +40,11 @@
                         }
 
 
-                        $remainder = count($CONTRACTS) % 4;
-                        $loopCount = $remainder == 0 ? 0 : (4 - $remainder);
-                        for ($i = 0; $i < $loopCount; $i++) {
-                            print("<div class='panel'></div>");
-                        }
+//                         $remainder = count($CONTRACTS) % 4;
+//                         $loopCount = $remainder == 0 ? 0 : (4 - $remainder);
+//                         for ($i = 0; $i < $loopCount; $i++) {
+//                             print("<div class='panel'></div>");
+//                         }
                     ?>
                 </div>
             </div>

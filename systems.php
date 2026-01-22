@@ -18,7 +18,7 @@
         <div class="min-h-screen text-primary">
             <div class="container">
                 <?php
-                    $WAYPOINTS = SELECT('SELECT symbol AS id,x,y FROM waypoints'); 
+                    $WAYPOINTS = SELECT("SELECT symbol AS id,type,x,y FROM waypoints WHERE orbits = ''"); 
                     $jsonData = json_encode($WAYPOINTS);
                 ?>
                 <div id="orbitChart" style="width:900px; height: 900px;"></div>
