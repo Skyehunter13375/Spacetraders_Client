@@ -56,9 +56,9 @@
                                             <tr> <td>Role:</td>     <td class='text-right'>{$vals['role']} </td></tr>
                                             <tr> <td>Crew:</td>     <td class='text-right'>{$vals['crew_cur']} / {$vals['crew_cap']} (req: {$vals['crew_req']})</td></tr>
                                             <tr> <td>Fuel:</td>     <td class='text-right'>{$vals['fuel_cur']} / {$vals['fuel_cap']}</td></tr>
-                                            <tr> <td>Waypoint:</td> <td class='text-right'><button class='open-modal' data-symbol='{$vals['waypoint']}'  data-type='System'>{$vals['waypoint']} ({$vals['waypoint_type']})</button></td></tr>
+                                            <tr> <td>Waypoint:</td> <td class='text-right'><button class='open-modal' data-symbol='{$vals['waypoint']}' data-type='System'>{$vals['waypoint']} ({$vals['waypoint_type']})</button></td></tr>
                                             <tr> <td>Contract:</td> <td class='text-right'><button class='open-modal' data-symbol='PLACEHOLDER_CONTRACT' data-type='Contract'>View Contract</td></tr>
-                                            <tr> <td>Cargo:</td>    <td class='text-right'><button class='open-modal' data-symbol='{$vals['symbol']}'    data-type='Cargo'>View Cargo</button></td></tr>
+                                            <tr> <td>Cargo:</td>    <td class='text-right'><button class='open-modal' data-id='{$vals['symbol']}_CARGO' data-type='Cargo'>View Cargo</button></td></tr>
                                         </tbody>
                                     </table>
                                 </div>

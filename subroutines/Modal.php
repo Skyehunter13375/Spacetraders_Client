@@ -7,23 +7,31 @@
 
     switch ($desire) {
         case 'System':
-            $WAYP = SELECT("SELECT system,symbol,type,x,y,orbits,construction FROM waypoints WHERE system = 'X1-TT41' ORDER BY type");
+            $SYST = SELECT("SELECT system FROM waypoints WHERE symbol = '{$symbol}'")[0]['system'];
+            $WAYP = SELECT("SELECT system,symbol,type,x,y,orbits,construction FROM waypoints WHERE system = '{$SYST}' ORDER BY type");
             print("
+                    <div class='panel'>
                         <table class='table'>
-                            <tbody>
+                            <thead>
                                 <tr>
-                                    <td>System</td>
-                                    <td>Symbol</td>
-                                    <td>Type</td>
-                                    <td>X</td>
-                                    <td>Y</td>
-                                    <td>Orbits</td>
-                                    <td>Construction</td>
+                                    <th>System</th>
+                                    <th>Symbol</th>
+                                    <th>Type</th>
+                                    <th>X</th>
+                                    <th>Y</th>
+                                    <th>Orbits</th>
+                                    <th>Construction</th>
                                 </tr>
+                            </thead>
+                            <tbody>
             ");
             foreach ($WAYP as $key => $val) {
+                if ($val['symbol'] == $symbol) {
+                    print("     <tr style='background-color: var(--border-accent);'>");
+                } else {
+                    print("     <tr>");
+                }
                 print("
-                                <tr>
                                     <td>{$val['system']}</td>
                                     <td>{$val['symbol']}</td>
                                     <td>{$val['type']}</td>
@@ -37,6 +45,7 @@
             print("
                             </tbody>
                         </table>
+                    </div>
             ");
             break;
 
