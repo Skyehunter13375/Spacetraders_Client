@@ -65,6 +65,7 @@ CREATE TABLE ships (
     symbol       TEXT PRIMARY KEY,
     name         TEXT,
     role         TEXT,
+    status       TEXT,
     faction      TEXT,
     last_updated TEXT
 );
@@ -157,6 +158,7 @@ CREATE TABLE contracts (
     pay_on_complete    INTEGER,
     accepted           INTEGER, -- boolean 0/1
     fulfilled          INTEGER, -- boolean 0/1
+    fulfilled_by       TEXT,
     deadline           TEXT,
     expiration         TEXT,
     deadline_to_accept TEXT,

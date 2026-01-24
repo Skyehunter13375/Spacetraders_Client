@@ -7,6 +7,7 @@ type Contract struct {
 	Terms            ContractTerms `json:"terms"`
 	Accepted         bool          `json:"accepted"`
 	Fulfilled        bool          `json:"fulfilled"`
+	FulfilledBy      string        `json:"fulfilled_by"`
 	Expiration       string        `json:"expiration"`
 	DeadlineToAccept string        `json:"deadlineToAccept"`
 	LastUpdated      string

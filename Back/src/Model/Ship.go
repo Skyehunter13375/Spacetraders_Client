@@ -13,7 +13,8 @@ type Ship struct {
 	Mounts       []ShipMounts  `json:"mounts"`
 	Cargo        ShipCargo     `json:"cargo"`
 	Fuel         ShipFuel      `json:"fuel"`
-	LastUpdated  string
+	Status       string        `json:"status"`
+	LastUpdated  string        `json:"lastupdated"`
 }
 
 type ShipReg struct {

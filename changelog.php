@@ -17,6 +17,28 @@
         <?php print_header($thisFileName); ?>
         <div class="container">
             <div class='panel' style='margin-bottom: 1rem;'>
+            <h2 class='text-primary'>01/24/2026</h2>
+            <ul class='text-white'>
+                <li>Working on the modal for the system viewer within the fleet page. Only a table view of the system for now until I can get the javascript piece finished and integrated.</li>
+                <li>I also created a component viewer in the fleet page using a lot of the same logic.</li>
+                <li>My intention is to come clean this logic up later on, right now it's just a functional prototype.</li>
+                <li>Tomorrow is reset day, so I'll be reregistering my agent and checking all of the automation that's complete at this point.</li>
+                <li>Fixed some bugs in the ingest code. I was sticking some of the ship_frame data in the ship_reactor tables by mistake.</li>
+                <li>Still need to build out the ship cargo viewer and create integration to offload or jettison that cargo as needed.</li>
+            </ul>
+            </div>
+
+            <div class='panel' style='margin-bottom: 1rem;'>
+            <h2 class='text-primary'>01/23/2026</h2>
+            <ul class='text-white'>
+                <li>Created a table view (modal) of each ship's location in the fleet page. That way you can see where each ship is in the system.</li>
+                <li>I have not incorporated the actual javascript system viewer to this just yet but I'm getting there.</li>
+                <li>Next step is to build out the ship components and contract viewer pages more and start creating links to the actual go program to accept and fulfil contracts.</li>
+                <li>Getting VERY close to being able to actually interact with the game and start playing!!!</li>
+            </ul>
+            </div>
+
+            <div class='panel' style='margin-bottom: 1rem;'>
             <h2 class='text-primary'>01/19/2026</h2>
             <ul class='text-white'>
                 <li>Finished and tested the new agent registration code.</li>

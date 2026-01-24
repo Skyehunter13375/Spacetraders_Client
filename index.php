@@ -36,10 +36,10 @@
                             More will be added over time! I refuse to give up on this project and I WILL eventually get to play this incredible game someday!
                         </p><br>
                         <blockquote class="italic text-sm text-secondary" cite="">
-                            “Between quiet stars, the abyss invites thought.<br>
-                            I look inward and find room to grow, echoes turning into possibility.<br>
-                            The universe holds its silence gently, and I meet it with calm awareness,<br>
-                            learning beneath the Null Sky.”<br>
+                            "Across the quiet span of stars, thought drifts and settles.<br>
+                            I look within, mapping new ground where uncertainty becomes direction.<br>
+                            The vastness remains still, inviting awareness rather than fear,<br>
+                            learning beneath the Null Sky."
                         </blockquote>
                     </div>
                 </div>
@@ -51,10 +51,10 @@
                         <table class="table">
                             <?php $ServerStatus = SELECT('SELECT server_up, game_version, agents, ships, systems, waypoints, accounts, reset_freq, reset_date, next_reset, last_updated FROM server')[0]; ?>
                             <tbody>
-                                <tr> <td>Status:</td>            <td class="text-right"><?= $ServerStatus['server_up'] ?>    </td></tr>
-                                <tr> <td>Version:</td>           <td class="text-right"><?= $ServerStatus['game_version'] ?> </td></tr>
-                                <tr> <td>Last Reset:</td>        <td class="text-right">PLACEHOLDER TEXT</td></tr>
-                                <tr> <td>Next Reset:</td>        <td class="text-right"><?= $ServerStatus['next_reset'] ?>   </td></tr>
+                                <tr> <td>Status:</td>     <td class="text-right"><?= $ServerStatus['server_up'] ?></td></tr>
+                                <tr> <td>Version:</td>    <td class="text-right"><?= $ServerStatus['game_version'] ?></td></tr>
+                                <tr> <td>Last Reset:</td> <td class="text-right">PLACEHOLDER TEXT</td></tr>
+                                <tr> <td>Next Reset:</td> <td class="text-right"><?= $ServerStatus['next_reset'] ?></td></tr>
                             </tbody>
                         </table>
                     </div>
@@ -78,8 +78,8 @@
                         <table class="table">
                             <thead>
                                 <tr>
-                                    <th>Agent</th>
-                                    <th>Credits</th>
+                                    <th style='text-align: left'>Agent</th>
+                                    <th style='text-align: right'>Credits</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -88,7 +88,7 @@
                                     foreach ($Leaderboard as $key => $vals) {
                                         print("<tr>");
                                         print("<td>{$vals['agent']}</td>");
-                                        print("<td>{$vals['credits']}</td>");
+                                        print("<td class='text-right'>{$vals['credits']}</td>");
                                         print("</tr>");
                                     }
                                 ?>
@@ -101,8 +101,8 @@
                         <table class="table">
                             <thead>
                                 <tr>
-                                    <th>Agent</th>
-                                    <th>Charts</th>
+                                    <th style='text-align: left'>Agent</th>
+                                    <th style='text-align: right'>Charts</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -111,7 +111,7 @@
                                     foreach ($Leaderboard as $key => $vals) {
                                         print("<tr>");
                                         print("<td>{$vals['agent']}</td>");
-                                        print("<td>{$vals['charts']}</td>");
+                                        print("<td class='text-right'>{$vals['charts']}</td>");
                                         print("</tr>");
                                     }
                                 ?>

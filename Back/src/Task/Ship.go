@@ -259,12 +259,12 @@ func UpdateShipState(ships []Model.Ship) error {
 			s.Symbol,
 			s.Reactor.Symbol,
 			s.Reactor.Name,
-			s.Frame.Description,
-			s.Frame.Condition,
-			s.Frame.Integrity,
-			s.Frame.Quality,
-			s.Frame.Requirements.Power,
-			s.Frame.Requirements.Crew,
+			s.Reactor.Description,
+			s.Reactor.Condition,
+			s.Reactor.Integrity,
+			s.Reactor.Quality,
+			s.Reactor.Requirements.Power,
+			s.Reactor.Requirements.Crew,
 		)
 		if err != nil { LogErr("UpdateShipState ShipReactor: " + err.Error()) }
 
