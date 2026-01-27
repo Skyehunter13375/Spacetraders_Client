@@ -113,10 +113,9 @@ type ShipCooldown struct {
 
 type ShipModules struct {
 	Symbol       string `json:"symbol"`
-	Capacity     int    `json:"capacity"`
-	Range        int    `json:"range"`
 	Name         string `json:"name"`
 	Description  string `json:"description"`
+	Capacity     int    `json:"capacity"`
 	Requirements struct {
 		Power int `json:"power"`
 		Crew  int `json:"crew"`

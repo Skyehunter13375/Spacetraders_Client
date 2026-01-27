@@ -78,6 +78,7 @@
                         <table class="table">
                             <thead>
                                 <tr>
+                                    <th style='width: 35px'>Pos</th>
                                     <th style='text-align: left'>Agent</th>
                                     <th style='text-align: right'>Credits</th>
                                 </tr>
@@ -86,10 +87,14 @@
                                 <?php 
                                     $Leaderboard = SELECT("SELECT * FROM leaderboard_creds");
                                     foreach ($Leaderboard as $key => $vals) {
-                                        print("<tr>");
-                                        print("<td>{$vals['agent']}</td>");
-                                        print("<td class='text-right'>{$vals['credits']}</td>");
-                                        print("</tr>");
+                                        $curr = $key + 1;
+                                        print("
+                                            <tr>
+                                                <td style='width: 35px'>{$curr}</td>
+                                                <td>{$vals['agent']}</td>
+                                                <td class='text-right'>{$vals['credits']}</td>
+                                            </tr>
+                                        ");
                                     }
                                 ?>
                             </tbody>
@@ -101,6 +106,7 @@
                         <table class="table">
                             <thead>
                                 <tr>
+                                    <th style='width: 35px'>Pos</th>
                                     <th style='text-align: left'>Agent</th>
                                     <th style='text-align: right'>Charts</th>
                                 </tr>
@@ -109,10 +115,14 @@
                                 <?php 
                                     $Leaderboard = SELECT("SELECT * FROM leaderboard_charts");
                                     foreach ($Leaderboard as $key => $vals) {
-                                        print("<tr>");
-                                        print("<td>{$vals['agent']}</td>");
-                                        print("<td class='text-right'>{$vals['charts']}</td>");
-                                        print("</tr>");
+                                        $curr = $key + 1;
+                                        print("
+                                            <tr>
+                                                <td style='width: 35px'>{$curr}</td>
+                                                <td>{$vals['agent']}</td>
+                                                <td class='text-right'>{$vals['charts']}</td>
+                                            </tr>
+                                        ");
                                     }
                                 ?>
                             </tbody>

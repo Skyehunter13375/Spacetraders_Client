@@ -98,6 +98,9 @@
             $ENGINE = SELECT("SELECT * FROM ship_engine WHERE ship = '{$symbol}'");
             $FRAME  = SELECT("SELECT * FROM ship_frame WHERE ship = '{$symbol}'");
             $REACTR = SELECT("SELECT * FROM ship_reactor WHERE ship = '{$symbol}'");
+            $CREW   = SELECT("SELECT * FROM ship_crew WHERE ship = '{$symbol}'");
+            $MODULE = SELECT("SELECT * FROM ship_modules WHERE ship = '{$symbol}'");
+            $MOUNTS = SELECT("SELECT * FROM ship_mounts WHERE ship = '{$symbol}'");
             print("
                 <div class='grid grid-4'>
                     <div class='panel'>
@@ -148,23 +151,46 @@
                         </table>
                         <p class='text-white'>{$ENGINE[0]['description']}</p>
                     </div>
+
+                    <div class='panel'>
+                        <h3 class=text-primary text-lg section-title'>Crew</h3>
+                        <table class='table'>
+                            <tbody>
+                                <tr> <td>Current</td>  <td class='text-right'>{$CREW[0]['current']} / {$CREW[0]['capacity']}</td></tr>
+                                <tr> <td>Required</td> <td class='text-right'>{$CREW[0]['required']}</td></tr>
+                                <tr> <td>Rotation</td> <td class='text-right'>{$CREW[0]['rotation']}</td></tr>
+                                <tr> <td>Morale</td>   <td class='text-right'>{$CREW[0]['morale']}</td></tr>
+                                <tr> <td>Wages</td>    <td class='text-right'>{$CREW[0]['wages']}</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
                 <br><hr style='border-color: var(--border-accent)'>
                 <h3 class=text-primary text-lg section-title'>Modules Installed</h3>
                 <table class='table'>
                     <thead>
-                        <th>Placeholder</th>
-                        <th>Placeholder</th>
-                        <th>Placeholder</th>
-                        <th>Placeholder</th>
+                        <th>Symbol</th>
+                        <th>Name</th>
+                        <th>Capacity</th>
+                        <th>Power Required</th>
+                        <th>Crew Required</th>
+                        <th>Slots Required</th>
                     </thead>
                     <tbody>
+            ");
+            foreach ($MODULE as $key => $val) {
+                print("
                         <tr>
-                            <td>Placeholder</td>
-                            <td>Placeholder</td>
-                            <td>Placeholder</td>
-                            <td>Placeholder</td>
+                            <td>{$val['symbol']}</td>
+                            <td>{$val['name']}</td>
+                            <td>{$val['capacity']}</td>
+                            <td>{$val['power_required']}</td>
+                            <td>{$val['crew_required']}</td>
+                            <td>{$val['slots_required']}</td>
                         </tr>
+                ");
+            }
+            print("
                     </tbody>
                 </table>
                 <br><hr style='border-color: var(--border-accent)'>
@@ -173,18 +199,34 @@
                 <h3 class=text-primary text-lg section-title'>Mounted Components</h3>
                 <table class='table'>
                     <thead>
-                        <th>Placeholder</th>
-                        <th>Placeholder</th>
-                        <th>Placeholder</th>
-                        <th>Placeholder</th>
+                        <th>Symbol</th>
+                        <th>Name</th>
+                        <th>Strength</th>
+                        <th>Power Required</th>
+                        <th>Crew Required</th>
+                        <th>Slots Required</th>
+                        <th>Deposits</th>
                     </thead>
                     <tbody>
+            ");
+            foreach ($MOUNTS as $key => $val) {
+                $val['deposits'] = str_replace(',', '<br>', $val['deposits']);
+                print("
                         <tr>
-                            <td>Placeholder</td>
-                            <td>Placeholder</td>
-                            <td>Placeholder</td>
-                            <td>Placeholder</td>
+                            <td>{$val['symbol']}</td>
+                            <td>{$val['name']}</td>
+                            <td>{$val['strength']}</td>
+                            <td>{$val['power_required']}</td>
+                            <td>{$val['crew_required']}</td>
+                            <td>{$val['slots_required']}</td>
+                            <td>{$val['deposits']}</td>
                         </tr>
+                ");
+            }
+            print("
+                    </tbody>
+                </table>
+                <br><hr style='border-color: var(--border-accent)'>
                     </tbody>
                 </table>
             ");

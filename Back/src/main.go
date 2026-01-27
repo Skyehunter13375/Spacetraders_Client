@@ -27,6 +27,7 @@ func main() {
 		panic(err)
 	}
 
+
 	for {
 		CFG,_ := Task.GetConfig()
 

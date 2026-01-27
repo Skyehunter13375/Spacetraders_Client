@@ -150,6 +150,31 @@ CREATE TABLE ship_engine (
     FOREIGN KEY(ship) REFERENCES ships(symbol) ON DELETE CASCADE
 );
 
+CREATE TABLE ship_modules (
+    ship        TEXT,
+    symbol      TEXT,
+    name        TEXT,
+    description TEXT,
+    power_required INTEGER,
+    crew_required  INTEGER,
+    slots_required INTEGER,
+    capacity       INTEGER,
+    FOREIGN KEY(ship) REFERENCES ships(symbol) ON DELETE CASCADE
+);
+
+CREATE TABLE ship_mounts (
+    ship        TEXT,
+    symbol      TEXT,
+    name        TEXT,
+    description TEXT,
+    deposits    TEXT,
+    strength       INTEGER,
+    power_required INTEGER,
+    crew_required  INTEGER,
+    slots_required INTEGER,
+    FOREIGN KEY(ship) REFERENCES ships(symbol) ON DELETE CASCADE
+);
+
 CREATE TABLE contracts (
     id                 TEXT PRIMARY KEY,
     faction            TEXT,

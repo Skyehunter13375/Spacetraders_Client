@@ -3,6 +3,7 @@ package Task
 import "Spacetraders/src/Model"
 import "encoding/json"
 import "time"
+import "strings"
 
 func GetShipState(symbol string) Model.Ship {
 	var sd Model.Ship
@@ -263,7 +264,7 @@ func UpdateShipState(ships []Model.Ship) error {
 			s.Reactor.Condition,
 			s.Reactor.Integrity,
 			s.Reactor.Quality,
-			s.Reactor.Requirements.Power,
+	s.Reactor.Requirements.Power,
 			s.Reactor.Requirements.Crew,
 		)
 		if err != nil { LogErr("UpdateShipState ShipReactor: " + err.Error()) }
@@ -296,6 +297,45 @@ func UpdateShipState(ships []Model.Ship) error {
 			s.Engine.Requirements.Crew,
 		)
 		if err != nil { LogErr("UpdateShipState ShipEngine: " + err.Error()) }
+
+		// <---> Ship Modules <---> \\
+		PG.Exec(`DELETE FROM ship_modules WHERE ship = '?'`, s.Symbol)
+		for mod_idx := range s.Modules {
+			_, err = PG.Exec(`
+				INSERT INTO ship_modules (ship,symbol,name,description,power_required,crew_required,slots_required,capacity)
+				VALUES (?,?,?,?,?,?,?,?)
+			`,
+				s.Symbol,
+				s.Modules[mod_idx].Symbol,
+				s.Modules[mod_idx].Name,
+				s.Modules[mod_idx].Description,
+				s.Modules[mod_idx].Requirements.Power,
+				s.Modules[mod_idx].Requirements.Crew,
+				s.Modules[mod_idx].Requirements.Slots,
+				s.Modules[mod_idx].Capacity,
+			)
+		}
+		
+
+		// <---> Ship Mounts  <---> \\
+		PG.Exec(`DELETE FROM ship_mounts WHERE ship = '?'`, s.Symbol)
+		for mnt_idx := range s.Mounts {
+			deposits := strings.Join(s.Mounts[mnt_idx].Deposits, ",")
+			_, err = PG.Exec(`
+				INSERT INTO ship_mounts (ship,symbol,name,description,strength,deposits,power_required,crew_required,slots_required)
+				VALUES (?,?,?,?,?,?,?,?,?)
+			`,
+				s.Symbol,
+				s.Mounts[mnt_idx].Symbol,
+				s.Mounts[mnt_idx].Name,
+				s.Mounts[mnt_idx].Description,
+				s.Mounts[mnt_idx].Strength,
+				deposits,
+				s.Mounts[mnt_idx].Requirements.Power,
+				s.Mounts[mnt_idx].Requirements.Crew,
+				s.Mounts[mnt_idx].Requirements.Slots,
+			)
+		}
 	}
 
 	return nil
