@@ -181,14 +181,13 @@ blockquote {
  * Modal data
 */
 .modal-backdrop {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-
+    position:   fixed;
+    top:        0;
+    left:       0;
+    width:      100vw;
+    height:     100vh;
     background: var(--bg-main);
-    z-index: 99999;
+    z-index:    99999;
 }
 
 .modal-window {

@@ -4,7 +4,7 @@ This is my most recent attempt at creating a usable client for the [SpaceTraders
 If you stumbled across this project looking for some good advice on how to write in Golang or to steal my trade secrets in-game you've come to the wrong place friend! I'm doing this mostly for the data collection and TUI building experience, I'd be lucky if my agent completes even a single contract per bi-weekly reset!
 
 # What this project is:
-- A passion project & academic exercise for me to learn Golang and practice with SQL.
+- A passion project & academic exercise for me to learn Golang and practice with PHP and SQL.
 - A fun way for me to both justify playing a fun game and also build skills/tools at the same time.
 
 # What this project is NOT:
@@ -12,10 +12,9 @@ If you stumbled across this project looking for some good advice on how to write
 - A point of reference for how programming should be done. 
 - While I've been writing PHP and building tools for several years I'm still VERY new to these topics.
 
-# In theory:
-This project should be entirely portable and agent agnostic...as long as you have a postgresql database on your machine and set up your tables exactly like I have in my sample schema files!
-
+# Caveats:
 I wrote this on a RHEL based system with no intention of making it interoperable with other distros or kernels since this is really just for me.
+I intended for this to be system and user agnostic but abandoned that plan pretty early on in favor of more precise control over the environment.
 
 # Milestones
 - [ ] Setup
@@ -23,7 +22,7 @@ I wrote this on a RHEL based system with no intention of making it interoperable
     - [x] Register a New Agent
     - [ ] Display settings config.yaml contents
     - [x] Simplify and/or automate new user setup
-    - [ ] Automate reet process + archive old DB files for reference
+    - [x] Automate reset process + archive old DB files for reference
     - [ ] Edit settings config.yaml contents in the GUI
 
 - [x] Game Server

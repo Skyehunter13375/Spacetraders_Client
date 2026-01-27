@@ -16,7 +16,6 @@ function print_header($current) {
     $menuItems = [
         'index.php'       => 'Home',
         'fleet.php'       => 'Fleet',
-        'contracts.php'   => 'Contracts',
         'systems.php'     => 'Systems',
         'changelog.php'   => 'Changelog',
         'aboutme.php'     => 'AboutMe'

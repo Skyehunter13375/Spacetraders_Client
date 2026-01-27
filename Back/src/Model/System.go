@@ -1,6 +1,6 @@
 package Model
 
-// ┣━━━━━━━━━━━━━━━━━━━━━┫ System (All at once - no detail) ┣━━━━━━━━━━━━━━━━━━━━━┫
+// <---------------------> System (All at once - no detail) <--------------------->
 type System struct {
 	Symbol        string         `json:"symbol"`
 	Sector        string         `json:"sectorSymbol"`
@@ -60,7 +60,7 @@ type SysFactions struct {
 //     }
 // }
 
-// ┣━━━━━━━━━━━━━━━━━━━━━━━━━━━┫ Individual Waypoints ┣━━━━━━━━━━━━━━━━━━━━━━━━━━━┫
+// <---------------------------> Individual Waypoints <--------------------------->
 type Waypoint struct {
 	System       string      `json:"systemSymbol"`
 	Symbol       string      `json:"symbol"`
@@ -136,7 +136,7 @@ type WayChart struct {
 //     }
 // }
 
-// ┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫ Shipyard ┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫
+// <---------------------------------> Shipyard <--------------------------------->
 type Shipyard struct {
 	Symbol       string            `json:"symbol"`
 	Types        []SY_Types        `json:"shipTypes"`
@@ -158,13 +158,13 @@ type SY_Transactions struct {
 }
 
 type SY_Ship struct {
-	Type        string              `json:"type"`
-	Name        string              `json:"name"`
-	Description string              `json:"description"`
-	Supply      string              `json:"supply"`
-	Activity    string              `json:"activity"`
-	Price       int64               `json:"shipPrice"`
-	ModFee      int64               `json:"modificationsFee"`
+	Type        string        `json:"type"`
+	Name        string        `json:"name"`
+	Description string        `json:"description"`
+	Supply      string        `json:"supply"`
+	Activity    string        `json:"activity"`
+	Price       int64         `json:"shipPrice"`
+	ModFee      int64         `json:"modificationsFee"`
 	Frame       ShipFrame     `json:"frame"`
 	Reactor     ShipReactor   `json:"reactor"`
 	Engine      ShipEngine    `json:"engine"`

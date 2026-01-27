@@ -165,70 +165,66 @@
                         </table>
                     </div>
                 </div>
-                <br><hr style='border-color: var(--border-accent)'>
-                <h3 class=text-primary text-lg section-title'>Modules Installed</h3>
-                <table class='table'>
-                    <thead>
-                        <th>Symbol</th>
-                        <th>Name</th>
-                        <th>Capacity</th>
-                        <th>Power Required</th>
-                        <th>Crew Required</th>
-                        <th>Slots Required</th>
-                    </thead>
-                    <tbody>
+
+                <div class='panel'>
+                    <h3 class=text-primary text-lg section-title'>Modules Installed</h3>
+                    <table class='table'>
+                        <thead>
+                            <th>Name</th>
+                            <th>Capacity</th>
+                            <th>Power Required</th>
+                            <th>Crew Required</th>
+                            <th>Slots Required</th>
+                        </thead>
+                        <tbody>
             ");
             foreach ($MODULE as $key => $val) {
                 print("
-                        <tr>
-                            <td>{$val['symbol']}</td>
-                            <td>{$val['name']}</td>
-                            <td>{$val['capacity']}</td>
-                            <td>{$val['power_required']}</td>
-                            <td>{$val['crew_required']}</td>
-                            <td>{$val['slots_required']}</td>
-                        </tr>
+                            <tr>
+                                <td>{$val['name']}</td>
+                                <td>{$val['capacity']}</td>
+                                <td>{$val['power_required']}</td>
+                                <td>{$val['crew_required']}</td>
+                                <td>{$val['slots_required']}</td>
+                            </tr>
                 ");
             }
             print("
-                    </tbody>
-                </table>
-                <br><hr style='border-color: var(--border-accent)'>
+                        </tbody>
+                    </table>
+                </div>
 
-
-                <h3 class=text-primary text-lg section-title'>Mounted Components</h3>
-                <table class='table'>
-                    <thead>
-                        <th>Symbol</th>
-                        <th>Name</th>
-                        <th>Strength</th>
-                        <th>Power Required</th>
-                        <th>Crew Required</th>
-                        <th>Slots Required</th>
-                        <th>Deposits</th>
-                    </thead>
-                    <tbody>
+                <br>
+                <div class='panel'>
+                    <h3 class=text-primary text-lg section-title'>Mounted Components</h3>
+                    <table class='table'>
+                        <thead>
+                            <th>Name</th>
+                            <th>Strength</th>
+                            <th>Power Required</th>
+                            <th>Crew Required</th>
+                            <th>Slots Required</th>
+                            <th>Deposits</th>
+                        </thead>
+                        <tbody>
             ");
             foreach ($MOUNTS as $key => $val) {
                 $val['deposits'] = str_replace(',', '<br>', $val['deposits']);
                 print("
-                        <tr>
-                            <td>{$val['symbol']}</td>
-                            <td>{$val['name']}</td>
-                            <td>{$val['strength']}</td>
-                            <td>{$val['power_required']}</td>
-                            <td>{$val['crew_required']}</td>
-                            <td>{$val['slots_required']}</td>
-                            <td>{$val['deposits']}</td>
-                        </tr>
+                            <tr>
+                                <td>{$val['name']}</td>
+                                <td>{$val['strength']}</td>
+                                <td>{$val['power_required']}</td>
+                                <td>{$val['crew_required']}</td>
+                                <td>{$val['slots_required']}</td>
+                                <td>{$val['deposits']}</td>
+                            </tr>
                 ");
             }
             print("
-                    </tbody>
-                </table>
-                <br><hr style='border-color: var(--border-accent)'>
-                    </tbody>
-                </table>
+                        </tbody>
+                    </table>
+                </div>
             ");
 
             break;

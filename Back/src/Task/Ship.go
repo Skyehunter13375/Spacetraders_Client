@@ -2,16 +2,16 @@ package Task
 
 import "Spacetraders/src/Model"
 import "encoding/json"
-import "time"
 import "strings"
 
 func GetShipState(symbol string) Model.Ship {
 	var sd Model.Ship
 
-	tsStr := "1970-01-01T00:00:00Z"
-	PG.QueryRow(`SELECT last_updated FROM ships where symbol = ?`, symbol).Scan(&tsStr)
-	ts, _ := time.Parse(time.RFC3339, tsStr)
-	if time.Since(ts) > 15*time.Minute { UpdateShipState(nil) }
+	// TASK OBSOLETE: Check if data is more than 15 mins old and refresh. Handled by the job task scheduler now.
+	// tsStr := "1970-01-01T00:00:00Z"
+	// PG.QueryRow(`SELECT last_updated FROM ships where symbol = ?`, symbol).Scan(&tsStr)
+	// ts, _ := time.Parse(time.RFC3339, tsStr)
+	// if time.Since(ts) > 15*time.Minute { UpdateShipState(nil) }
 
 	query := `
 		SELECT ship.*, navg.*, crew.*, fuel.*, frame.*, reactor.*, engine.*
@@ -114,7 +114,7 @@ func UpdateShipState(ships []Model.Ship) error {
 	}
 
 	for _, s := range ships {
-		// ┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫ Upsert Ship ┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫
+		// <-------------------------------> Upsert Ship <-------------------------------->
 		_, err := PG.Exec(`
 			INSERT INTO ships (symbol,name,role,faction,last_updated) 
 			VALUES (?,?,?,?,datetime('now'))
@@ -132,7 +132,7 @@ func UpdateShipState(ships []Model.Ship) error {
 		)
 		if err != nil { LogErr("UpdateShipState Ships: " + err.Error()) }
 
-		// ┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫ Upsert Ship Nav ┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫
+		// <-----------------------------> Upsert Ship Nav <------------------------------>
 		_, err = PG.Exec(`
 			INSERT INTO ship_nav (ship,system,waypoint,status,flight_mode,origin,origin_type,origin_x,origin_y,destination,destination_type,destination_x,destination_y,arrival,departure) 
 			VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
@@ -171,7 +171,7 @@ func UpdateShipState(ships []Model.Ship) error {
 		)
 		if err != nil { LogErr("UpdateShipState ShipNav: " + err.Error()) }
 
-		// ┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫ Upsert Ship Crew ┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫
+		// <-----------------------------> Upsert Ship Crew <----------------------------->
 		_, err = PG.Exec(`
 			INSERT INTO ship_crew (ship, current, required, capacity, rotation, morale, wages) 
 			VALUES (?,?,?,?,?,?,?)
@@ -194,7 +194,7 @@ func UpdateShipState(ships []Model.Ship) error {
 		)
 		if err != nil { LogErr("UpdateShipState ShipCrew: " + err.Error()) }
 
-		// ┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫ Upsert Ship Fuel ┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫
+		// <-----------------------------> Upsert Ship Fuel <----------------------------->
 		_, err = PG.Exec(`
 			INSERT INTO ship_fuel (ship,current,capacity)
 			VALUES (?,?,?)
@@ -209,7 +209,7 @@ func UpdateShipState(ships []Model.Ship) error {
 		)
 		if err != nil { LogErr("UpdateShipState ShipFuel: " + err.Error()) }
 
-		// ┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫ Upsert Ship Frame ┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫
+		// <----------------------------> Upsert Ship Frame <----------------------------->
 		_, err = PG.Exec(`
 			INSERT INTO ship_frame (ship,symbol,name,description,module_slots,mount_points,fuel_capacity,condition,integrity,quality,power_required,crew_required)
 			VALUES (?,?,?,?,?,?,?,?,?,?,?,?)
@@ -242,7 +242,7 @@ func UpdateShipState(ships []Model.Ship) error {
 		)
 		if err != nil { LogErr("UpdateShipState ShipFrame: " + err.Error()) }
 
-		// ┣━━━━━━━━━━━━━━━━━━━━━━━━━━━┫ Upsert Ship Reactor ┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫
+		// <---------------------------> Upsert Ship Reactor <---------------------------->
 		_, err = PG.Exec(`
 			INSERT INTO ship_reactor (ship,symbol,name,description,condition,integrity,power_output,quality,crew_required)
 			VALUES (?,?,?,?,?,?,?,?,?)
@@ -268,8 +268,10 @@ func UpdateShipState(ships []Model.Ship) error {
 			s.Reactor.Requirements.Crew,
 		)
 		if err != nil { LogErr("UpdateShipState ShipReactor: " + err.Error()) }
-
-		// ┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫ Upsert Ship Engine ┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫
+		
+		//
+		// <----------------------------> Upsert Ship Engine <---------------------------->
+		//
 		_, err = PG.Exec(`
 			INSERT INTO ship_engine (ship,symbol,name,description,condition,integrity,speed,quality,power_required,crew_required)
 			VALUES (?,?,?,?,?,?,?,?,?,?)
@@ -299,7 +301,7 @@ func UpdateShipState(ships []Model.Ship) error {
 		if err != nil { LogErr("UpdateShipState ShipEngine: " + err.Error()) }
 
 		// <---> Ship Modules <---> \\
-		PG.Exec(`DELETE FROM ship_modules WHERE ship = '?'`, s.Symbol)
+		PG.Exec(`DELETE FROM ship_modules WHERE ship = ?`, s.Symbol)
 		for mod_idx := range s.Modules {
 			_, err = PG.Exec(`
 				INSERT INTO ship_modules (ship,symbol,name,description,power_required,crew_required,slots_required,capacity)
@@ -318,7 +320,7 @@ func UpdateShipState(ships []Model.Ship) error {
 		
 
 		// <---> Ship Mounts  <---> \\
-		PG.Exec(`DELETE FROM ship_mounts WHERE ship = '?'`, s.Symbol)
+		PG.Exec(`DELETE FROM ship_mounts WHERE ship = ?`, s.Symbol)
 		for mnt_idx := range s.Mounts {
 			deposits := strings.Join(s.Mounts[mnt_idx].Deposits, ",")
 			_, err = PG.Exec(`

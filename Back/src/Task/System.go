@@ -5,8 +5,6 @@ import "encoding/json"
 
 func UpdateSystem(symbol string) error {
 	jsonStr := GetUrlJson("https://api.spacetraders.io/v2/systems/" + symbol, "")
-	// LogActivity(string(jsonStr))
-
 	var wrapper map[string]json.RawMessage
 	err := json.Unmarshal([]byte(jsonStr), &wrapper)
 	if err != nil { LogErr("UpdateSystem: " + err.Error()) }
@@ -118,7 +116,7 @@ func UpdateShipyard(system string, symbol string) error {
 	err := json.Unmarshal(wrapper["data"], &y)
 	if err != nil { LogErr("UpdateShipyard: " + err.Error()) }
 
-	// TODO: Write SQL to upsert data
+	// TODO Write SQL to upsert data
 
 	return nil
 }

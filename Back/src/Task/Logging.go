@@ -2,6 +2,8 @@ package Task
 
 import "log"
 import "os"
+import "fmt"
+import "time"
 
 func LogErr(msg string) {
 	CFG, _     := GetConfig()
@@ -9,6 +11,10 @@ func LogErr(msg string) {
 	log.SetOutput(logFile)
 	log.Printf("%s", msg)
 	logFile.Close()
+
+	currentTime := time.Now().UTC()
+	formatdTime := currentTime.Format("01/02/2006 15:04:05")
+	fmt.Println(formatdTime + " - " + msg)
 }
 
 func LogActivity(msg string) {
@@ -17,6 +23,10 @@ func LogActivity(msg string) {
 	log.SetOutput(logFile)
 	log.Printf("%s", msg)
 	logFile.Close()
+
+	currentTime := time.Now().UTC()
+	formatdTime := currentTime.Format("01/02/2006 15:04:05")
+	fmt.Println(formatdTime + " - " + msg)
 }
 
 

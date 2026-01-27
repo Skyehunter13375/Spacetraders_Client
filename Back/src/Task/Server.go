@@ -2,7 +2,6 @@ package Task
 
 import "Spacetraders/src/Model"
 import "encoding/json"
-import "time"
 
 // FEAT Capture and store the state of the game
 func UpdateGameServerState() error {
@@ -58,11 +57,11 @@ func UpdateGameServerState() error {
 func GetGameServerState() Model.ServerState {
 	var g Model.ServerState
 	
-	// TASK Check last updated timestamp, if > 15 mins go pull new data
-	tsStr := "1970-01-01T00:00:00Z"
-	PG.QueryRow(`SELECT last_updated FROM server`).Scan(&tsStr)
-	ts, _ := time.Parse(time.RFC3339, tsStr)
-	if time.Since(ts) > 15*time.Minute { UpdateGameServerState() }
+	// TASK OBSOLETE: Check last updated timestamp, if > 15 mins go pull new data
+// 	tsStr := "1970-01-01T00:00:00Z"
+// 	PG.QueryRow(`SELECT last_updated FROM server`).Scan(&tsStr)
+// 	ts, _ := time.Parse(time.RFC3339, tsStr)
+// 	if time.Since(ts) > 15*time.Minute { UpdateGameServerState() }
 
 	// TASK Pull updated values
 	_ = PG.QueryRow(`SELECT server_up,game_version,agents,ships,systems,waypoints,accounts,reset_date,next_reset,reset_freq,last_updated FROM server`).Scan(

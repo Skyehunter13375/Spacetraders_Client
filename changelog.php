@@ -19,6 +19,18 @@
             <div class='panel' style='margin-bottom: 1rem;'>
             <h2 class='text-primary'>01/24/2026</h2>
             <ul class='text-white'>
+                <li>Completely new main program that includes a task controller and scheduler.</li>
+                <li>Now the program can run entirely independently. This sets the framework for interacting with the program rather than the DB directly from the web pages.</li>
+                <li>I will create a service to keep the game up and running here soon, then all interaction with the game will be done through scheduled or manual task creation.</li>
+                <li>This should ensure that we only ever have one main source of truth for both the state of my agent and fleet but also a single point of entry to the DB.</li>
+                <li>I also now capture each ships module and mount hardpoint loadouts. I wasn't doing so before but that data is now being collected and updated on ship update.</li>
+                <li>That means I also can now display that data in the fleet page so that was built out today as well.</li>
+            </ul>
+            </div>
+
+            <div class='panel' style='margin-bottom: 1rem;'>
+            <h2 class='text-primary'>01/24/2026</h2>
+            <ul class='text-white'>
                 <li>Working on the modal for the system viewer within the fleet page. Only a table view of the system for now until I can get the javascript piece finished and integrated.</li>
                 <li>I also created a component viewer in the fleet page using a lot of the same logic.</li>
                 <li>My intention is to come clean this logic up later on, right now it's just a functional prototype.</li>
